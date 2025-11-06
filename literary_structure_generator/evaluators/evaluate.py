@@ -64,7 +64,7 @@ def run_all_evaluators(
         spec: StorySpec used for generation
         digest: ExemplarDigest for comparison
         exemplar_text: Original exemplar text (for overlap check)
-        config: GenerationConfig used
+        _config: GenerationConfig used (reserved for future use)
         use_llm_stylefit: Whether to use LLM stylefit (default False for tests)
 
     Returns:
@@ -377,9 +377,7 @@ def generate_tuning_suggestions(
                 param="temperature",
                 action="decrease",
                 by=0.1,
-                reason=(
-                    f"Low overall score ({scores.overall:.2f}), " "try more conservative generation"
-                ),
+                reason=f"Low overall score ({scores.overall:.2f}), try more conservative generation",  # noqa: E501
             )
         )
 
