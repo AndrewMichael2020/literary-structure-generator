@@ -1,0 +1,57 @@
+{
+  "schema": "GenerationConfig@2",
+  "seed": 137,
+  "num_candidates": 8,
+  "per_beat_generation": {
+    "temperature": [0.7, 0.95],
+    "top_p": [0.85, 0.95],
+    "length_tolerance": 0.2,
+    "repetition_penalty": 1.05,
+    "stop_on": [],
+    "rewrite_passes": 1
+  },
+  "diversity": {
+    "beat_shuffle": 0.15,
+    "spec_jitter": 0.1
+  },
+  "constraint_enforcement": {
+    "max_ngram": 12,
+    "simhash_hamming_min": 18,
+    "forbidden_lexicon": []
+  },
+  "repair_steps": {
+    "enable_line_edit": true,
+    "max_passes": 2
+  },
+  "evaluator_suite": [
+    "stylefit",
+    "formfit",
+    "coherence",
+    "freshness",
+    "overlap_guard",
+    "valence_arc_fit",
+    "cadence"
+  ],
+  "objective_weights": {
+    "stylefit": 0.3,
+    "formfit": 0.3,
+    "coherence": 0.25,
+    "freshness": 0.1,
+    "cadence": 0.05
+  },
+  "optimizer": {
+    "mode": "adamish",
+    "max_iters": 10,
+    "warmup_iters": 2,
+    "patience": 3,
+    "step_size": 0.1,
+    "beta1": 0.8,
+    "beta2": 0.95,
+    "exploration_radius": 0.08,
+    "population": 6
+  },
+  "caching": {
+    "prompt_cache": true,
+    "digest_cache": true
+  }
+}
