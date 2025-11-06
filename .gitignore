@@ -205,3 +205,8 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Literary Structure Generator
+# Runtime artifacts and workflow outputs
+runs/
+artifacts/
