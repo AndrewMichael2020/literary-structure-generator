@@ -16,15 +16,13 @@ Workflow:
 Each decision is logged via log_decision() for reproducibility.
 """
 
-from typing import Optional
-
 from literary_structure_generator.models.author_profile import AuthorProfile
 from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 from literary_structure_generator.models.story_spec import StorySpec
 from literary_structure_generator.utils.decision_logger import log_decision
 
 
-def map_voice_parameters(digest: ExemplarDigest, _profile: Optional[AuthorProfile] = None) -> dict:
+def map_voice_parameters(digest: ExemplarDigest, _profile: AuthorProfile | None = None) -> dict:
     """
     Map digest stylometry to voice parameters.
 
@@ -42,7 +40,8 @@ def map_voice_parameters(digest: ExemplarDigest, _profile: Optional[AuthorProfil
         # Each bucket represents a range: [1-5, 6-10, 11-15, 16-20, 21-30, 31-40, 41-50, 51-75, 76+]
         bucket_midpoints = [3, 8, 13, 18, 25, 35, 45, 63, 80]
         weighted_sum = sum(
-            count * midpoint for count, midpoint in zip(sentence_len_hist, bucket_midpoints)
+            count * midpoint
+            for count, midpoint in zip(sentence_len_hist, bucket_midpoints, strict=False)
         )
         avg_sentence_len = round(weighted_sum / total_sentences)
     else:
@@ -154,7 +153,8 @@ def map_form_parameters(
         # Bucket midpoints for paragraph lengths
         bucket_midpoints = [3, 8, 13, 25, 50, 75, 100, 150, 200]
         weighted_sum = sum(
-            count * midpoint for count, midpoint in zip(para_len_hist, bucket_midpoints)
+            count * midpoint
+            for count, midpoint in zip(para_len_hist, bucket_midpoints, strict=False)
         )
         avg_para_len = round(weighted_sum / total_paragraphs)
     else:
@@ -259,9 +259,9 @@ def synthesize_spec(
     digest: ExemplarDigest,
     story_id: str,
     seed: int = 137,
-    profile: Optional[AuthorProfile] = None,
+    profile: AuthorProfile | None = None,
     alpha_exemplar: float = 0.7,
-    output_path: Optional[str] = None,
+    output_path: str | None = None,
     run_id: str = "run_001",
     iteration: int = 0,
 ) -> StorySpec:

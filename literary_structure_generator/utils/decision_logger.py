@@ -10,7 +10,7 @@ Each decision is saved as a ReasonLog JSON file in the /runs/{run_id}/iter_{iter
 
 import json
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from literary_structure_generator.models.reason_log import ReasonLog
 
@@ -21,9 +21,9 @@ def log_decision(
     agent: str,
     decision: str,
     reasoning: str,
-    parameters: Optional[dict[str, Any]] = None,
-    outcome: Optional[str] = None,
-    metadata: Optional[dict[str, Any]] = None,
+    parameters: dict[str, Any] | None = None,
+    outcome: str | None = None,
+    metadata: dict[str, Any] | None = None,
     output_dir: str = "runs",
 ) -> ReasonLog:
     """
@@ -87,8 +87,8 @@ def log_decision(
 
 def load_decision_logs(
     run_id: str,
-    iteration: Optional[int] = None,
-    agent: Optional[str] = None,
+    iteration: int | None = None,
+    agent: str | None = None,
     output_dir: str = "runs",
 ) -> list[ReasonLog]:
     """

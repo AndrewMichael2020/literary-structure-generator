@@ -17,7 +17,6 @@ import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
 
 from literary_structure_generator.evaluators.evaluate import evaluate_draft
 from literary_structure_generator.generation.draft_generator import (
@@ -37,7 +36,7 @@ def generate_single_candidate(
     exemplar_text: str,
     candidate_id: str,
     run_id: str,
-    config: Optional[GenerationConfig] = None,
+    config: GenerationConfig | None = None,
 ) -> dict:
     """
     Generate a single candidate draft.
@@ -200,8 +199,8 @@ def generate_candidates(
     digest: ExemplarDigest,
     exemplar_text: str,
     n_candidates: int = 3,
-    routing_overrides: Optional[dict] = None,
-    run_id: Optional[str] = None,
+    routing_overrides: dict | None = None,
+    run_id: str | None = None,
 ) -> dict:
     """
     Generate N candidate drafts, evaluate them, and select the best.

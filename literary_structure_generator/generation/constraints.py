@@ -10,8 +10,6 @@ Features:
     - POV consistency checking
 """
 
-from typing import Optional
-
 
 def extract_ngrams(text: str, n: int) -> set[str]:
     """
@@ -80,7 +78,7 @@ def enforce_constraints(
     text: str,
     exemplar_text: str,
     max_ngram: int = 12,
-    forbidden: Optional[list[str]] = None,
+    forbidden: list[str] | None = None,
     expected_pov: str = "first",
 ) -> dict[str, any]:
     """

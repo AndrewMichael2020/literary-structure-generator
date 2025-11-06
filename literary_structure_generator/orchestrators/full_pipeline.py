@@ -20,12 +20,11 @@ CLI interface for running complete workflow.
 """
 
 import argparse
-from typing import Optional
 
 
 def run_pipeline(
     exemplar_path: str,
-    author_profile_path: Optional[str] = None,
+    author_profile_path: str | None = None,
     story_id: str = "story_001",
     seed: int = 137,
     output_dir: str = "artifacts/",

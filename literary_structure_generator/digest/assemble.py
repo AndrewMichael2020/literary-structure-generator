@@ -15,8 +15,6 @@ Workflow:
 Each decision is logged via log_decision() for reproducibility.
 """
 
-from typing import Optional
-
 from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 from literary_structure_generator.utils.decision_logger import log_decision
 
@@ -96,7 +94,7 @@ def merge_results(heuristic_results: dict, llm_results: dict) -> dict:
 def assemble_digest(
     filepath: str,
     model: str = "gpt-4",
-    _output_path: Optional[str] = None,
+    _output_path: str | None = None,
     run_id: str = "run_001",
     iteration: int = 0,
 ) -> ExemplarDigest:

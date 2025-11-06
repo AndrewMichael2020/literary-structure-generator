@@ -6,7 +6,6 @@ detected profanity with [bleep] while preserving rhythm and tone.
 """
 
 import re
-from typing import Optional
 
 # Comprehensive profanity list for filtering
 PROFANITY_LIST = [
@@ -93,7 +92,7 @@ def apply_profanity_filter(
     enabled: bool = True,
     substitution: str = "[bleep]",
     log_replacements: bool = False,
-) -> tuple[str, Optional[int]]:
+) -> tuple[str, int | None]:
     """
     Apply profanity filter with optional logging.
 

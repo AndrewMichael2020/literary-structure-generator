@@ -11,7 +11,7 @@ Used to track agent decisions across workflow runs and iterations.
 """
 
 from datetime import datetime, timezone
-from typing import Any, ClassVar, Optional
+from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field
 
@@ -43,7 +43,7 @@ class ReasonLog(BaseModel):
         default_factory=dict,
         description="Relevant parameters that influenced the decision",
     )
-    outcome: Optional[str] = Field(
+    outcome: str | None = Field(
         default=None, description="Outcome or result of the decision (if available)"
     )
     metadata: dict[str, Any] = Field(
