@@ -25,8 +25,13 @@
       "model": "gpt-4o",
       "temperature": 0.2
     },
+    "beat_generator": {
+      "model": "gpt-5",
+      "max_tokens": 800,
+      "temperature": 0.8
+    },
     "repair_pass": {
-      "model": "claude-opus-4",
+      "model": "opus-4.1",
       "temperature": 0.3,
       "max_tokens": 800
     }

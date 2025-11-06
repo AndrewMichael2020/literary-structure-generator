@@ -15,7 +15,7 @@ class LLMClient(ABC):
     def __init__(
         self,
         model: str,
-        temperature: float = 0.2,
+        temperature: Optional[float] = 0.2,
         top_p: float = 0.9,
         max_tokens: int = 512,
         seed: Optional[int] = None,
@@ -27,6 +27,7 @@ class LLMClient(ABC):
         Args:
             model: Model identifier
             temperature: Sampling temperature (0.0-2.0), default 0.2 for stability
+                        Can be None for models that don't support temperature
             top_p: Nucleus sampling parameter (0.0-1.0)
             max_tokens: Maximum tokens to generate
             seed: Random seed for reproducibility
