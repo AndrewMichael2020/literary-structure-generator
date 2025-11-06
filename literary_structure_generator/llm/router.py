@@ -122,7 +122,5 @@ def get_client(component: str) -> LLMClient:
         from literary_structure_generator.llm.clients.openai_client import OpenAIClient
 
         return OpenAIClient(**client_params)
-    if provider == "anthropic":
-        # Placeholder for future Anthropic support
-        raise ValueError(f"Provider '{provider}' not yet implemented. Use 'mock' or 'openai'.")
-    raise ValueError(f"Unknown provider: {provider}. Supported: 'mock', 'openai', 'anthropic'")
+    # Anthropic support coming in future phase
+    raise ValueError(f"Unknown provider: {provider}. Supported: 'mock', 'openai'")

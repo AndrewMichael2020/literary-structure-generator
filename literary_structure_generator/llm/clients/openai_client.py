@@ -5,6 +5,7 @@ Connects to OpenAI API with retry logic and error handling.
 """
 
 import os
+import random
 import time
 
 from literary_structure_generator.llm.base import LLMClient
@@ -96,8 +97,10 @@ class OpenAIClient(LLMClient):
             except Exception as e:
                 last_error = e
                 if attempt < max_retries:
-                    # Exponential backoff with jitter
-                    wait_time = (2**attempt) + (time.time() % 1)
+                    # Exponential backoff with jitter (0.0-1.0 seconds)
+                    base_wait = 2**attempt
+                    jitter = random.random()
+                    wait_time = base_wait + jitter
                     time.sleep(wait_time)
                 else:
                     raise last_error from e
