@@ -434,7 +434,8 @@ class TestOptimizerIntegration:
             ),
         )
 
-        exemplar_text = """
+        exemplar_text = (
+            """
 The rain began at dusk. Sarah stood at the corner, watching the water pool in the gutters.
 
 She didn't remember how she got there. The streets looked familiar but wrong, like a photograph
@@ -447,7 +448,9 @@ offered no answers, and the distant lights seemed to move further away with each
 
 Time felt strange here. Hours or minutes, she couldn't tell. Just the wet streets and the
 steady drumming of rain on concrete.
-""" * 5  # Repeat to make it longer
+"""
+            * 5
+        )  # Repeat to make it longer
 
         with tempfile.TemporaryDirectory() as tmpdir:
             result = optimizer.run(

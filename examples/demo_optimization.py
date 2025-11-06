@@ -170,7 +170,8 @@ def main():
     )
 
     # Create exemplar text (different content to avoid overlap)
-    exemplar_text = """
+    exemplar_text = (
+        """
 The bar was dim. Music played from somewhere unseen. A woman sat alone at the counter.
 
 Outside, the city continued its relentless rhythm. Inside, time seemed suspended.
@@ -184,7 +185,9 @@ Decisions had to be made. Some paths led forward, others circled back. In the en
 nothing changed. Everything changed.
 
 The neon sign flickered. Red, blue, red again. Patterns in the darkness.
-""" * 30  # Repeat to make realistic length
+"""
+        * 30
+    )  # Repeat to make realistic length
 
     # Create generation config
     config = GenerationConfig(
