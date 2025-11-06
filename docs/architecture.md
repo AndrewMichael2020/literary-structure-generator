@@ -58,7 +58,7 @@ flowchart TB
     K --> N[LLM Response]
     L --> N
     M --> N
-    N --> O[Apply Profanity Filter]
+    N --> O[Apply Grit Filter]
     O --> P[Compute Checksum]
     P --> Q[Log Decision]
     Q --> R[Cache Result]
@@ -70,7 +70,7 @@ flowchart TB
 ```
 
 **Explanation:**
-The LLM router centralizes all LLM interactions. When a component (e.g., `motif_labeler`, `beat_paraphraser`) requests LLM completion, the router checks for component-specific or global configuration. It loads the versioned prompt template from the `prompts/` directory, optionally checks the SQLite cache (keyed by prompt + params), and dispatches to the appropriate client (Mock, OpenAI, or Anthropic). Responses pass through the universal profanity filter, are checksummed for drift detection, logged for reproducibility, cached for efficiency, and returned to the caller.
+The LLM router centralizes all LLM interactions. When a component (e.g., `motif_labeler`, `beat_paraphraser`) requests LLM completion, the router checks for component-specific or global configuration. It loads the versioned prompt template from the `prompts/` directory, optionally checks the SQLite cache (keyed by prompt + params), and dispatches to the appropriate client (Mock, OpenAI, or Anthropic). Responses pass through the universal grit filter, are checksummed for drift detection, logged for reproducibility, cached for efficiency, and returned to the caller.
 
 ---
 
@@ -85,7 +85,7 @@ sequenceDiagram
     participant Router as LLMRouter
     participant LLM as LLM Client
     participant Guards as Guards
-    participant Filter as ProfanityFilter
+    participant Filter as GritFilter
     
     DG->>BG: generate_beat_text(beat_spec, memory)
     BG->>BG: Build context from memory
@@ -97,7 +97,7 @@ sequenceDiagram
     Router-->>BG: filtered_text
     BG->>Guards: Check constraints
     Guards->>Guards: Length validation
-    Guards->>Guards: Profanity check
+    Guards->>Guards: Grit check
     Guards-->>BG: validation_result
     alt Validation Pass
         BG->>BG: Update memory
@@ -110,7 +110,7 @@ sequenceDiagram
 ```
 
 **Explanation:**
-Beat generation is context-aware and iterative. The `DraftGenerator` orchestrates per-beat generation, passing accumulated memory (previous beats' text and functions) to the `BeatGenerator`. The generator constructs a prompt enriched with context, requests completion via the router, and receives profanity-filtered text. Guards validate length and content constraints. If validation fails, the generator retries with adjusted parameters (e.g., reduced temperature, stricter length hints). Successfully validated beats update the memory context for subsequent beats.
+Beat generation is context-aware and iterative. The `DraftGenerator` orchestrates per-beat generation, passing accumulated memory (previous beats' text and functions) to the `BeatGenerator`. The generator constructs a prompt enriched with context, requests completion via the router, and receives grit-filtered text. Guards validate length and content constraints. If validation fails, the generator retries with adjusted parameters (e.g., reduced temperature, stricter length hints). Successfully validated beats update the memory context for subsequent beats.
 
 ---
 
@@ -234,7 +234,7 @@ classDiagram
         +diversity: Diversity
         +constraint_enforcement: ConstraintEnforcement
         +repair_steps: RepairSteps
-        +profanity: Profanity
+        +grit: Grit
         +optimizer: Optimizer
     }
     
@@ -254,7 +254,7 @@ classDiagram
         +profile_id: str
         +voice_prefs: VoicePrefs
         +lexicon: Lexicon
-        +profanity: ProfanityPolicy
+        +grit: GritPolicy
         +content_safety: ContentSafety
     }
     
@@ -272,7 +272,7 @@ The system uses five core Pydantic models as JSON-serializable data artifacts:
 
 2. **StorySpec** is synthesized from the digest and represents a portable specification for generation. It defines voice parameters (POV, tense, syntax), form (beat structure, dialogue ratio), content (setting, characters, themes), and anti-plagiarism constraints.
 
-3. **GenerationConfig** controls the orchestrator's behavior: LLM sampling parameters, diversity controls, constraint enforcement, repair settings, profanity filtering, evaluator suite composition, and optimizer hyperparameters.
+3. **GenerationConfig** controls the orchestrator's behavior: LLM sampling parameters, diversity controls, constraint enforcement, repair settings, grit filtering, evaluator suite composition, and optimizer hyperparameters.
 
 4. **EvalReport** contains comprehensive evaluation results: component scores, per-beat analysis, drift detection (deviations from spec), red flags (constraint violations), and tuning suggestions for iterative improvement.
 
@@ -294,6 +294,6 @@ All models are versioned (e.g., `@2`) for schema evolution and use Pydantic for 
 
 5. **Drift Control**: Prompt versioning, semantic checksums, and low-temperature sampling prevent model drift.
 
-6. **Profanity Handling**: Universal `[bleep]` filtering maintains narrative authenticity while ensuring content safety.
+6. **Grit Handling**: Universal `[bleep]` filtering maintains narrative authenticity while ensuring content safety.
 
 7. **Iterative Refinement**: Evaluation-driven optimization loop continuously improves quality through targeted adjustments.

@@ -269,7 +269,7 @@ python -m literary_structure_generator.orchestrators.full_pipeline \
   - Per-beat text generation with LLM routing
   - Beat stitching into coherent narrative
   - Anti-plagiarism guards (n-gram overlap, SimHash)
-  - Profanity filtering (Clean Mode)
+  - Grit filtering (Clean Mode)
   - Repair passes for quality improvement
   - GPT-5 model compatibility
 

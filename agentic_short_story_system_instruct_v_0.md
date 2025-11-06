@@ -34,7 +34,7 @@ Constraints:
 ---
 
 ## 3) Inputs you’ll provide
-- **AuthorProfile.json**: lexicon, syntax tendencies, taboo/allowed words, register sliders (deadpan ↔ lyrical, sardonic ↔ earnest), profanity policy, em‑dash usage, sentence‑length targets, dialogue ratio, etc.
+- **AuthorProfile.json**: lexicon, syntax tendencies, taboo/allowed words, register sliders (deadpan ↔ lyrical, sardonic ↔ earnest), grit policy, em‑dash usage, sentence‑length targets, dialogue ratio, etc.
 - **SeedKit/** (any subset):
   - **Notes.md** (fragments, memories, conflicts, images)
   - **ScenePrompts.json** (if you have anchors you want included)

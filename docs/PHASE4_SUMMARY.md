@@ -17,7 +17,7 @@ Successfully implemented Phase 4: Per-beat draft generation with stitching, over
 2. **guards.py** (51 statements, 98% coverage)
    - `max_ngram_overlap()` - N-gram overlap detection (3-12 tokens)
    - `simhash_distance()` - SimHash Hamming distance (256-bit)
-   - `clean_mode()` - Profanity filtering and replacement
+   - `clean_mode()` - Grit filtering and replacement
    - `check_overlap_guard()` - Combined anti-plagiarism checks
    - `apply_clean_mode_if_needed()` - Conditional filtering
 
@@ -82,7 +82,7 @@ Successfully implemented Phase 4: Per-beat draft generation with stitching, over
 - Guidance injection for retries
 
 ### Clean Mode
-- Profanity detection and replacement
+- Grit detection and replacement
 - Maintains narrative flow
 - Configurable per StorySpec
 - Applied to both beats and final output

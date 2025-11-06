@@ -97,8 +97,8 @@ Anti-plagiarism and content filtering.
   - Returns Hamming distance (0-256)
   - Threshold: ≥18 bits different
 
-- `clean_mode()` - Profanity filtering
-  - Replaces profanity with neutral alternatives
+- `clean_mode()` - Grit filtering
+  - Replaces grit with neutral alternatives
   - Maintains readability
   - Configurable per StorySpec
 

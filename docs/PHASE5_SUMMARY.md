@@ -13,7 +13,7 @@ Phase 5 implements a comprehensive evaluation suite for scoring generated story 
    - Sentence length matching (± tolerance)
    - Parataxis ratio calculation
    - Dialogue ratio adherence
-   - Clean mode verification (profanity detection)
+   - Clean mode verification (grit detection)
    - Returns: score 0..1
 
 2. **`formfit.py`** - Structural adherence

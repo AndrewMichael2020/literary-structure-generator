@@ -131,7 +131,7 @@ Evolved to: Sophisticated routing, caching, and drift control system
 
 **Evolution Beyond Initial Plan:**
 - Added GPT-5 model compatibility (auto-filters unsupported parameters)
-- Enhanced profanity filtering with `[bleep]` replacement
+- Enhanced grit filtering with `[bleep]` replacement
 - More sophisticated retry strategy with guidance injection
 - Complete artifact persistence with detailed metadata
 
@@ -333,7 +333,7 @@ Cache Check (SQLite)
   ↓
 Provider Selection (mock/openai/anthropic)
   ↓
-Profanity Filter
+Grit Filter
   ↓
 Checksum + Decision Log
   ↓
