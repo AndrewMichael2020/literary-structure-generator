@@ -20,7 +20,11 @@ from typing import Any
 
 from literary_structure_generator.evaluators.evaluate import evaluate_draft, save_eval_report
 from literary_structure_generator.generation.draft_generator import run_draft_generation
-from literary_structure_generator.models.eval_report import EvalReport, TuningSuggestion
+from literary_structure_generator.models.eval_report import (
+    DriftItem,
+    EvalReport,
+    TuningSuggestion,
+)
 from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 from literary_structure_generator.models.generation_config import GenerationConfig
 from literary_structure_generator.models.story_spec import StorySpec
@@ -348,7 +352,7 @@ class Optimizer:
             elif action == "decrease":
                 spec.form.dialogue_ratio = max(spec.form.dialogue_ratio - amount, 0.0)
 
-    def _correct_drift(self, spec: StorySpec, drift: Any) -> None:
+    def _correct_drift(self, spec: StorySpec, drift: DriftItem) -> None:
         """Correct drift from target specification."""
         field = drift.field
 
@@ -423,7 +427,7 @@ class Optimizer:
         best_spec: StorySpec,
         best_draft: dict[str, Any] | None,
         best_score: float,
-        best_report: EvalReport | None,  # noqa: ARG002
+        best_report: EvalReport | None,
         history: list[dict[str, Any]],
         output_dir: str,
     ) -> None:
@@ -441,6 +445,12 @@ class Optimizer:
             draft_path = results_dir / "best_draft.txt"
             with open(draft_path, "w", encoding="utf-8") as f:
                 f.write(best_draft.get("text", ""))
+
+        # Save best evaluation report if available
+        if best_report:
+            report_path = results_dir / "best_report.json"
+            with open(report_path, "w", encoding="utf-8") as f:
+                json.dump(best_report.model_dump(by_alias=True), f, indent=2)
 
         # Save optimization summary
         summary = {
