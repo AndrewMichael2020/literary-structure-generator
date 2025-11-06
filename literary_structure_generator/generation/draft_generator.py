@@ -15,7 +15,6 @@ import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
 
 from literary_structure_generator.generation.guards import (
     apply_clean_mode_if_needed,
@@ -110,8 +109,8 @@ Generate prose for this beat matching the specified voice and style.
 def generate_beat_text(
     beat_spec: BeatSpec,
     story_spec: StorySpec,
-    memory: Optional[dict] = None,
-    exemplar: Optional[str] = None,
+    memory: dict | None = None,
+    exemplar: str | None = None,
     max_retries: int = 2,
 ) -> dict:
     """
@@ -224,8 +223,8 @@ def stitch_beats(beat_texts: list[str]) -> str:
 
 def run_draft_generation(
     spec: StorySpec,
-    exemplar: Optional[str] = None,
-    output_dir: Optional[str] = None,
+    exemplar: str | None = None,
+    output_dir: str | None = None,
 ) -> dict:
     """
     Run complete draft generation pipeline.

@@ -17,7 +17,6 @@ Workflow:
 import hashlib
 import os
 from pathlib import Path
-from typing import Optional
 
 from literary_structure_generator.evaluators.cadence_pacing import evaluate_cadence_pacing
 from literary_structure_generator.evaluators.coherence_graph_fit import (
@@ -436,7 +435,7 @@ def evaluate_draft(
     spec: StorySpec,
     digest: ExemplarDigest,
     exemplar_text: str = "",
-    config: Optional[GenerationConfig] = None,
+    config: GenerationConfig | None = None,
     run_id: str = "eval_001",
     candidate_id: str = "cand_001",
     use_llm_stylefit: bool = False,

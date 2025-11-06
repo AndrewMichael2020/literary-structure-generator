@@ -20,7 +20,6 @@ Each adapter:
 import hashlib
 import json
 from pathlib import Path
-from typing import Optional
 
 from literary_structure_generator.llm.cache import LLMCache
 from literary_structure_generator.llm.router import get_client, get_params
@@ -28,7 +27,7 @@ from literary_structure_generator.utils.decision_logger import log_decision
 from literary_structure_generator.utils.profanity import structural_bleep
 
 # Global cache instance
-_cache: Optional[LLMCache] = None
+_cache: LLMCache | None = None
 
 
 def _get_cache() -> LLMCache:
@@ -93,7 +92,7 @@ def _log_llm_call(
     template_version: str,
     params: dict,
     input_hash: str,
-    output_checksum: Optional[str] = None,
+    output_checksum: str | None = None,
     run_id: str = "run_001",
     iteration: int = 0,
 ):

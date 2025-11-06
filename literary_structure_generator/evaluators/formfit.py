@@ -79,7 +79,7 @@ def check_beat_length_adherence(
     per_beat_scores = []
     per_beat_details = []
 
-    for _i, (beat_text, beat_spec) in enumerate(zip(beat_texts, beat_specs)):
+    for _i, (beat_text, beat_spec) in enumerate(zip(beat_texts, beat_specs, strict=False)):
         actual_words = count_words(beat_text)
         target_words = beat_spec.target_words
 
@@ -142,7 +142,7 @@ def check_beat_function_alignment(
     per_beat_scores = []
     per_beat_details = []
 
-    for beat_text, beat_spec in zip(beat_texts, beat_specs):
+    for beat_text, beat_spec in zip(beat_texts, beat_specs, strict=False):
         beat_text_lower = beat_text.lower()
         function = beat_spec.function.lower()
 

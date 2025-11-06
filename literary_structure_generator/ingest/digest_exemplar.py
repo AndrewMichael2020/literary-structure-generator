@@ -14,7 +14,6 @@ import json
 import re
 from collections import Counter
 from pathlib import Path
-from typing import Optional
 
 from literary_structure_generator.digest.entity_extractor import extract_entities
 from literary_structure_generator.digest.motif_extractor import (
@@ -364,7 +363,7 @@ def analyze_text(
     path: str,
     run_id: str = "run_001",
     iteration: int = 0,
-    output_dir: Optional[str] = None,
+    output_dir: str | None = None,
 ) -> ExemplarDigest:
     """
     Read exemplar, compute stylometry & structural stats, and return populated model.

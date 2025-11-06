@@ -15,8 +15,6 @@ Workflow:
 Each decision is logged via log_decision() for reproducibility.
 """
 
-from typing import Optional
-
 from literary_structure_generator.models.eval_report import EvalReport
 from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 from literary_structure_generator.models.generation_config import GenerationConfig
@@ -119,7 +117,7 @@ def assemble_eval_report(
     _digest: ExemplarDigest,
     _exemplar_text: str,
     _config: GenerationConfig,
-    _output_path: Optional[str] = None,
+    _output_path: str | None = None,
     iteration: int = 0,
 ) -> EvalReport:
     """

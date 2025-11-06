@@ -9,13 +9,12 @@ import hashlib
 import json
 import sqlite3
 from pathlib import Path
-from typing import Optional
 
 
 class LLMCache:
     """SQLite-based cache for LLM responses."""
 
-    def __init__(self, cache_path: Optional[str] = None):
+    def __init__(self, cache_path: str | None = None):
         """
         Initialize cache.
 
@@ -111,7 +110,7 @@ class LLMCache:
         template_version: str,
         params: dict,
         input_text: str,
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Retrieve cached response if available.
 
@@ -179,7 +178,7 @@ class LLMCache:
         conn.commit()
         conn.close()
 
-    def clear(self, component: Optional[str] = None):
+    def clear(self, component: str | None = None):
         """
         Clear cache entries.
 

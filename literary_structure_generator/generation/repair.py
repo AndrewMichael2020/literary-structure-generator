@@ -9,8 +9,6 @@ LLM-based repair for generated text:
     - Profanity filtering with [bleep] replacement
 """
 
-from typing import Optional
-
 from literary_structure_generator.llm.router import get_client
 from literary_structure_generator.models.story_spec import StorySpec
 from literary_structure_generator.utils.profanity import structural_bleep
@@ -75,7 +73,7 @@ def build_repair_notes(text: str, spec: StorySpec, issues: list[str]) -> dict:
 def repair_text(
     stitched: str,
     spec: StorySpec,
-    notes: Optional[dict] = None,
+    notes: dict | None = None,
 ) -> str:
     """
     Apply LLM repair pass to stitched text.

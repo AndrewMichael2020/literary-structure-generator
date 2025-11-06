@@ -6,7 +6,6 @@ Handles seed management and sampling defaults.
 """
 
 from abc import ABC, abstractmethod
-from typing import Optional
 
 
 class LLMClient(ABC):
@@ -15,10 +14,10 @@ class LLMClient(ABC):
     def __init__(
         self,
         model: str,
-        temperature: Optional[float] = 0.2,
+        temperature: float | None = 0.2,
         top_p: float = 0.9,
         max_tokens: int = 512,
-        seed: Optional[int] = None,
+        seed: int | None = None,
         timeout_s: int = 20,
     ):
         """

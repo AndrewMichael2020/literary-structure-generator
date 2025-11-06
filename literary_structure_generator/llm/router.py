@@ -8,13 +8,12 @@ that merge global defaults with component-specific overrides.
 import json
 import os
 from pathlib import Path
-from typing import Optional
 
 from literary_structure_generator.llm.base import LLMClient
 from literary_structure_generator.llm.clients.mock_client import MockClient
 
 # Cache for routing config
-_routing_config: Optional[dict] = None
+_routing_config: dict | None = None
 
 
 def load_routing_config() -> dict:
