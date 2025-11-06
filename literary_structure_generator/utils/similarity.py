@@ -10,10 +10,15 @@ Features:
     - Hamming distance
 """
 
+import hashlib
+import re
+
 
 def calculate_simhash(text: str, num_bits: int = 256) -> int:
     """
     Calculate SimHash fingerprint of text.
+
+    Uses word-based features with hash-based weights.
 
     Args:
         text: Input text
@@ -22,8 +27,34 @@ def calculate_simhash(text: str, num_bits: int = 256) -> int:
     Returns:
         SimHash as integer
     """
-    # TODO: Implement SimHash calculation
-    raise NotImplementedError("SimHash calculation not yet implemented")
+    # Tokenize text into words
+    words = re.findall(r"\w+", text.lower())
+
+    if not words:
+        return 0
+
+    # Initialize bit vector
+    v = [0] * num_bits
+
+    # Process each word
+    for word in words:
+        # Hash the word
+        h = int(hashlib.md5(word.encode()).hexdigest(), 16)
+
+        # Update bit vector
+        for i in range(num_bits):
+            if h & (1 << i):
+                v[i] += 1
+            else:
+                v[i] -= 1
+
+    # Generate fingerprint
+    fingerprint = 0
+    for i in range(num_bits):
+        if v[i] > 0:
+            fingerprint |= 1 << i
+
+    return fingerprint
 
 
 def hamming_distance(hash1: int, hash2: int) -> int:
@@ -37,8 +68,13 @@ def hamming_distance(hash1: int, hash2: int) -> int:
     Returns:
         Hamming distance (number of differing bits)
     """
-    # TODO: Implement Hamming distance
-    raise NotImplementedError("Hamming distance calculation not yet implemented")
+    # XOR to find differing bits, then count them
+    xor = hash1 ^ hash2
+    distance = 0
+    while xor:
+        distance += xor & 1
+        xor >>= 1
+    return distance
 
 
 def levenshtein_distance(s1: str, s2: str) -> int:

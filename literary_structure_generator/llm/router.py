@@ -104,16 +104,22 @@ def get_client(component: str) -> LLMClient:
     """
     params = get_params(component)
     provider = params.get("provider", "mock")
+    model = params.get("model", "gpt-4o-mini")
 
     # Extract client parameters
     client_params = {
-        "model": params.get("model", "gpt-4o-mini"),
+        "model": model,
         "temperature": params.get("temperature", 0.2),
         "top_p": params.get("top_p", 0.9),
         "max_tokens": params.get("max_tokens", 512),
         "seed": params.get("seed"),
         "timeout_s": params.get("timeout_s", 20),
     }
+
+    # Filter unsupported params for GPT-5 family
+    if model.startswith("gpt-5"):
+        # GPT-5 family doesn't support temperature parameter
+        client_params.pop("temperature", None)
 
     # Instantiate appropriate client
     if provider == "mock":

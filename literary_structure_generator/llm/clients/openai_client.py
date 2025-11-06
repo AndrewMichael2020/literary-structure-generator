@@ -65,10 +65,14 @@ class OpenAIClient(LLMClient):
         # Merge kwargs with defaults
         params = {
             "model": kwargs.get("model", self.model),
-            "temperature": kwargs.get("temperature", self.temperature),
             "top_p": kwargs.get("top_p", self.top_p),
             "max_tokens": kwargs.get("max_tokens", self.max_tokens),
         }
+
+        # Only add temperature if it's supported (not None)
+        temperature = kwargs.get("temperature", self.temperature)
+        if temperature is not None:
+            params["temperature"] = temperature
 
         if self.seed is not None:
             params["seed"] = self.seed

@@ -32,17 +32,19 @@ class MockClient(LLMClient):
         # Estimate token counts
         prompt_tokens = len(prompt.split())
 
-        # Pattern matching for different adapter types
-        if "label" in prompt.lower() and "motif" in prompt.lower():
+        # Pattern matching for different adapter types (order matters - most specific first)
+        if "generate the beat" in prompt.lower() or "beat specification" in prompt.lower():
+            response = self._mock_beat_generation(prompt)
+        elif "repair" in prompt.lower() and "original text" in prompt.lower():
+            response = self._mock_repair(prompt)
+        elif "label" in prompt.lower() and "motif" in prompt.lower():
             response = self._mock_motif_labels(prompt)
-        elif "name" in prompt.lower() and "imagery" in prompt.lower():
+        elif "name" in prompt.lower() and "imagery phrases" in prompt.lower():
             response = self._mock_imagery_names(prompt)
-        elif "paraphrase" in prompt.lower() or "beat" in prompt.lower():
+        elif "paraphrase" in prompt.lower() or ("beat" in prompt.lower() and "function" in prompt.lower() and "paraphrase" in prompt.lower()):
             response = self._mock_beat_paraphrase(prompt)
         elif "stylefit" in prompt.lower() or "score" in prompt.lower():
             response = "0.75"
-        elif "repair" in prompt.lower():
-            response = self._mock_repair(prompt)
         else:
             response = "[mock response]"
 
@@ -91,9 +93,75 @@ class MockClient(LLMClient):
 
     def _mock_repair(self, prompt: str) -> str:
         """Generate mock repair output."""
-        # Extract text snippet if present
-        if "```" in prompt:
-            parts = prompt.split("```")
-            if len(parts) >= 2:
-                return parts[1].strip()
-        return "[repaired text]"
+        # Extract original text between **Original Text:** and **Constraints:**
+        if "**original text:**" in prompt.lower():
+            import re
+            # Try to find text between markers
+            match = re.search(
+                r"\*\*original text:\*\*\s*```\s*(.+?)\s*```\s*\*\*constraints",
+                prompt,
+                re.DOTALL | re.IGNORECASE
+            )
+            if match:
+                original_text = match.group(1).strip()
+                # Skip if it's the example from the template
+                if "doctor was very" not in original_text.lower():
+                    return original_text
+        
+        # Fallback: return placeholder that won't corrupt output
+        return "[mock repaired text - repair pass would improve this]"
+
+    def _mock_beat_generation(self, prompt: str) -> str:
+        """Generate mock beat prose."""
+        # Extract target words if present
+        target_words = 200
+        if "target words:" in prompt.lower():
+            import re
+            match = re.search(r"target words:\*\*\s*(\d+)", prompt, re.IGNORECASE)
+            if match:
+                target_words = int(match.group(1))
+
+        # Generate mock prose based on function if available
+        function = "scene"
+        if "function:**" in prompt:
+            import re
+            match = re.search(r"function:\*\*\s*(.+?)[\n*]", prompt, re.IGNORECASE)
+            if match:
+                function = match.group(1).strip()
+
+        # Generate contextual prose
+        sentences = [
+            "The morning air carried the scent of rain.",
+            "She stood at the window, watching the street below.",
+            "Her thoughts drifted to the conversation from last night.",
+            "It wasn't supposed to happen this way.",
+            "But here she was, facing the consequences.",
+            "The phone rang, breaking the silence.",
+            "She let it ring three times before answering.",
+            "His voice was different, uncertain.",
+            "They spoke in careful sentences, measuring each word.",
+            "When she hung up, everything had changed.",
+            "Outside, the leaves were turning.",
+            "The season was shifting, relentless.",
+            "She watched a bird land on the windowsill.",
+            "For a moment, nothing else mattered.",
+            "Then the moment passed.",
+        ]
+
+        # Vary based on function
+        if "opening" in function.lower() or "establish" in function.lower():
+            sentences[0] = "The day began quietly, as most days did."
+        elif "develop" in function.lower() or "conflict" in function.lower():
+            sentences[0] = "The tension in the room was palpable."
+        elif "resolution" in function.lower() or "conclud" in function.lower():
+            sentences[0] = "In the end, nothing was quite as she'd expected."
+
+        # Calculate how many sentences needed
+        words_per_sentence = sum(len(s.split()) for s in sentences) / len(sentences)
+        num_sentences = max(5, int(target_words / words_per_sentence))
+        
+        result_sentences = []
+        for i in range(num_sentences):
+            result_sentences.append(sentences[i % len(sentences)])
+
+        return " ".join(result_sentences)
