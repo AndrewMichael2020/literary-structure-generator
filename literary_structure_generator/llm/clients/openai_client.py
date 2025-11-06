@@ -96,14 +96,14 @@ class OpenAIClient(LLMClient):
                 if response.choices and len(response.choices) > 0:
                     return response.choices[0].message.content.strip()
 
-                raise ValueError("Empty response from OpenAI API")
+                raise ValueError("Empty response from OpenAI API")  # noqa: TRY301
 
             except Exception as e:
                 last_error = e
                 if attempt < max_retries:
                     # Exponential backoff with jitter (0.0-1.0 seconds)
                     base_wait = 2**attempt
-                    jitter = random.random()
+                    jitter = random.random()  # noqa: S311
                     wait_time = base_wait + jitter
                     time.sleep(wait_time)
                 else:

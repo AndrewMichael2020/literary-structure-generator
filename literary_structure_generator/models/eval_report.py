@@ -10,7 +10,7 @@ Schema version: EvalReport@2
 Used to assess quality and provide feedback for optimization.
 """
 
-from typing import Any
+from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field
 
@@ -127,7 +127,7 @@ class EvalReport(BaseModel):
 
         populate_by_name = True
 
-        json_schema_extra = {
+        json_schema_extra: ClassVar[dict] = {
             "example": {
                 "schema": "EvalReport@2",
                 "run_id": "run_001",

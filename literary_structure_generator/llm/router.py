@@ -27,7 +27,7 @@ def load_routing_config() -> dict:
     Raises:
         FileNotFoundError: If config file doesn't exist
     """
-    global _routing_config
+    global _routing_config  # noqa: PLW0603
 
     if _routing_config is not None:
         return _routing_config

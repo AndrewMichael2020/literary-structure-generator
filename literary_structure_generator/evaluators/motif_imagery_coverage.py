@@ -141,7 +141,7 @@ def calculate_balance_score(mentions: dict[str, int]) -> float:
 
 
 def evaluate_motif_imagery_coverage(
-    text: str, spec: StorySpec, digest: ExemplarDigest
+    text: str, spec: StorySpec, _digest: ExemplarDigest
 ) -> dict[str, any]:
     """
     Evaluate motif and imagery coverage.

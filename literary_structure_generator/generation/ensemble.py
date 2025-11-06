@@ -19,7 +19,7 @@ from literary_structure_generator.utils.decision_logger import log_decision
 
 
 def generate_candidate(
-    spec: StorySpec,
+    _spec: StorySpec,
     config: GenerationConfig,
     candidate_id: str,
     seed: int,
@@ -92,7 +92,7 @@ def apply_beat_shuffle(spec: StorySpec, shuffle_prob: float = 0.15) -> StorySpec
 
 
 def generate_ensemble(
-    spec: StorySpec,
+    _spec: StorySpec,
     config: GenerationConfig,
     run_id: str,
     iteration: int = 0,
@@ -117,7 +117,8 @@ def generate_ensemble(
         decision=f"Generate ensemble of {config.num_candidates} candidates",
         reasoning=(
             f"Using ensemble of {config.num_candidates} candidates with diversity controls: "
-            f"spec_jitter={config.diversity.spec_jitter}, beat_shuffle={config.diversity.beat_shuffle}"
+            f"spec_jitter={config.diversity.spec_jitter}, "
+            f"beat_shuffle={config.diversity.beat_shuffle}"
         ),
         parameters={
             "num_candidates": config.num_candidates,

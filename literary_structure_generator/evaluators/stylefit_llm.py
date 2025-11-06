@@ -48,7 +48,8 @@ def load_prompt_template(template_name: str = "stylefit_eval.v1.md") -> str:
 
 ## Task
 
-You are given a piece of generated text and a style specification summary. Your task is to score (0.0-1.0) how well the text matches the specified style.
+You are given a piece of generated text and a style specification summary. Your task is to score
+(0.0-1.0) how well the text matches the specified style.
 
 ## Scoring Criteria
 
@@ -183,14 +184,13 @@ def evaluate_stylefit_llm(text: str, spec: StorySpec, use_llm: bool = True) -> d
 
         # Parse score
         score = parse_llm_score(response)
-
+    except Exception as e:
+        # If parsing fails, return disabled result
+        return {"overall": 0.5, "enabled": False, "error": str(e)}
+    else:
         return {
             "overall": score,
             "enabled": True,
             "model": client.model,
             "raw_response": response,
         }
-
-    except Exception as e:
-        # If LLM call fails, return error
-        return {"overall": None, "enabled": False, "error": str(e), "note": "LLM stylefit failed"}

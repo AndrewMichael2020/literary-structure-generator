@@ -33,7 +33,7 @@ _cache: Optional[LLMCache] = None
 
 def _get_cache() -> LLMCache:
     """Get or create global cache instance."""
-    global _cache
+    global _cache  # noqa: PLW0603
     if _cache is None:
         _cache = LLMCache()
     return _cache

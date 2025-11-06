@@ -53,7 +53,7 @@ def run_all_evaluators(
     spec: StorySpec,
     digest: ExemplarDigest,
     exemplar_text: str,
-    config: GenerationConfig,
+    _config: GenerationConfig,
     use_llm_stylefit: bool = False,
 ) -> dict[str, any]:
     """
@@ -64,7 +64,7 @@ def run_all_evaluators(
         spec: StorySpec used for generation
         digest: ExemplarDigest for comparison
         exemplar_text: Original exemplar text (for overlap check)
-        config: GenerationConfig used
+        _config: GenerationConfig used (reserved for future use)
         use_llm_stylefit: Whether to use LLM stylefit (default False for tests)
 
     Returns:
@@ -202,7 +202,10 @@ def extract_per_beat_scores(results: dict[str, any], spec: StorySpec) -> list[Pe
         if i < len(per_beat_function):
             function_data = per_beat_function[i]
             function_score = function_data["score"]
-            function_note = f"Function: {function_data['function']}, Matches: {function_data['keyword_matches']}"
+            function_note = (
+                f"Function: {function_data['function']}, "
+                f"Matches: {function_data['keyword_matches']}"
+            )
         else:
             function_score = 0.5
             function_note = "No function data"
@@ -266,7 +269,7 @@ def identify_red_flags(results: dict[str, any], scores: Scores) -> list[str]:
     return red_flags
 
 
-def analyze_drift(results: dict[str, any], spec: StorySpec, text: str) -> list[DriftItem]:
+def analyze_drift(_results: dict[str, any], spec: StorySpec, text: str) -> list[DriftItem]:
     """
     Analyze drift from specification.
 
@@ -317,8 +320,8 @@ def analyze_drift(results: dict[str, any], spec: StorySpec, text: str) -> list[D
 def generate_tuning_suggestions(
     results: dict[str, any],
     scores: Scores,
-    spec: StorySpec,
-    config: GenerationConfig,
+    _spec: StorySpec,
+    _config: GenerationConfig,
 ) -> list[TuningSuggestion]:
     """
     Generate tuning suggestions for next iteration.
@@ -374,7 +377,7 @@ def generate_tuning_suggestions(
                 param="temperature",
                 action="decrease",
                 by=0.1,
-                reason=f"Low overall score ({scores.overall:.2f}), try more conservative generation",
+                reason=f"Low overall score ({scores.overall:.2f}), try more conservative generation",  # noqa: E501
             )
         )
 
@@ -396,7 +399,10 @@ def generate_tuning_suggestions(
                 param="motif_quota",
                 action="decrease",
                 by=0.15,
-                reason=f"Motif overuse detected (penalty: {motif_result['overall_overuse_penalty']:.2f})",
+                reason=(
+                    f"Motif overuse detected "
+                    f"(penalty: {motif_result['overall_overuse_penalty']:.2f})"
+                ),
             )
         )
 
@@ -459,7 +465,7 @@ def evaluate_draft(
         config = GenerationConfig()
 
     # Calculate config hash
-    config_hash = hashlib.md5(config.model_dump_json().encode()).hexdigest()[:8]
+    config_hash = hashlib.md5(config.model_dump_json().encode()).hexdigest()[:8]  # noqa: S324
 
     # Run all evaluators
     results = run_all_evaluators(
@@ -467,7 +473,7 @@ def evaluate_draft(
         spec=spec,
         digest=digest,
         exemplar_text=exemplar_text,
-        config=config,
+        _config=config,
         use_llm_stylefit=use_llm_stylefit,
     )
 

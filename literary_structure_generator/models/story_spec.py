@@ -9,7 +9,7 @@ Schema version: StorySpec@2
 Used by the generator to produce candidate stories.
 """
 
-from typing import Any
+from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field
 
@@ -282,7 +282,7 @@ class StorySpec(BaseModel):
 
         populate_by_name = True
 
-        json_schema_extra = {
+        json_schema_extra: ClassVar[dict] = {
             "example": {
                 "schema": "StorySpec@2",
                 "meta": {

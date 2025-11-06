@@ -24,7 +24,7 @@ from literary_structure_generator.models.story_spec import StorySpec
 from literary_structure_generator.utils.decision_logger import log_decision
 
 
-def map_voice_parameters(digest: ExemplarDigest, profile: Optional[AuthorProfile] = None) -> dict:
+def map_voice_parameters(digest: ExemplarDigest, _profile: Optional[AuthorProfile] = None) -> dict:
     """
     Map digest stylometry to voice parameters.
 
