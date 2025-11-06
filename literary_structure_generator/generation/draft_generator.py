@@ -13,8 +13,7 @@ Features:
 
 import hashlib
 import json
-import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -73,9 +72,7 @@ Generate prose for this beat matching the specified voice and style.
     props = ", ".join(content.props[:5])
 
     # Format register info
-    register_info = "\n".join(
-        [f"- {k}: {v:.2f}" for k, v in voice.register_sliders.items()]
-    )
+    register_info = "\n".join([f"- {k}: {v:.2f}" for k, v in voice.register_sliders.items()])
 
     # Determine parataxis style
     parataxis_val = voice.syntax.parataxis_vs_hypotaxis
@@ -147,15 +144,17 @@ def generate_beat_text(
 
         # Add guidance to avoid overlap on retry
         if attempt > 0 and exemplar:
-            prompt += f"\n\n**Important:** Avoid phrasing similar to exemplar text. Use fresh language and distinct sentence structures. This is attempt {attempt + 1}."
+            prompt += (
+                "\n\n**Important:** Avoid phrasing similar to exemplar text. "
+                f"Use fresh language and distinct sentence structures. "
+                f"This is attempt {attempt + 1}."
+            )
 
         # Generate beat text
         raw_text = client.complete(prompt)
 
         # Apply clean mode if profanity not allowed
-        clean_text = apply_clean_mode_if_needed(
-            raw_text, not story_spec.voice.profanity.allowed
-        )
+        clean_text = apply_clean_mode_if_needed(raw_text, not story_spec.voice.profanity.allowed)
 
         # Check overlap guard if exemplar provided
         guard_result = {"passed": True, "violations": []}
@@ -222,14 +221,12 @@ def stitch_beats(beat_texts: list[str]) -> str:
         Stitched story text
     """
     # Join with double newlines for paragraph separation
-    stitched = "\n\n".join(beat_texts)
-    return stitched
+    return "\n\n".join(beat_texts)
 
 
 def run_draft_generation(
     spec: StorySpec,
     exemplar: Optional[str] = None,
-    routing_overrides: Optional[dict] = None,
     output_dir: Optional[str] = None,
 ) -> dict:
     """
@@ -246,7 +243,6 @@ def run_draft_generation(
     Args:
         spec: Story specification
         exemplar: Optional exemplar text for overlap checking
-        routing_overrides: Optional router config overrides
         output_dir: Optional output directory (default: /runs/)
 
     Returns:
@@ -264,9 +260,7 @@ def run_draft_generation(
     memory = {}  # Context for beat generation
 
     for beat_spec in spec.form.beat_map:
-        beat_result = generate_beat_text(
-            beat_spec, spec, memory=memory, exemplar=exemplar
-        )
+        beat_result = generate_beat_text(beat_spec, spec, memory=memory, exemplar=exemplar)
         beat_results.append(beat_result)
         beat_texts.append(beat_result["text"])
 
@@ -296,12 +290,10 @@ def run_draft_generation(
         repair_notes["issues"].extend(stitched_guard["violations"])
 
     # Run repair pass
-    repaired = repair_text(stitched, spec, notes=repair_notes, exemplar=exemplar)
+    repaired = repair_text(stitched, spec, notes=repair_notes)
 
     # Apply clean mode to final text
-    final_text = apply_clean_mode_if_needed(
-        repaired, not spec.voice.profanity.allowed
-    )
+    final_text = apply_clean_mode_if_needed(repaired, not spec.voice.profanity.allowed)
 
     # Re-check guard after repair
     final_guard = {"passed": True, "violations": []}
@@ -317,7 +309,7 @@ def run_draft_generation(
     # Compile metadata
     metadata = {
         "story_id": spec.meta.story_id,
-        "generation_timestamp": datetime.now().isoformat(),
+        "generation_timestamp": datetime.now(timezone.utc).isoformat(),
         "num_beats": len(beat_results),
         "total_words": len(final_text.split()),
         "target_words": spec.constraints.length_words.target,

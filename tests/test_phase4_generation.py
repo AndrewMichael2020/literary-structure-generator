@@ -185,7 +185,9 @@ class TestRepair:
 
     def test_calculate_paragraph_variance_high(self):
         """Test variance calculation with varied paragraphs."""
-        text = "Short.\n\nThis is a much longer paragraph with many more words to make variance high."
+        text = (
+            "Short.\n\nThis is a much longer paragraph with many more words to make variance high."
+        )
         variance = calculate_paragraph_variance(text)
         assert variance > 10.0  # Should be high
 

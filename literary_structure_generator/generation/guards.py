@@ -8,7 +8,6 @@ Anti-plagiarism checks:
 """
 
 import re
-from typing import Optional
 
 from literary_structure_generator.utils.similarity import calculate_simhash, hamming_distance
 
@@ -161,16 +160,12 @@ def check_overlap_guard(
     # Check n-gram overlap
     ngram_overlap = max_ngram_overlap(text, exemplar, n=max_ngram)
     if ngram_overlap > max_overlap_pct:
-        violations.append(
-            f"N-gram overlap {ngram_overlap:.3f} exceeds threshold {max_overlap_pct}"
-        )
+        violations.append(f"N-gram overlap {ngram_overlap:.3f} exceeds threshold {max_overlap_pct}")
 
     # Check SimHash distance
     simhash_dist = simhash_distance(text, exemplar)
     if simhash_dist < min_simhash_hamming:
-        violations.append(
-            f"SimHash distance {simhash_dist} below minimum {min_simhash_hamming}"
-        )
+        violations.append(f"SimHash distance {simhash_dist} below minimum {min_simhash_hamming}")
 
     return {
         "passed": len(violations) == 0,

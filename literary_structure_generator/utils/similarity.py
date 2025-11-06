@@ -38,8 +38,8 @@ def calculate_simhash(text: str, num_bits: int = 256) -> int:
 
     # Process each word
     for word in words:
-        # Hash the word
-        h = int(hashlib.md5(word.encode()).hexdigest(), 16)
+        # Hash the word (using MD5 for SimHash - not for security)
+        h = int(hashlib.md5(word.encode()).hexdigest(), 16)  # noqa: S324
 
         # Update bit vector
         for i in range(num_bits):

@@ -8,7 +8,6 @@ LLM-based repair for generated text:
     - Cadence checking
 """
 
-import re
 from typing import Optional
 
 from literary_structure_generator.llm.router import get_client
@@ -39,9 +38,7 @@ def calculate_paragraph_variance(text: str) -> float:
 
     # Calculate variance
     mean = sum(lengths) / len(lengths)
-    variance = sum((x - mean) ** 2 for x in lengths) / len(lengths)
-
-    return variance
+    return sum((x - mean) ** 2 for x in lengths) / len(lengths)
 
 
 def build_repair_notes(text: str, spec: StorySpec, issues: list[str]) -> dict:
@@ -77,7 +74,6 @@ def repair_text(
     stitched: str,
     spec: StorySpec,
     notes: Optional[dict] = None,
-    exemplar: Optional[str] = None,
 ) -> str:
     """
     Apply LLM repair pass to stitched text.
@@ -92,7 +88,6 @@ def repair_text(
         stitched: Stitched beat text to repair
         spec: Story specification
         notes: Optional repair notes/issues
-        exemplar: Optional exemplar text for overlap checking
 
     Returns:
         Repaired text
@@ -114,7 +109,7 @@ def repair_text(
     from pathlib import Path
 
     prompt_path = Path(__file__).parent.parent.parent / "prompts" / "repair_pass.v1.md"
-    
+
     if prompt_path.exists():
         with open(prompt_path, encoding="utf-8") as f:
             template = f.read()
