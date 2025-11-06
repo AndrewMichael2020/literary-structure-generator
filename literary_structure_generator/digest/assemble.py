@@ -11,11 +11,14 @@ Workflow:
     3. Run LLM-assisted extractors (beats, motifs, voice)
     4. Merge results into ExemplarDigest model
     5. Validate and save to JSON
+
+Each decision is logged via log_decision() for reproducibility.
 """
 
 from typing import Optional
 
 from literary_structure_generator.models.exemplar_digest import ExemplarDigest
+from literary_structure_generator.utils.decision_logger import log_decision
 
 
 def load_exemplar(filepath: str) -> str:
@@ -91,7 +94,11 @@ def merge_results(heuristic_results: dict, llm_results: dict) -> dict:
 
 
 def assemble_digest(
-    filepath: str, model: str = "gpt-4", output_path: Optional[str] = None
+    filepath: str,
+    model: str = "gpt-4",
+    output_path: Optional[str] = None,
+    run_id: str = "run_001",
+    iteration: int = 0,
 ) -> ExemplarDigest:
     """
     Main entry point: assemble complete ExemplarDigest from exemplar file.
@@ -100,10 +107,23 @@ def assemble_digest(
         filepath: Path to exemplar text file
         model: LLM model to use for analysis
         output_path: Optional path to save digest JSON
+        run_id: Unique run identifier for logging
+        iteration: Iteration number for logging
 
     Returns:
         Complete ExemplarDigest object
     """
+    # Log decision to use specific model
+    log_decision(
+        run_id=run_id,
+        iteration=iteration,
+        agent="Digest",
+        decision=f"Use {model} for LLM-assisted analysis",
+        reasoning=f"Model {model} selected for beat labeling, motif extraction, and voice analysis",
+        parameters={"model": model, "filepath": filepath},
+        metadata={"stage": "initialization"},
+    )
+
     # TODO: Implement full pipeline orchestration
     # 1. Load and preprocess
     # 2. Run analyses
