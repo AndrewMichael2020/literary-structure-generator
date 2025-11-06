@@ -262,7 +262,7 @@ def generate_candidates(
         "generation_timestamp": datetime.now(timezone.utc).isoformat(),
         "story_id": spec.meta.story_id,
         "routing_overrides": routing_overrides or {},
-        "config_hash": hashlib.md5(config.model_dump_json().encode()).hexdigest()[:8],
+        "config_hash": hashlib.md5(config.model_dump_json().encode()).hexdigest()[:8],  # noqa: S324
     }
 
     # Persist to /runs/ directory

@@ -96,7 +96,7 @@ def merge_results(heuristic_results: dict, llm_results: dict) -> dict:
 def assemble_digest(
     filepath: str,
     model: str = "gpt-4",
-    output_path: Optional[str] = None,
+    _output_path: Optional[str] = None,
     run_id: str = "run_001",
     iteration: int = 0,
 ) -> ExemplarDigest:
@@ -106,7 +106,7 @@ def assemble_digest(
     Args:
         filepath: Path to exemplar text file
         model: LLM model to use for analysis
-        output_path: Optional path to save digest JSON
+        _output_path: Optional path to save digest JSON
         run_id: Unique run identifier for logging
         iteration: Iteration number for logging
 

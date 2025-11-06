@@ -97,13 +97,13 @@ def _split_paragraphs(text: str) -> list[str]:
     return [p.strip() for p in paragraphs if p.strip()]
 
 
-def _detect_capitalized_spans(sentence: str, is_sentence_start: bool = False) -> list[str]:
+def _detect_capitalized_spans(sentence: str, _is_sentence_start: bool = False) -> list[str]:
     """
     Detect capitalized multi-token spans that could be entities.
 
     Args:
         sentence: Input sentence
-        is_sentence_start: Whether this is the first sentence in a context
+        _is_sentence_start: Whether this is the first sentence in a context
 
     Returns:
         List of capitalized spans
@@ -215,47 +215,51 @@ def _resolve_aliases(candidates: list[tuple[str, str, str]]) -> dict[str, dict]:
                 break
 
             # Nickname match
-            if entity_lower in NICKNAME_MAP:
-                if NICKNAME_MAP[entity_lower] == canonical_lower:
-                    info["surface_forms"].add(entity_text)
-                    info["aliases"].add(entity_text)
-                    info["mentions"] += 1
-                    matched = True
-                    break
+            if entity_lower in NICKNAME_MAP and NICKNAME_MAP[entity_lower] == canonical_lower:
+                info["surface_forms"].add(entity_text)
+                info["aliases"].add(entity_text)
+                info["mentions"] += 1
+                matched = True
+                break
 
-            if canonical_lower in NICKNAME_MAP:
-                if NICKNAME_MAP[canonical_lower] == entity_lower:
-                    # Update canonical to the longer form
-                    if len(entity_text) > len(canonical):
-                        entities[entity_text] = info
-                        del entities[canonical]
-                    info["surface_forms"].add(entity_text)
-                    info["aliases"].add(entity_text)
-                    info["mentions"] += 1
-                    matched = True
-                    break
+            if canonical_lower in NICKNAME_MAP and NICKNAME_MAP[canonical_lower] == entity_lower:
+                # Update canonical to the longer form
+                if len(entity_text) > len(canonical):
+                    entities[entity_text] = info
+                    del entities[canonical]
+                info["surface_forms"].add(entity_text)
+                info["aliases"].add(entity_text)
+                info["mentions"] += 1
+                matched = True
+                break
 
             # Levenshtein distance for short names (typos, variations)
-            if len(entity_text) <= 6 and entity_type == "PERSON":
-                if _levenshtein_distance(entity_lower, canonical_lower) <= 1:
-                    info["surface_forms"].add(entity_text)
-                    info["mentions"] += 1
-                    matched = True
-                    break
+            if (
+                len(entity_text) <= 6
+                and entity_type == "PERSON"
+                and _levenshtein_distance(entity_lower, canonical_lower) <= 1
+            ):
+                info["surface_forms"].add(entity_text)
+                info["mentions"] += 1
+                matched = True
+                break
 
             # Last name matching (for "John Smith" vs "Smith")
             words_entity = entity_text.split()
             words_canonical = canonical.split()
-            if len(words_entity) > 1 and len(words_canonical) > 1:
-                if words_entity[-1].lower() == words_canonical[-1].lower():
-                    # Prefer the longer form
-                    if len(entity_text) > len(canonical):
-                        entities[entity_text] = info
-                        del entities[canonical]
-                    info["surface_forms"].add(entity_text)
-                    info["mentions"] += 1
-                    matched = True
-                    break
+            if (
+                len(words_entity) > 1
+                and len(words_canonical) > 1
+                and words_entity[-1].lower() == words_canonical[-1].lower()
+            ):
+                # Prefer the longer form
+                if len(entity_text) > len(canonical):
+                    entities[entity_text] = info
+                    del entities[canonical]
+                info["surface_forms"].add(entity_text)
+                info["mentions"] += 1
+                matched = True
+                break
 
         if not matched:
             # Create new entity
@@ -272,13 +276,15 @@ def _resolve_aliases(candidates: list[tuple[str, str, str]]) -> dict[str, dict]:
     return entities
 
 
-def _extract_speaker_attribution(sentence: str, entities: dict[str, dict]) -> list[tuple[str, str]]:
+def _extract_speaker_attribution(
+    sentence: str, _entities: dict[str, dict]
+) -> list[tuple[str, str]]:
     """
     Extract speaker attribution from dialogue.
 
     Args:
         sentence: Sentence containing dialogue
-        entities: Known entities
+        _entities: Known entities
 
     Returns:
         List of (speaker, target) tuples
@@ -366,7 +372,7 @@ def extract_entities(
     # Step 1: Extract candidate entities
     candidates = []
     for sent_idx, sentence in enumerate(all_sentences):
-        spans = _detect_capitalized_spans(sentence, is_sentence_start=(sent_idx == 0))
+        spans = _detect_capitalized_spans(sentence, _is_sentence_start=(sent_idx == 0))
         for span in spans:
             entity_type = _classify_entity_type(span, sentence)
             candidates.append((span, entity_type, sentence))
@@ -521,7 +527,10 @@ def extract_entities(
         iteration=iteration,
         agent="Digest",
         decision=f"entities={num_entities}, edges={num_edges}, avg_degree={avg_degree:.2f}",
-        reasoning=f"Filtered to entities with ≥{min_mentions} mentions, edges with ≥{min_edge_weight} weight",
+        reasoning=(
+            f"Filtered to entities with ≥{min_mentions} mentions, "
+            f"edges with ≥{min_edge_weight} weight"
+        ),
         parameters=stats,
         metadata={"stage": "entity_graph"},
     )

@@ -9,6 +9,8 @@ Schema version: AuthorProfile@1
 Used to blend exemplar style with user's personal voice.
 """
 
+from typing import ClassVar
+
 from pydantic import BaseModel, Field
 
 
@@ -66,7 +68,7 @@ class AuthorProfile(BaseModel):
 
         populate_by_name = True
 
-        json_schema_extra = {
+        json_schema_extra: ClassVar[dict] = {
             "example": {
                 "schema": "AuthorProfile@1",
                 "lexicon": {

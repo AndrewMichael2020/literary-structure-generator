@@ -101,7 +101,7 @@ def detect_aliasing_issues(entity_map: dict[str, dict]) -> tuple[float, list[str
             alias_groups[alias].append(entity)
 
     # Check for suspicious alias groups (multiple full names with same first name)
-    for alias, full_names in alias_groups.items():
+    for _alias, full_names in alias_groups.items():
         if len(full_names) > 1:
             # Check if these are truly different entities or just aliasing
             # If mentioned close together without clarification, it's confusing
@@ -159,7 +159,7 @@ def detect_name_spikes(entity_map: dict[str, dict], threshold: int = 10) -> tupl
     return penalty, issues
 
 
-def check_entity_introduction(text: str, entity_map: dict[str, dict]) -> float:
+def check_entity_introduction(_text: str, entity_map: dict[str, dict]) -> float:
     """
     Check if major entities are properly introduced.
 

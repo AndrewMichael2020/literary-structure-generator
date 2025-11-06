@@ -230,7 +230,10 @@ def extract_valence_arc(
         run_id=run_id,
         iteration=iteration,
         agent="Digest",
-        decision=f"Computed valence arc: mean={valence_arc['overall_mean']:.2f}, change_points={len(change_points)}",
+        decision=(
+            f"Computed valence arc: mean={valence_arc['overall_mean']:.2f}, "
+            f"change_points={len(change_points)}"
+        ),
         reasoning="Lexicon-based sentiment per paragraph, smoothed with moving average",
         parameters={
             "num_paragraphs": len(paragraphs),

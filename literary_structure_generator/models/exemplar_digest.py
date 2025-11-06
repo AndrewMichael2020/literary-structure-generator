@@ -12,7 +12,7 @@ Schema version: ExemplarDigest@2
 No verbatim text is stored to prevent plagiarism.
 """
 
-from typing import Any
+from typing import Any, ClassVar
 
 from pydantic import BaseModel, Field
 
@@ -197,7 +197,7 @@ class ExemplarDigest(BaseModel):
 
         populate_by_name = True
 
-        json_schema_extra = {
+        json_schema_extra: ClassVar[dict] = {
             "example": {
                 "schema": "ExemplarDigest@2",
                 "meta": {"source": "Emergency", "tokens": 5234, "paragraphs": 127},

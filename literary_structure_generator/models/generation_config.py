@@ -10,6 +10,8 @@ Schema version: GenerationConfig@2
 Used to control the generation and optimization process.
 """
 
+from typing import ClassVar
+
 from pydantic import BaseModel, Field
 
 
@@ -150,7 +152,7 @@ class GenerationConfig(BaseModel):
 
         populate_by_name = True
 
-        json_schema_extra = {
+        json_schema_extra: ClassVar[dict] = {
             "example": {
                 "schema": "GenerationConfig@2",
                 "seed": 137,

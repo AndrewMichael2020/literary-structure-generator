@@ -112,14 +112,14 @@ def generate_tuning_suggestions(
 
 
 def assemble_eval_report(
-    text: str,
+    _text: str,
     run_id: str,
     candidate_id: str,
-    spec: StorySpec,
-    digest: ExemplarDigest,
-    exemplar_text: str,
-    config: GenerationConfig,
-    output_path: Optional[str] = None,
+    _spec: StorySpec,
+    _digest: ExemplarDigest,
+    _exemplar_text: str,
+    _config: GenerationConfig,
+    _output_path: Optional[str] = None,
     iteration: int = 0,
 ) -> EvalReport:
     """
@@ -144,15 +144,15 @@ def assemble_eval_report(
         run_id=run_id,
         iteration=iteration,
         agent="Evaluator",
-        decision=f"Evaluate candidate {candidate_id} with {len(config.evaluator_suite)} metrics",
+        decision=f"Evaluate candidate {candidate_id} with {len(_config.evaluator_suite)} metrics",
         reasoning=(
-            f"Running evaluation suite: {', '.join(config.evaluator_suite)}. "
-            f"Weighted by: {config.objective_weights}"
+            f"Running evaluation suite: {', '.join(_config.evaluator_suite)}. "
+            f"Weighted by: {_config.objective_weights}"
         ),
         parameters={
             "candidate_id": candidate_id,
-            "evaluator_suite": config.evaluator_suite,
-            "objective_weights": config.objective_weights,
+            "evaluator_suite": _config.evaluator_suite,
+            "objective_weights": _config.objective_weights,
         },
     )
 

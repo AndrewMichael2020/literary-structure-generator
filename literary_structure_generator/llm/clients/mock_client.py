@@ -20,7 +20,7 @@ class MockClient(LLMClient):
         super().__init__(model="mock", **kwargs)
         self._last_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
 
-    def complete(self, prompt: str, **kwargs) -> str:
+    def complete(self, prompt: str, **_kwargs) -> str:
         """
         Generate mock completion based on prompt patterns.
 

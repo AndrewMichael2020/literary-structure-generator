@@ -11,7 +11,7 @@ Used to track agent decisions across workflow runs and iterations.
 """
 
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any, ClassVar, Optional
 
 from pydantic import BaseModel, Field
 
@@ -55,7 +55,7 @@ class ReasonLog(BaseModel):
 
         populate_by_name = True
 
-        json_schema_extra = {
+        json_schema_extra: ClassVar[dict] = {
             "example": {
                 "schema": "ReasonLog@1",
                 "timestamp": "2024-01-15T10:30:00.000000",
