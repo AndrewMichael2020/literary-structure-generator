@@ -270,35 +270,49 @@ def identify_red_flags(results: Dict[str, any], scores: Scores) -> List[str]:
     return red_flags
 
 
-def analyze_drift(results: Dict[str, any], spec: StorySpec) -> List[DriftItem]:
+def analyze_drift(
+    results: Dict[str, any],
+    spec: StorySpec,
+    text: str
+) -> List[DriftItem]:
     """
     Analyze drift from specification.
     
     Args:
         results: Dictionary of evaluation results
         spec: StorySpec with targets
+        text: Generated text (for calculating actual values)
         
     Returns:
         List of DriftItem objects
     """
     drift_items = []
     
-    stylefit_result = results['stylefit_rules']
-    
     # Calculate actual dialogue ratio
-    from literary_structure_generator.evaluators.stylefit_rules import calculate_dialogue_ratio
+    from literary_structure_generator.evaluators.stylefit_rules import (
+        calculate_dialogue_ratio,
+        calculate_avg_sentence_length,
+    )
     
-    # We'd need the text here, but for now use the score as proxy
-    # In a real implementation, we'd pass text through
     target_dialogue_ratio = spec.form.dialogue_ratio
-    # Estimate actual from score (rough proxy)
-    actual_dialogue_ratio = target_dialogue_ratio  # Placeholder
+    actual_dialogue_ratio = calculate_dialogue_ratio(text)
     
     drift_items.append(DriftItem(
         field="dialogue_ratio",
         target=target_dialogue_ratio,
         actual=actual_dialogue_ratio,
         delta=actual_dialogue_ratio - target_dialogue_ratio
+    ))
+    
+    # Add sentence length drift
+    target_sentence_len = spec.voice.syntax.avg_sentence_len
+    actual_sentence_len = calculate_avg_sentence_length(text)
+    
+    drift_items.append(DriftItem(
+        field="avg_sentence_len",
+        target=float(target_sentence_len),
+        actual=actual_sentence_len,
+        delta=actual_sentence_len - target_sentence_len
     ))
     
     return drift_items
@@ -463,7 +477,7 @@ def evaluate_draft(
     red_flags = identify_red_flags(results, scores)
     
     # Analyze drift
-    drift_items = analyze_drift(results, spec)
+    drift_items = analyze_drift(results, spec, text)
     
     # Generate tuning suggestions
     tuning_suggestions = generate_tuning_suggestions(results, scores, spec, config)
