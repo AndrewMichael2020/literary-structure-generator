@@ -95,12 +95,37 @@ class Pacing(BaseModel):
     whitespace_ratio: float = Field(default=0.0, description="Ratio of whitespace to text")
 
 
+class Entity(BaseModel):
+    """Entity in the coherence graph."""
+
+    id: str = Field(..., description="Entity ID (e.g., E1, E2)")
+    canonical: str = Field(..., description="Canonical name for this entity")
+    type: str = Field(..., description="Entity type: PERSON, PLACE, ORG, OBJECT, ANIMAL, VEHICLE")
+    surface_forms: List[str] = Field(default_factory=list, description="Surface forms used in text")
+    aliases: List[str] = Field(default_factory=list, description="Known aliases")
+    mentions: int = Field(default=0, description="Total number of mentions")
+
+
+class Edge(BaseModel):
+    """Edge in the coherence graph."""
+
+    source: str = Field(..., description="Source entity ID")
+    target: str = Field(..., description="Target entity ID")
+    relation: str = Field(..., description="Relation type: co_occurs, speaks_to, located_in")
+    weight_sent: int = Field(default=0, description="Number of co-occurrences in same sentence")
+    weight_para: int = Field(default=0, description="Number of co-occurrences in same paragraph")
+    beats: List[str] = Field(default_factory=list, description="Beat IDs where this edge occurs")
+
+
 class CoherenceGraph(BaseModel):
     """Entity coherence graph."""
 
-    entities: List[str] = Field(default_factory=list, description="List of entities")
-    edges: List[List[str]] = Field(
-        default_factory=list, description="Entity relationships [[entity1, relation, entity2], ...]"
+    entities: List[Entity] = Field(default_factory=list, description="List of entities")
+    edges: List[Edge] = Field(
+        default_factory=list, description="Entity relationships"
+    )
+    stats: Dict[str, Any] = Field(
+        default_factory=dict, description="Graph statistics (num_entities, num_edges, avg_degree, largest_component)"
     )
 
 
