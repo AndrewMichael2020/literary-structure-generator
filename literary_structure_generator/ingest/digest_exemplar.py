@@ -10,12 +10,22 @@ structural information. No heavy NLP dependencies are used to keep the pipeline
 deterministic and lightweight.
 """
 
+import json
 import re
 from collections import Counter
 from pathlib import Path
+from typing import Optional
 
+from literary_structure_generator.digest.entity_extractor import extract_entities
+from literary_structure_generator.digest.motif_extractor import (
+    extract_imagery_palettes,
+    extract_lexical_domains,
+    extract_motifs,
+)
+from literary_structure_generator.digest.valence_extractor import extract_valence_arc
 from literary_structure_generator.models.exemplar_digest import (
     Beat,
+    CoherenceGraph,
     Discourse,
     ExemplarDigest,
     MetaInfo,
@@ -23,6 +33,7 @@ from literary_structure_generator.models.exemplar_digest import (
     Safety,
     Stylometry,
 )
+from literary_structure_generator.utils.decision_logger import log_decision
 
 
 def _read_file(path: str) -> str:
@@ -315,7 +326,12 @@ def _calculate_profanity_rate() -> float:
     return 0.0
 
 
-def analyze_text(path: str) -> ExemplarDigest:
+def analyze_text(
+    path: str,
+    run_id: str = "run_001",
+    iteration: int = 0,
+    output_dir: Optional[str] = None,
+) -> ExemplarDigest:
     """
     Read exemplar, compute stylometry & structural stats, and return populated model.
 
@@ -326,9 +342,16 @@ def analyze_text(path: str) -> ExemplarDigest:
     - Part-of-speech / function-word frequency
     - Simple beat segmentation placeholder
     - Profanity rate (always 0.0 in Clean Mode)
+    - Motifs and themes (TF-IDF + PMI)
+    - Imagery palettes (concrete nouns, adjective-noun pairs)
+    - Entity graph (heuristic NER + co-occurrence)
+    - Valence arc and surprise curve (lexicon-based sentiment)
 
     Args:
         path: Path to the exemplar text file
+        run_id: Run ID for logging
+        iteration: Iteration number for logging
+        output_dir: Optional output directory to save digest JSON (defaults to runs/{run_id})
 
     Returns:
         Populated ExemplarDigest model with extracted features
@@ -336,6 +359,16 @@ def analyze_text(path: str) -> ExemplarDigest:
     Raises:
         FileNotFoundError: If the file doesn't exist
     """
+    log_decision(
+        run_id=run_id,
+        iteration=iteration,
+        agent="Digest",
+        decision=f"Begin digest extraction from {Path(path).name}",
+        reasoning="Starting Phase 2.1 enriched digest pipeline",
+        parameters={"path": path},
+        metadata={"stage": "initialization"},
+    )
+
     # Read the text file
     text = _read_file(path)
 
@@ -374,8 +407,42 @@ def analyze_text(path: str) -> ExemplarDigest:
     # Calculate profanity rate (always 0.0 in Clean Mode)
     profanity_rate = _calculate_profanity_rate()
 
+    # Phase 2.1 enrichments
+    
+    # Extract motifs
+    motif_map = extract_motifs(text, run_id=run_id, iteration=iteration, top_k=20)
+    
+    # Extract imagery palettes
+    imagery_palettes = extract_imagery_palettes(
+        text, run_id=run_id, iteration=iteration, top_k_per_category=5
+    )
+    
+    # Extract lexical domains
+    lexical_domains = extract_lexical_domains(text)
+    
+    # Extract entity graph
+    entities, edges, entity_stats = extract_entities(
+        text,
+        beats,
+        min_mentions=2,
+        min_edge_weight=2,
+        run_id=run_id,
+        iteration=iteration,
+    )
+    
+    coherence_graph = CoherenceGraph(
+        entities=entities,
+        edges=edges,
+        stats=entity_stats,
+    )
+    
+    # Extract valence arc and surprise curve
+    valence_arc, surprise_curve = extract_valence_arc(
+        text, beats, run_id=run_id, iteration=iteration
+    )
+
     # Create and populate ExemplarDigest model
-    return ExemplarDigest(
+    digest = ExemplarDigest(
         meta=MetaInfo(
             source=source_name,
             tokens=total_tokens,
@@ -394,7 +461,53 @@ def analyze_text(path: str) -> ExemplarDigest:
         pacing=Pacing(
             paragraph_len_hist=paragraph_len_hist,
         ),
+        coherence_graph=coherence_graph,
+        motif_map=motif_map,
+        imagery_palettes=imagery_palettes,
+        lexical_domains=lexical_domains,
+        valence_arc=valence_arc,
+        surprise_curve=surprise_curve,
         safety=Safety(
             profanity_rate=profanity_rate,
         ),
     )
+
+    # Log summary
+    log_decision(
+        run_id=run_id,
+        iteration=iteration,
+        agent="Digest",
+        decision=(
+            f"motifs={len(motif_map)}; "
+            f"imagery={list(imagery_palettes.keys())}; "
+            f"entities={entity_stats.get('num_entities', 0)}; "
+            f"edges={entity_stats.get('num_edges', 0)}"
+        ),
+        reasoning="Completed Phase 2.1 enriched digest extraction",
+        parameters={
+            "motifs": [m.motif for m in motif_map[:3]],
+            "imagery_categories": list(imagery_palettes.keys()),
+            "entity_stats": entity_stats,
+        },
+        metadata={"stage": "completion"},
+    )
+
+    # Save to disk if output_dir specified
+    if output_dir:
+        output_path = Path(output_dir) / run_id / f"ExemplarDigest_{source_name}.json"
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(digest.model_dump(by_alias=True), f, indent=2)
+        
+        log_decision(
+            run_id=run_id,
+            iteration=iteration,
+            agent="Digest",
+            decision=f"Saved digest to {output_path}",
+            reasoning="Persisting enriched digest for reuse",
+            parameters={"output_path": str(output_path)},
+            metadata={"stage": "persistence"},
+        )
+
+    return digest

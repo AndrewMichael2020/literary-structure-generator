@@ -24,7 +24,7 @@ class TestExemplarDigest:
         digest = ExemplarDigest(
             meta={"source": "Emergency", "tokens": 0, "paragraphs": 0}
         )
-        assert digest.schema == "ExemplarDigest@2"
+        assert digest.schema_version == "ExemplarDigest@2"
         assert digest.meta.source == "Emergency"
 
     def test_digest_serialization(self):
@@ -49,7 +49,7 @@ class TestStorySpec:
                 "characters": [],
             },
         )
-        assert spec.schema == "StorySpec@2"
+        assert spec.schema_version == "StorySpec@2"
         assert spec.meta.story_id == "test_001"
 
     def test_spec_defaults(self):
@@ -71,7 +71,7 @@ class TestGenerationConfig:
     def test_create_default_config(self):
         """Test creating config with defaults."""
         config = GenerationConfig()
-        assert config.schema == "GenerationConfig@2"
+        assert config.schema_version == "GenerationConfig@2"
         assert config.seed == 137
         assert config.num_candidates == 8
 
@@ -92,7 +92,7 @@ class TestEvalReport:
             candidate_id="cand_001",
             config_hash="abc123",
         )
-        assert report.schema == "EvalReport@2"
+        assert report.schema_version == "EvalReport@2"
         assert report.run_id == "run_001"
 
     def test_report_scores(self):
@@ -112,7 +112,7 @@ class TestAuthorProfile:
     def test_create_default_profile(self):
         """Test creating profile with defaults."""
         profile = AuthorProfile()
-        assert profile.schema == "AuthorProfile@1"
+        assert profile.schema_version == "AuthorProfile@1"
         assert profile.syntax.avg_sentence_len == 14
         assert profile.profanity.allowed is False
 
