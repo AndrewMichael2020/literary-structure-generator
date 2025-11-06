@@ -373,6 +373,7 @@ class TestLLMRouting:
         import json
         import os
         from pathlib import Path
+        from unittest.mock import patch
 
         # Create temporary config with GPT-5
         config = {
@@ -398,34 +399,37 @@ class TestLLMRouting:
             tmp_config_path = tmp_config.name
 
         try:
-            # Set environment variable
-            os.environ["LLM_ROUTING_CONFIG"] = tmp_config_path
+            # Use environment variable to override config
+            with patch.dict(os.environ, {"LLM_ROUTING_CONFIG": tmp_config_path}):
+                # Import router module to reload with new config
+                import importlib
+                import literary_structure_generator.llm.router as router_module
 
-            # Clear cached config
-            import literary_structure_generator.llm.router as router_module
+                # Reload the module to pick up new config
+                importlib.reload(router_module)
 
-            router_module._routing_config = None
+                # Get params for beat_generator component
+                params = get_params("beat_generator")
 
-            # Get params for beat_generator component
-            params = get_params("beat_generator")
+                # Verify model is set correctly
+                assert params["model"] == "gpt-5-turbo"
 
-            # Verify model is set correctly
-            assert params["model"] == "gpt-5-turbo"
+                # The router's get_client filters temperature for GPT-5
+                # Since we're using MockClient, it will override model to "mock"
+                # But the parameter filtering logic in get_client should handle it
+                from literary_structure_generator.llm.router import get_client
 
-            # The router's get_client filters temperature for GPT-5
-            # Since we're using MockClient, it will override model to "mock"
-            # But the parameter filtering logic in get_client should handle it
-            from literary_structure_generator.llm.router import get_client
+                client = get_client("beat_generator")
 
-            client = get_client("beat_generator")
-
-            # MockClient always uses "mock" as model name
-            # The key test is that get_client doesn't crash with GPT-5 config
-            assert client is not None
+                # MockClient always uses "mock" as model name
+                # The key test is that get_client doesn't crash with GPT-5 config
+                assert client is not None
 
         finally:
             # Cleanup
             os.unlink(tmp_config_path)
-            if "LLM_ROUTING_CONFIG" in os.environ:
-                del os.environ["LLM_ROUTING_CONFIG"]
-            router_module._routing_config = None
+            # Reload to reset to default config
+            import importlib
+            import literary_structure_generator.llm.router as router_module
+
+            importlib.reload(router_module)

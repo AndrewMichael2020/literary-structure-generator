@@ -121,11 +121,15 @@ def generate_single_candidate(
     )
 
     # Step 5: Evaluate using Phase 5
+    # Extract seeds for repro (use 0 as default if not present)
+    DEFAULT_SEED = 0
+    per_beat_seeds = [
+        br.get("metadata", {}).get("seed", DEFAULT_SEED) for br in beat_results
+    ]
+    
     draft_dict = {
         "text": repaired,
-        "seeds": {
-            "per_beat": [br.get("metadata", {}).get("seed", 0) for br in beat_results]
-        },
+        "seeds": {"per_beat": per_beat_seeds},
     }
 
     eval_report = evaluate_draft(
@@ -149,7 +153,7 @@ def generate_single_candidate(
         "target_words": spec.constraints.length_words.target,
         "stitched_guard": guard_result,
         "final_guard": final_guard,
-        "beat_guard_failures": sum(1 for br in beat_results if not br["guard_passed"]),
+        "beat_guard_failures": sum(1 for br in beat_results if not br.get("guard_passed", True)),
     }
 
     return {
