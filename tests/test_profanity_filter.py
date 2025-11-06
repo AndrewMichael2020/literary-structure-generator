@@ -53,7 +53,7 @@ class TestStructuralBleep:
     def test_empty_text(self):
         """Test empty text handling."""
         assert structural_bleep("") == ""
-        assert structural_bleep(None) == None
+        assert structural_bleep(None) is None
 
     def test_no_profanity(self):
         """Test text without profanity."""
