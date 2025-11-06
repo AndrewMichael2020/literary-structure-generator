@@ -63,7 +63,7 @@ To run tests with real LLM providers:
 
 The system includes multiple safety mechanisms:
 
-1. **Profanity Filtering**: Universal `[bleep]` replacement for profanity
+1. **Grit Filtering**: Universal `[bleep]` replacement for grit
 2. **Anti-Plagiarism Guards**: 
    - Maximum n-gram overlap: 12 tokens
    - Overall overlap threshold: ≤3%
@@ -128,10 +128,10 @@ When using real LLM providers (OpenAI, Anthropic):
 - Cache in `runs/llm_cache.db` is SQLite without encryption
 - Decision logs in `decisions.jsonl` may contain prompts
 
-### Profanity Filter
+### Grit Filter
 
-- The profanity filter is heuristic-based
-- It may not catch all variants or context-specific profanity
+- The grit filter is heuristic-based
+- It may not catch all variants or context-specific grit
 - It uses a predefined list that can be extended
 
 ## Compliance
@@ -146,7 +146,7 @@ When using real LLM providers (OpenAI, Anthropic):
 
 - Generated content should be reviewed before publication
 - The system is a tool; human oversight is required
-- Profanity filtering maintains authenticity with `[bleep]` replacement
+- Grit filtering maintains authenticity with `[bleep]` replacement
 
 ## Support
 

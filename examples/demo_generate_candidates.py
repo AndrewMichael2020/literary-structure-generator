@@ -159,7 +159,7 @@ def main():
     print("  Each candidate will go through:")
     print("    1. Per-beat generation (using LLM router)")
     print("    2. Stitch beats together")
-    print("    3. Guards (overlap, SimHash, profanity)")
+    print("    3. Guards (overlap, SimHash, grit)")
     print("    4. Repair pass (using LLM router)")
     print("    5. Evaluate (Phase 5 orchestrator)")
     print()

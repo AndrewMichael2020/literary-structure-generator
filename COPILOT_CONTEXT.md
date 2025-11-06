@@ -65,7 +65,7 @@ Exemplar → Digest → StorySpec → Generate → Evaluate → Optimize → Fin
 5. **AuthorProfile** (`models/author_profile.py`)
    - User voice preferences
    - Lexicon, syntax, register sliders
-   - Profanity policy, content safety
+   - Grit policy, content safety
 
 ### Module Structure
 
@@ -97,6 +97,7 @@ Exemplar → Digest → StorySpec → Generate → Evaluate → Optimize → Fin
 - **utils/**: Shared utilities
   - `decision_logger.py`: Decision tracking for reproducibility
   - `text_utils.py`, `similarity.py`, `io_utils.py`
+  - Grit filter on all outputs (Clean Mode)
 
 ## LLM Integration (Phase 3.2)
 
@@ -219,7 +220,7 @@ Set `OPENAI_API_KEY` and update routing config:
 - Overall overlap ≤ 3% vs exemplar
 - SimHash Hamming distance ≥ 18 for 256-bit chunks
 - No verbatim text stored in artifacts
-- Profanity filter on all outputs (Clean Mode)
+- Grit filter on all outputs (Clean Mode)
 
 ## Reproducibility
 
@@ -389,7 +390,7 @@ iter_0_logs = load_decision_logs("run_001", iteration=0)
 **Key Features:**
 - Per-beat structured prompting with StorySpec constraints
 - Anti-plagiarism guards: max n-gram ≤12, overlap ≤3%, SimHash distance ≥18
-- Profanity filtering with `[bleep]` replacement
+- Grit filtering with `[bleep]` replacement
 - Automatic retry up to 2 times on guard failure
 - GPT-5 model compatibility (auto-filters temperature param)
 - Complete artifact management in `/runs/{story_id}/`
@@ -569,6 +570,6 @@ iter_0_logs = [log for log in logs if log.iteration == 0]
 
 - No secrets in code or artifacts
 - API keys via environment variables only
-- Profanity filtering on all LLM outputs
+- Grit filtering on all LLM outputs
 - No exemplar text stored verbatim
 - Cache keys use hashes, not raw prompts

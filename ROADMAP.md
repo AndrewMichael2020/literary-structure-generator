@@ -161,7 +161,7 @@ This project implements an agentic workflow for literary short-story generation 
 
 **Tasks**:
 - [x] Define blending weights (`alpha_exemplar` vs `alpha_author`)
-- [x] Support "Clean Mode" (no profanity) vs "Grit Mode" (future)
+- [x] Support "Clean Mode" (no grit) vs "Grit Mode" (future)
 - [x] Create sample `AuthorProfile.json` templates
 
 **Example Blending**:
@@ -368,8 +368,8 @@ python -m literary_structure_generator.orchestrators.full_pipeline \
 - Inject into imagery_palette and sensory_quotas
 - Anchor beats to visual anchors
 
-### 10.2 Profanity/Grit Mode
-**Toggle**: `profanity.allowed = true` in AuthorProfile
+### 10.2 Grit Mode
+**Toggle**: `grit.allowed = true` in AuthorProfile
 
 **Safety**:
 - Use permissive content-policy models

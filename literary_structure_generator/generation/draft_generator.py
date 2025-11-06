@@ -150,7 +150,7 @@ def generate_beat_text(
         # Generate beat text
         raw_text = client.complete(prompt)
 
-        # Apply clean mode if profanity not allowed
+        # Apply clean mode if grit not allowed
         clean_text = apply_clean_mode_if_needed(raw_text, not story_spec.voice.profanity.allowed)
 
         # Check overlap guard if exemplar provided

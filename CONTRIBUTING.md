@@ -52,10 +52,10 @@ pytest
 pytest --cov=literary_structure_generator --cov-report=term-missing
 
 # Run specific test file
-pytest tests/test_profanity_filter.py
+pytest tests/test_grit_filter.py
 
 # Run specific test
-pytest tests/test_profanity_filter.py::TestStructuralBleep::test_single_profanity
+pytest tests/test_grit_filter.py::TestStructuralBleep::test_single_grit
 ```
 
 ### Code Quality
@@ -136,7 +136,7 @@ Types:
 
 Examples:
 ```
-feat(profanity): add universal [bleep] filtering
+feat(grit): add universal [bleep] filtering
 
 fix(llm): handle cache miss gracefully
 

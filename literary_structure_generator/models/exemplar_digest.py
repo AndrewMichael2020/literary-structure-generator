@@ -152,7 +152,7 @@ class EventScript(BaseModel):
 class Safety(BaseModel):
     """Content safety analysis."""
 
-    profanity_rate: float = Field(default=0.0, description="Rate of profanity usage")
+    profanity_rate: float = Field(default=0.0, description="Rate of grit usage")
     taboo_topics: list[str] = Field(default_factory=list, description="Detected taboo topics")
 
 

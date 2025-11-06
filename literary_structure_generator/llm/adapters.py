@@ -189,7 +189,7 @@ def label_motifs(
         if use_cache:
             cache.put(component, params["model"], version, params, prompt, response)
 
-    # Apply profanity filter to all labels
+    # Apply grit filter to all labels
     labels = [structural_bleep(label) for label in labels]
 
     # Compute checksum
@@ -254,7 +254,7 @@ def name_imagery(
         if use_cache:
             cache.put(component, params["model"], version, params, prompt, response)
 
-    # Apply profanity filter to all names
+    # Apply grit filter to all names
     names = [structural_bleep(name) for name in names]
 
     # Compute checksum
@@ -322,7 +322,7 @@ def paraphrase_beats(
         if use_cache:
             cache.put(component, params["model"], version, params, prompt, response)
 
-    # Apply profanity filter to all summaries
+    # Apply grit filter to all summaries
     summaries = [structural_bleep(summary) for summary in summaries]
 
     # Compute checksum
@@ -452,7 +452,7 @@ def repair_pass(
         if use_cache:
             cache.put(component, params["model"], version, params, prompt, repaired)
 
-    # Apply profanity filter to repaired text
+    # Apply grit filter to repaired text
     repaired = structural_bleep(repaired.strip())
 
     # Log call (no checksum for single text)
