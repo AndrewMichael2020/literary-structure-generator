@@ -12,13 +12,13 @@ Blending modes:
 Uses same analysis tools as ExemplarDigest.
 """
 
-from typing import List, Optional
+from typing import Optional
 
 from literary_structure_generator.models.author_profile import AuthorProfile
 from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 
 
-def analyze_user_texts(filepaths: List[str]) -> dict:
+def analyze_user_texts(filepaths: list[str]) -> dict:
     """
     Analyze user's writing samples.
 
@@ -69,7 +69,7 @@ def blend_profiles(
 
 
 def learn_author_profile(
-    user_filepaths: List[str],
+    user_filepaths: list[str],
     exemplar_digest: Optional[ExemplarDigest] = None,
     alpha_exemplar: float = 0.7,
     output_path: Optional[str] = None,

@@ -178,9 +178,9 @@ def _detect_dialogue_ratio(text: str) -> float:
 
     # Calculate total quoted characters
     quoted_chars = (
-        sum(len(m) for m in matches_smart) +
-        sum(len(m) for m in matches_straight) +
-        sum(len(m) for m in matches_single)
+        sum(len(m) for m in matches_smart)
+        + sum(len(m) for m in matches_straight)
+        + sum(len(m) for m in matches_single)
     )
     total_chars = len(text.strip())
 
@@ -203,11 +203,52 @@ def _extract_function_word_profile(words: list[str], top_n: int = 20) -> dict[st
     """
     # Common function words
     function_words = {
-        "the", "and", "but", "or", "as", "if", "when", "where", "while",
-        "a", "an", "of", "in", "on", "at", "to", "for", "with", "from",
-        "by", "about", "through", "over", "under", "into", "onto",
-        "i", "you", "he", "she", "it", "we", "they", "me", "him", "her",
-        "is", "was", "are", "were", "be", "been", "being", "have", "has", "had",
+        "the",
+        "and",
+        "but",
+        "or",
+        "as",
+        "if",
+        "when",
+        "where",
+        "while",
+        "a",
+        "an",
+        "of",
+        "in",
+        "on",
+        "at",
+        "to",
+        "for",
+        "with",
+        "from",
+        "by",
+        "about",
+        "through",
+        "over",
+        "under",
+        "into",
+        "onto",
+        "i",
+        "you",
+        "he",
+        "she",
+        "it",
+        "we",
+        "they",
+        "me",
+        "him",
+        "her",
+        "is",
+        "was",
+        "are",
+        "were",
+        "be",
+        "been",
+        "being",
+        "have",
+        "has",
+        "had",
     }
 
     total_words = len(words)
@@ -217,16 +258,12 @@ def _extract_function_word_profile(words: list[str], top_n: int = 20) -> dict[st
     # Count function words
     word_counts = Counter(words)
     function_word_counts = {
-        word: count for word, count in word_counts.items()
-        if word in function_words
+        word: count for word, count in word_counts.items() if word in function_words
     }
 
     # Get top N and convert to frequency per 100 words
     top_function_words = Counter(function_word_counts).most_common(top_n)
-    return {
-        word: (count / total_words) * 100.0
-        for word, count in top_function_words
-    }
+    return {word: (count / total_words) * 100.0 for word, count in top_function_words}
 
 
 def _calculate_type_token_ratio(words: list[str]) -> float:
@@ -270,10 +307,7 @@ def _analyze_punctuation_density(text: str, word_count: int) -> dict[str, float]
     }
 
     # Convert to per 100 words
-    return {
-        key: (count / word_count) * 100.0
-        for key, count in punctuation_counts.items()
-    }
+    return {key: (count / word_count) * 100.0 for key, count in punctuation_counts.items()}
 
 
 def _create_placeholder_beats(total_tokens: int) -> list[Beat]:
@@ -408,18 +442,18 @@ def analyze_text(
     profanity_rate = _calculate_profanity_rate()
 
     # Phase 2.1 enrichments
-    
+
     # Extract motifs
     motif_map = extract_motifs(text, run_id=run_id, iteration=iteration, top_k=20)
-    
+
     # Extract imagery palettes
     imagery_palettes = extract_imagery_palettes(
         text, run_id=run_id, iteration=iteration, top_k_per_category=5
     )
-    
+
     # Extract lexical domains
     lexical_domains = extract_lexical_domains(text)
-    
+
     # Extract entity graph
     entities, edges, entity_stats = extract_entities(
         text,
@@ -429,13 +463,13 @@ def analyze_text(
         run_id=run_id,
         iteration=iteration,
     )
-    
+
     coherence_graph = CoherenceGraph(
         entities=entities,
         edges=edges,
         stats=entity_stats,
     )
-    
+
     # Extract valence arc and surprise curve
     valence_arc, surprise_curve = extract_valence_arc(
         text, beats, run_id=run_id, iteration=iteration
@@ -496,10 +530,10 @@ def analyze_text(
     if output_dir:
         output_path = Path(output_dir) / run_id / f"ExemplarDigest_{source_name}.json"
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(digest.model_dump(by_alias=True), f, indent=2)
-        
+
         log_decision(
             run_id=run_id,
             iteration=iteration,

@@ -10,10 +10,10 @@ Features:
     - POV consistency checking
 """
 
-from typing import List, Set
+from typing import Optional
 
 
-def extract_ngrams(text: str, n: int) -> Set[str]:
+def extract_ngrams(text: str, n: int) -> set[str]:
     """
     Extract all n-grams from text.
 
@@ -46,7 +46,7 @@ def check_ngram_overlap(
     raise NotImplementedError("N-gram overlap checking not yet implemented")
 
 
-def check_forbidden_lexicon(text: str, forbidden: List[str]) -> List[str]:
+def check_forbidden_lexicon(text: str, forbidden: list[str]) -> list[str]:
     """
     Check for forbidden words or phrases in text.
 
@@ -80,7 +80,7 @@ def enforce_constraints(
     text: str,
     exemplar_text: str,
     max_ngram: int = 12,
-    forbidden: List[str] = None,
+    forbidden: Optional[list[str]] = None,
     expected_pov: str = "first",
 ) -> Dict[str, any]:
     """

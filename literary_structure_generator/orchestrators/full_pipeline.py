@@ -21,7 +21,6 @@ CLI interface for running complete workflow.
 
 import argparse
 from typing import Optional
-from pathlib import Path
 
 
 def run_pipeline(
@@ -66,9 +65,7 @@ def main() -> None:
     """
     CLI entry point for full pipeline.
     """
-    parser = argparse.ArgumentParser(
-        description="Literary Structure Generator - Full Pipeline"
-    )
+    parser = argparse.ArgumentParser(description="Literary Structure Generator - Full Pipeline")
     parser.add_argument(
         "--exemplar",
         required=True,
@@ -112,7 +109,7 @@ def main() -> None:
         help="Disable digest caching",
     )
 
-    args = parser.parse_args()
+    parser.parse_args()
 
     # TODO: Implement CLI execution
     # Run pipeline with parsed arguments

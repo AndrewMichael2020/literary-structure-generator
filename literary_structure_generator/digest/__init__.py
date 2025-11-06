@@ -16,12 +16,12 @@ Modules:
 """
 
 __all__ = [
-    "stylometry",
-    "discourse",
-    "pacing",
-    "coherence",
-    "beat_labeler",
-    "motif_extractor",
-    "voice_analyzer",
     "assemble",
+    "beat_labeler",
+    "coherence",
+    "discourse",
+    "motif_extractor",
+    "pacing",
+    "stylometry",
+    "voice_analyzer",
 ]

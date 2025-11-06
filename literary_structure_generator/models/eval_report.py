@@ -10,7 +10,7 @@ Schema version: EvalReport@2
 Used to assess quality and provide feedback for optimization.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -51,8 +51,8 @@ class PerBeatScore(BaseModel):
 class CoherenceGraph(BaseModel):
     """Entity coherence graph."""
 
-    entities: List[str] = Field(default_factory=list, description="List of entities")
-    edges: List[List[str]] = Field(
+    entities: list[str] = Field(default_factory=list, description="List of entities")
+    edges: list[list[str]] = Field(
         default_factory=list, description="Entity relationships [[entity1, relation, entity2], ...]"
     )
 
@@ -91,31 +91,31 @@ class EvalReport(BaseModel):
     Includes multi-metric scores, diagnostics, and optimization feedback.
     """
 
-    schema_version: str = Field(default="EvalReport@2", description="Schema version identifier", alias="schema")
+    schema_version: str = Field(
+        default="EvalReport@2", description="Schema version identifier", alias="schema"
+    )
     run_id: str = Field(..., description="Unique run identifier")
     candidate_id: str = Field(..., description="Candidate identifier")
     config_hash: str = Field(..., description="Hash of generation config")
-    seeds: Dict[str, Any] = Field(
+    seeds: dict[str, Any] = Field(
         default_factory=dict, description="Random seeds used (global and per-beat)"
     )
-    length: Dict[str, int] = Field(
+    length: dict[str, int] = Field(
         default_factory=dict, description="Length metrics (words, paragraphs)"
     )
     scores: Scores = Field(default_factory=Scores, description="Evaluation scores")
-    per_beat: List[PerBeatScore] = Field(
+    per_beat: list[PerBeatScore] = Field(
         default_factory=list, description="Per-beat evaluation scores"
     )
     coherence_graph: CoherenceGraph = Field(
         default_factory=CoherenceGraph, description="Entity coherence graph"
     )
-    red_flags: List[str] = Field(default_factory=list, description="Quality red flags")
-    guardrail_failures: List[str] = Field(
-        default_factory=list, description="Guardrail violations"
-    )
-    drift_vs_spec: List[DriftItem] = Field(
+    red_flags: list[str] = Field(default_factory=list, description="Quality red flags")
+    guardrail_failures: list[str] = Field(default_factory=list, description="Guardrail violations")
+    drift_vs_spec: list[DriftItem] = Field(
         default_factory=list, description="Drift from specification"
     )
-    tuning_suggestions: List[TuningSuggestion] = Field(
+    tuning_suggestions: list[TuningSuggestion] = Field(
         default_factory=list, description="Optimization suggestions"
     )
     pass_fail: bool = Field(default=False, description="Whether this candidate passes all checks")
@@ -124,7 +124,7 @@ class EvalReport(BaseModel):
 
     class Config:
         """Pydantic config."""
-        
+
         populate_by_name = True
 
         json_schema_extra = {

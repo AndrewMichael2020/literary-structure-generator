@@ -12,7 +12,6 @@ Features:
 Returns score 0.0-1.0 where 1.0 is maximally novel.
 """
 
-from typing import Dict
 
 
 def calculate_simhash_distance(text1: str, text2: str, chunk_size: int = 256) -> int:
@@ -62,7 +61,7 @@ def calculate_lexical_novelty(text: str, exemplar: str) -> float:
     raise NotImplementedError("Lexical novelty calculation not yet implemented")
 
 
-def calculate_freshness(text: str, exemplar: str) -> Dict[str, float]:
+def calculate_freshness(text: str, exemplar: str) -> dict[str, float]:
     """
     Calculate overall freshness score.
 

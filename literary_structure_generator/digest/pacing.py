@@ -10,10 +10,9 @@ Features extracted:
     - Whitespace ratio
 """
 
-from typing import Dict, List
 
 
-def calculate_pacing_curve(text: str, num_bins: int = 20) -> List[float]:
+def calculate_pacing_curve(text: str, num_bins: int = 20) -> list[float]:
     """
     Calculate pacing intensity curve over story progression.
 
@@ -43,7 +42,7 @@ def calculate_pause_density(text: str) -> float:
     raise NotImplementedError("Pause density calculation not yet implemented")
 
 
-def analyze_paragraph_lengths(text: str) -> Dict[str, List[int]]:
+def analyze_paragraph_lengths(text: str) -> dict[str, list[int]]:
     """
     Analyze paragraph length distribution.
 

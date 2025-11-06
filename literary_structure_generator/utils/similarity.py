@@ -10,7 +10,6 @@ Features:
     - Hamming distance
 """
 
-from typing import List
 
 
 def calculate_simhash(text: str, num_bits: int = 256) -> int:
@@ -58,7 +57,7 @@ def levenshtein_distance(s1: str, s2: str) -> int:
     raise NotImplementedError("Levenshtein distance calculation not yet implemented")
 
 
-def cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
+def cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
     """
     Calculate cosine similarity between two vectors.
 
@@ -73,7 +72,7 @@ def cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
     raise NotImplementedError("Cosine similarity calculation not yet implemented")
 
 
-def normalize_vector(vec: List[float]) -> List[float]:
+def normalize_vector(vec: list[float]) -> list[float]:
     """
     Normalize vector to unit length.
 

@@ -11,7 +11,6 @@ Analyzes:
     - Emotional valence arc
 """
 
-from typing import Dict, List
 
 
 def analyze_pov(text: str) -> str:
@@ -43,7 +42,7 @@ def analyze_narrative_distance(text: str, model: str = "gpt-4") -> str:
     raise NotImplementedError("Narrative distance analysis not yet implemented")
 
 
-def analyze_register(text: str, model: str = "gpt-4") -> Dict[str, float]:
+def analyze_register(text: str, model: str = "gpt-4") -> dict[str, float]:
     """
     Analyze register and tone characteristics.
 
@@ -58,7 +57,7 @@ def analyze_register(text: str, model: str = "gpt-4") -> Dict[str, float]:
     raise NotImplementedError("Register analysis not yet implemented")
 
 
-def calculate_valence_arc(text: str, num_bins: int = 20) -> Dict[str, any]:
+def calculate_valence_arc(text: str, num_bins: int = 20) -> dict[str, any]:
     """
     Calculate emotional valence arc over story progression.
 
@@ -73,7 +72,7 @@ def calculate_valence_arc(text: str, num_bins: int = 20) -> Dict[str, any]:
     raise NotImplementedError("Valence arc calculation not yet implemented")
 
 
-def calculate_surprise_curve(text: str, num_bins: int = 20) -> List[float]:
+def calculate_surprise_curve(text: str, num_bins: int = 20) -> list[float]:
     """
     Calculate information-theoretic surprise over story progression.
 

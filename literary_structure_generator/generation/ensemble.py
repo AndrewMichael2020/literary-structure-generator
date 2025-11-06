@@ -13,10 +13,9 @@ Features:
 Each decision is logged via log_decision() for reproducibility.
 """
 
-from typing import List, Dict, Optional
 
-from literary_structure_generator.models.story_spec import StorySpec
 from literary_structure_generator.models.generation_config import GenerationConfig
+from literary_structure_generator.models.story_spec import StorySpec
 from literary_structure_generator.utils.decision_logger import log_decision
 
 
@@ -27,7 +26,7 @@ def generate_candidate(
     seed: int,
     run_id: str = "run_001",
     iteration: int = 0,
-) -> Dict[str, any]:
+) -> dict[str, any]:
     """
     Generate a single candidate story.
 
@@ -98,7 +97,7 @@ def generate_ensemble(
     config: GenerationConfig,
     run_id: str,
     iteration: int = 0,
-) -> List[Dict[str, any]]:
+) -> list[dict[str, any]]:
     """
     Generate ensemble of candidate stories.
 

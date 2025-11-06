@@ -12,10 +12,9 @@ Rubrics:
 Returns boolean judgments with short rationales.
 """
 
-from typing import Dict
 
 
-def evaluate_ending_quality(text: str, model: str = "gpt-4") -> Dict[str, any]:
+def evaluate_ending_quality(text: str, model: str = "gpt-4") -> dict[str, any]:
     """
     Evaluate if ending re-colors earlier beats effectively.
 
@@ -30,7 +29,7 @@ def evaluate_ending_quality(text: str, model: str = "gpt-4") -> Dict[str, any]:
     raise NotImplementedError("Ending quality evaluation not yet implemented")
 
 
-def evaluate_numinous_moments(text: str, model: str = "gpt-4") -> Dict[str, any]:
+def evaluate_numinous_moments(text: str, model: str = "gpt-4") -> dict[str, any]:
     """
     Evaluate if numinous moments are earned and grounded.
 
@@ -45,7 +44,7 @@ def evaluate_numinous_moments(text: str, model: str = "gpt-4") -> Dict[str, any]
     raise NotImplementedError("Numinous moment evaluation not yet implemented")
 
 
-def evaluate_prose_texture(text: str, model: str = "gpt-4") -> Dict[str, any]:
+def evaluate_prose_texture(text: str, model: str = "gpt-4") -> dict[str, any]:
     """
     Evaluate prose texture (concreteness, sensory detail, verb energy).
 
@@ -60,7 +59,7 @@ def evaluate_prose_texture(text: str, model: str = "gpt-4") -> Dict[str, any]:
     raise NotImplementedError("Prose texture evaluation not yet implemented")
 
 
-def evaluate_subjective(text: str, model: str = "gpt-4") -> Dict[str, any]:
+def evaluate_subjective(text: str, model: str = "gpt-4") -> dict[str, any]:
     """
     Run all subjective evaluation rubrics.
 

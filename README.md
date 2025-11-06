@@ -160,17 +160,35 @@ python -m literary_structure_generator.orchestrators.full_pipeline \
 
 ## Project Status
 
-**Current Phase**: Foundation & Scaffolding ✅
+**Current Phase**: Phase 3 Complete ✅
 
-This is the initial scaffolding with:
-- ✅ Project structure and configuration
-- ✅ Pydantic models for all data artifacts
-- ✅ Module stubs with docstrings
-- ✅ Roadmap and development plan
+### Completed Phases:
+- ✅ **Phase 1**: Foundation & Scaffolding
+  - Project structure and configuration
+  - Pydantic models for all data artifacts
+  - Module stubs with docstrings
+  - Roadmap and development plan
+
+- ✅ **Phase 2**: ExemplarDigest Pipeline
+  - Heuristic analyzers (stylometry, discourse, pacing, coherence)
+  - Entity extraction and coherence graphs
+  - Motif extraction and imagery palettes
+  - Valence arc and lexical domain analysis
+  - Full digest assembler with decision logging
+
+- ✅ **Phase 3**: StorySpec Synthesis
+  - Voice parameter mapping from digest
+  - Form parameter mapping (beat structure, dialogue ratio)
+  - Content section initialization
+  - Anti-plagiarism constraint setup
+  - Full synthesis pipeline with decision logging
+
+### Available Tools:
+- `scripts/demo_digest.py` - Generate ExemplarDigest from Emergency.txt
+- `scripts/demo_spec_synthesis.py` - Synthesize StorySpec from digest
+- Test coverage: 73% (80 tests passing)
 
 **Next Steps** (see [ROADMAP.md](ROADMAP.md)):
-- Phase 2: Implement ExemplarDigest pipeline
-- Phase 3: Implement StorySpec synthesis
 - Phase 4: Implement draft generation
 - Phase 5: Implement evaluation suite
 - Phase 6: Implement optimization loop

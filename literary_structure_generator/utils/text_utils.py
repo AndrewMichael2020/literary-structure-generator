@@ -10,10 +10,9 @@ Features:
     - Word counting
 """
 
-from typing import List, Set
 
 
-def tokenize_words(text: str) -> List[str]:
+def tokenize_words(text: str) -> list[str]:
     """
     Tokenize text into words.
 
@@ -27,7 +26,7 @@ def tokenize_words(text: str) -> List[str]:
     raise NotImplementedError("Word tokenization not yet implemented")
 
 
-def tokenize_sentences(text: str) -> List[str]:
+def tokenize_sentences(text: str) -> list[str]:
     """
     Tokenize text into sentences.
 
@@ -41,7 +40,7 @@ def tokenize_sentences(text: str) -> List[str]:
     raise NotImplementedError("Sentence tokenization not yet implemented")
 
 
-def tokenize_paragraphs(text: str) -> List[str]:
+def tokenize_paragraphs(text: str) -> list[str]:
     """
     Tokenize text into paragraphs.
 
@@ -55,7 +54,7 @@ def tokenize_paragraphs(text: str) -> List[str]:
     raise NotImplementedError("Paragraph tokenization not yet implemented")
 
 
-def extract_ngrams(text: str, n: int) -> Set[str]:
+def extract_ngrams(text: str, n: int) -> set[str]:
     """
     Extract all n-grams from text.
 

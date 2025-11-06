@@ -13,10 +13,9 @@ Uses prompts to identify:
 Outputs beat map with IDs, spans, and narrative functions.
 """
 
-from typing import Dict, List
 
 
-def label_beats_with_llm(text: str, model: str = "gpt-4") -> List[Dict[str, any]]:
+def label_beats_with_llm(text: str, model: str = "gpt-4") -> list[dict[str, any]]:
     """
     Use LLM to identify and label structural beats in text.
 
@@ -32,7 +31,7 @@ def label_beats_with_llm(text: str, model: str = "gpt-4") -> List[Dict[str, any]
     raise NotImplementedError("LLM beat labeling not yet implemented")
 
 
-def refine_beat_boundaries(text: str, initial_beats: List[Dict[str, any]]) -> List[Dict[str, any]]:
+def refine_beat_boundaries(text: str, initial_beats: list[dict[str, any]]) -> list[dict[str, any]]:
     """
     Refine beat boundaries using heuristics (scene breaks, paragraph boundaries).
 

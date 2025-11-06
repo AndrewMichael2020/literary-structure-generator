@@ -9,4 +9,4 @@ Modules:
     - constraints: Real-time constraint enforcement
 """
 
-__all__ = ["beat_drafter", "ensemble", "constraints"]
+__all__ = ["beat_drafter", "constraints", "ensemble"]

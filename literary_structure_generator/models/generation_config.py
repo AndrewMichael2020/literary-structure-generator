@@ -10,7 +10,6 @@ Schema version: GenerationConfig@2
 Used to control the generation and optimization process.
 """
 
-from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -18,17 +17,17 @@ from pydantic import BaseModel, Field
 class PerBeatGeneration(BaseModel):
     """Per-beat generation parameters."""
 
-    temperature: List[float] = Field(
+    temperature: list[float] = Field(
         default_factory=lambda: [0.7, 0.95], description="Temperature range for sampling"
     )
-    top_p: List[float] = Field(
+    top_p: list[float] = Field(
         default_factory=lambda: [0.85, 0.95], description="Top-p range for nucleus sampling"
     )
     length_tolerance: float = Field(
         default=0.2, description="Allowed deviation from target length (as fraction)"
     )
     repetition_penalty: float = Field(default=1.05, description="Repetition penalty factor")
-    stop_on: List[str] = Field(default_factory=list, description="Stop sequences")
+    stop_on: list[str] = Field(default_factory=list, description="Stop sequences")
     rewrite_passes: int = Field(default=1, description="Number of rewrite passes per beat")
 
 
@@ -50,7 +49,7 @@ class ConstraintEnforcement(BaseModel):
     simhash_hamming_min: int = Field(
         default=18, description="Minimum SimHash Hamming distance from exemplar"
     )
-    forbidden_lexicon: List[str] = Field(
+    forbidden_lexicon: list[str] = Field(
         default_factory=list, description="Forbidden words or phrases"
     )
 
@@ -93,7 +92,9 @@ class GenerationConfig(BaseModel):
     Controls LLM parameters, diversity, constraints, evaluation, and optimization.
     """
 
-    schema_version: str = Field(default="GenerationConfig@2", description="Schema version identifier", alias="schema")
+    schema_version: str = Field(
+        default="GenerationConfig@2", description="Schema version identifier", alias="schema"
+    )
     seed: int = Field(default=137, description="Global random seed for reproducibility")
     num_candidates: int = Field(default=8, description="Number of candidate stories to generate")
     per_beat_generation: PerBeatGeneration = Field(
@@ -106,7 +107,7 @@ class GenerationConfig(BaseModel):
     repair_steps: RepairSteps = Field(
         default_factory=RepairSteps, description="Repair and refinement settings"
     )
-    evaluator_suite: List[str] = Field(
+    evaluator_suite: list[str] = Field(
         default_factory=lambda: [
             "stylefit",
             "formfit",
@@ -118,7 +119,7 @@ class GenerationConfig(BaseModel):
         ],
         description="List of evaluators to run",
     )
-    objective_weights: Dict[str, float] = Field(
+    objective_weights: dict[str, float] = Field(
         default_factory=lambda: {
             "stylefit": 0.3,
             "formfit": 0.3,
@@ -133,7 +134,7 @@ class GenerationConfig(BaseModel):
 
     class Config:
         """Pydantic config."""
-        
+
         populate_by_name = True
 
         json_schema_extra = {
