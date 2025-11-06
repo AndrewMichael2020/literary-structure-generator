@@ -49,7 +49,7 @@ def calculate_overlap_percentage(text1: str, text2: str) -> float:
     raise NotImplementedError("Overlap percentage calculation not yet implemented")
 
 
-def find_levenshtein_bursts(text1: str, text2: str, threshold: float = 0.9) -> List[dict]:
+def find_levenshtein_bursts(text1: str, text2: str, threshold: float = 0.9) -> list[dict]:
     """
     Find Levenshtein similarity bursts (near-verbatim chunks).
 

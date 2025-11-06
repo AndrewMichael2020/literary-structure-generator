@@ -67,7 +67,7 @@ def map_voice_parameters(digest: ExemplarDigest, profile: Optional[AuthorProfile
         distance = "medium"
 
     # Build voice parameters
-    voice_params = {
+    return {
         "person": person,
         "distance": distance,
         "syntax": {
@@ -81,8 +81,6 @@ def map_voice_parameters(digest: ExemplarDigest, profile: Optional[AuthorProfile
             "tag_verbs_allowed": ["said", "asked"],
         },
     }
-
-    return voice_params
 
 
 def map_form_parameters(
@@ -103,7 +101,6 @@ def map_form_parameters(
     """
     # Convert beats from digest to beat specs
     beat_specs = []
-    total_tokens = digest.meta.tokens
     beat_functions = []
 
     for beat in digest.discourse.beats:
@@ -164,7 +161,7 @@ def map_form_parameters(
         avg_para_len = 45  # Default
 
     # Build form parameters
-    form_params = {
+    return {
         "structure": "episodic",  # Default for now
         "beat_map": beat_specs,
         "dialogue_ratio": digest.discourse.dialogue_ratio,
@@ -173,8 +170,6 @@ def map_form_parameters(
             "variance": 0.4,
         },
     }
-
-    return form_params
 
 
 def blend_with_author_profile(
@@ -293,8 +288,10 @@ def synthesize_spec(
         agent="SpecSynth",
         decision=f"Use alpha_exemplar={alpha_exemplar} for blending",
         reasoning=(
-            f"Blending exemplar digest with author profile using {alpha_exemplar:.0%} exemplar weight. "
-            f"This balances structural learning from exemplar with author's voice preferences."
+            f"Blending exemplar digest with author profile using "
+            f"{alpha_exemplar:.0%} exemplar weight. "
+            f"This balances structural learning from exemplar with "
+            f"author's voice preferences."
         ),
         parameters={
             "alpha_exemplar": alpha_exemplar,
@@ -310,7 +307,10 @@ def synthesize_spec(
         run_id=run_id,
         iteration=iteration,
         agent="SpecSynth",
-        decision=f"Mapped voice: person={voice_params['person']}, distance={voice_params['distance']}",
+        decision=(
+            f"Mapped voice: person={voice_params['person']}, "
+            f"distance={voice_params['distance']}"
+        ),
         reasoning="Extracted voice parameters from digest stylometry and discourse features",
         parameters={"voice_params": voice_params},
         metadata={"stage": "voice_mapping"},
@@ -322,7 +322,10 @@ def synthesize_spec(
         run_id=run_id,
         iteration=iteration,
         agent="SpecSynth",
-        decision=f"Mapped form: {len(form_params['beat_map'])} beats, dialogue_ratio={form_params['dialogue_ratio']:.2f}",
+        decision=(
+            f"Mapped form: {len(form_params['beat_map'])} beats, "
+            f"dialogue_ratio={form_params['dialogue_ratio']:.2f}"
+        ),
         reasoning="Extracted form structure from digest discourse and pacing features",
         parameters={"beat_count": len(form_params["beat_map"])},
         metadata={"stage": "form_mapping"},
@@ -348,10 +351,9 @@ def synthesize_spec(
     from literary_structure_generator.models.story_spec import (
         AntiPlagiarism,
         BeatSpec,
-        Content,
         Constraints,
+        Content,
         DialogueStyle,
-        Diction,
         Form,
         LengthConstraints,
         MetaInfo,
@@ -359,7 +361,6 @@ def synthesize_spec(
         Profanity,
         Setting,
         Syntax,
-        TenseStrategy,
         Voice,
     )
 

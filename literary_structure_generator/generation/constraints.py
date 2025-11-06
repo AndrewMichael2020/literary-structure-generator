@@ -30,7 +30,7 @@ def extract_ngrams(text: str, n: int) -> set[str]:
 
 def check_ngram_overlap(
     generated_text: str, exemplar_text: str, max_ngram: int = 12
-) -> Dict[str, any]:
+) -> dict[str, any]:
     """
     Check for n-gram overlap with exemplar text.
 
@@ -82,7 +82,7 @@ def enforce_constraints(
     max_ngram: int = 12,
     forbidden: Optional[list[str]] = None,
     expected_pov: str = "first",
-) -> Dict[str, any]:
+) -> dict[str, any]:
     """
     Enforce all constraints and return violations.
 

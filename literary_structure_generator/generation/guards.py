@@ -7,10 +7,8 @@ Anti-plagiarism checks:
     - Profanity filtering with [bleep] replacement
 """
 
-import re
-
-from literary_structure_generator.utils.similarity import calculate_simhash, hamming_distance
 from literary_structure_generator.utils.profanity import structural_bleep
+from literary_structure_generator.utils.similarity import calculate_simhash, hamming_distance
 
 
 def max_ngram_overlap(text: str, exemplar_text: str, n: int = 12) -> float:

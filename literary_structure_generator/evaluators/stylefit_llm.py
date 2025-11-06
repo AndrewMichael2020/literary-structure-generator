@@ -11,7 +11,6 @@ Returns score 0..1
 
 import re
 from pathlib import Path
-from typing import Dict
 
 from literary_structure_generator.llm.router import get_client
 from literary_structure_generator.models.story_spec import StorySpec
@@ -20,10 +19,10 @@ from literary_structure_generator.models.story_spec import StorySpec
 def load_prompt_template(template_name: str = "stylefit_eval.v1.md") -> str:
     """
     Load prompt template from prompts directory.
-    
+
     Args:
         template_name: Template file name
-        
+
     Returns:
         Template content as string
     """
@@ -32,17 +31,17 @@ def load_prompt_template(template_name: str = "stylefit_eval.v1.md") -> str:
         Path(__file__).parent.parent.parent / "prompts" / template_name,
         Path.cwd() / "prompts" / template_name,
     ]
-    
+
     for path in possible_paths:
         if path.exists():
-            with open(path, 'r', encoding='utf-8') as f:
+            with open(path, encoding="utf-8") as f:
                 return f.read()
-    
+
     # Fallback to embedded template
     return """# Stylefit Scoring Prompt Template
 
-**Version:** v1  
-**Component:** stylefit  
+**Version:** v1
+**Component:** stylefit
 **Purpose:** Score how well generated text matches a style specification
 
 ---
@@ -89,10 +88,10 @@ Return only a single floating-point number between 0.0 and 1.0.
 def create_spec_summary(spec: StorySpec) -> str:
     """
     Create concise style spec summary for prompt.
-    
+
     Args:
         spec: StorySpec object
-        
+
     Returns:
         Summary string
     """
@@ -104,33 +103,33 @@ def create_spec_summary(spec: StorySpec) -> str:
         f"Parataxis ratio: {spec.voice.syntax.parataxis_vs_hypotaxis:.2f}",
         f"Dialogue ratio: {spec.form.dialogue_ratio:.2f}",
     ]
-    
+
     # Add register sliders
     register = spec.voice.register_sliders
     if register:
         register_str = ", ".join(f"{k}: {v:.2f}" for k, v in register.items())
         summary_parts.append(f"Register: {register_str}")
-    
+
     return "\n".join(summary_parts)
 
 
 def parse_llm_score(response: str) -> float:
     """
     Parse LLM response to extract score.
-    
+
     Args:
         response: LLM response text
-        
+
     Returns:
         Extracted score 0..1
     """
     # Try to find a number in the response
     # Look for patterns like "0.85" or "Score: 0.85"
     patterns = [
-        r'(\d+\.\d+)',  # Decimal number
-        r'(\d+)',       # Integer
+        r"(\d+\.\d+)",  # Decimal number
+        r"(\d+)",  # Integer
     ]
-    
+
     for pattern in patterns:
         match = re.search(pattern, response)
         if match:
@@ -139,76 +138,59 @@ def parse_llm_score(response: str) -> float:
                 # Ensure in valid range
                 if score > 1.0:
                     score = score / 100.0  # Convert percentage to ratio
-                score = max(0.0, min(1.0, score))
-                return score
+                return max(0.0, min(1.0, score))
             except ValueError:
                 continue
-    
+
     # Default to 0.5 if can't parse
     return 0.5
 
 
-def evaluate_stylefit_llm(
-    text: str,
-    spec: StorySpec,
-    use_llm: bool = True
-) -> Dict[str, any]:
+def evaluate_stylefit_llm(text: str, spec: StorySpec, use_llm: bool = True) -> dict[str, any]:
     """
     Evaluate style using LLM via router.
-    
+
     Args:
         text: Generated text to evaluate
         spec: StorySpec with style targets
         use_llm: Whether to use LLM (if False, returns None)
-        
+
     Returns:
         Dictionary with score and metadata
     """
     if not use_llm:
-        return {
-            "overall": None,
-            "enabled": False,
-            "note": "LLM stylefit disabled"
-        }
-    
+        return {"overall": None, "enabled": False, "note": "LLM stylefit disabled"}
+
     # Get routed client for "stylefit" component
     client = get_client("stylefit")
-    
+
     # Load prompt template
     template = load_prompt_template()
-    
+
     # Create spec summary
     spec_summary = create_spec_summary(spec)
-    
+
     # Truncate text if too long (to fit in context)
     max_text_length = 2000  # characters
-    if len(text) > max_text_length:
-        text_sample = text[:max_text_length] + "..."
-    else:
-        text_sample = text
-    
+    text_sample = text[:max_text_length] + "..." if len(text) > max_text_length else text
+
     # Fill template
     prompt = template.format(spec_summary=spec_summary, text=text_sample)
-    
+
     # Call LLM
     try:
         response = client.complete(prompt)
-        
+
         # Parse score
         score = parse_llm_score(response)
-        
+
         return {
             "overall": score,
             "enabled": True,
             "model": client.model,
             "raw_response": response,
         }
-    
+
     except Exception as e:
         # If LLM call fails, return error
-        return {
-            "overall": None,
-            "enabled": False,
-            "error": str(e),
-            "note": "LLM stylefit failed"
-        }
+        return {"overall": None, "enabled": False, "error": str(e), "note": "LLM stylefit failed"}
