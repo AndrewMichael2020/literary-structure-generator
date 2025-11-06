@@ -8,7 +8,6 @@ detected profanity with [bleep] while preserving rhythm and tone.
 import re
 from typing import Optional
 
-
 # Comprehensive profanity list for filtering
 PROFANITY_LIST = [
     "fuck",
@@ -59,7 +58,10 @@ def structural_bleep(text: str, substitution: str = "[bleep]") -> str:
 
     # Build regex pattern with word boundaries
     # Case-insensitive matching to catch all variations
-    pattern = re.compile(r"\b(" + "|".join(re.escape(word) for word in PROFANITY_LIST) + r")\b", re.IGNORECASE)
+    pattern = re.compile(
+        r"\b(" + "|".join(re.escape(word) for word in PROFANITY_LIST) + r")\b",
+        re.IGNORECASE,
+    )
 
     # Replace with substitution
     return pattern.sub(substitution, text)
@@ -78,7 +80,10 @@ def count_bleeps(text: str) -> int:
     if not text:
         return 0
 
-    pattern = re.compile(r"\b(" + "|".join(re.escape(word) for word in PROFANITY_LIST) + r")\b", re.IGNORECASE)
+    pattern = re.compile(
+        r"\b(" + "|".join(re.escape(word) for word in PROFANITY_LIST) + r")\b",
+        re.IGNORECASE,
+    )
     matches = pattern.findall(text)
     return len(matches)
 

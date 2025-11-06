@@ -55,14 +55,14 @@ class LLMCache:
         # Create indices for faster lookups
         cursor.execute(
             """
-            CREATE INDEX IF NOT EXISTS idx_component 
+            CREATE INDEX IF NOT EXISTS idx_component
             ON llm_cache(component)
         """
         )
 
         cursor.execute(
             """
-            CREATE INDEX IF NOT EXISTS idx_created_at 
+            CREATE INDEX IF NOT EXISTS idx_created_at
             ON llm_cache(created_at)
         """
         )
@@ -169,7 +169,7 @@ class LLMCache:
 
         cursor.execute(
             """
-            INSERT OR REPLACE INTO llm_cache 
+            INSERT OR REPLACE INTO llm_cache
             (cache_key, component, model, template_version, params_hash, input_hash, response)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
@@ -213,8 +213,8 @@ class LLMCache:
 
         cursor.execute(
             """
-            SELECT component, COUNT(*) as count 
-            FROM llm_cache 
+            SELECT component, COUNT(*) as count
+            FROM llm_cache
             GROUP BY component
         """
         )

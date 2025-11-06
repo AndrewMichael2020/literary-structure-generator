@@ -26,7 +26,6 @@ from literary_structure_generator.generation.draft_generator import (
 )
 from literary_structure_generator.generation.guards import check_overlap_guard
 from literary_structure_generator.generation.repair import repair_text
-from literary_structure_generator.llm.router import get_params
 from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 from literary_structure_generator.models.generation_config import GenerationConfig
 from literary_structure_generator.models.story_spec import StorySpec
@@ -122,11 +121,9 @@ def generate_single_candidate(
 
     # Step 5: Evaluate using Phase 5
     # Extract seeds for repro (use 0 as default if not present)
-    DEFAULT_SEED = 0
-    per_beat_seeds = [
-        br.get("metadata", {}).get("seed", DEFAULT_SEED) for br in beat_results
-    ]
-    
+    default_seed = 0
+    per_beat_seeds = [br.get("metadata", {}).get("seed", default_seed) for br in beat_results]
+
     draft_dict = {
         "text": repaired,
         "seeds": {"per_beat": per_beat_seeds},

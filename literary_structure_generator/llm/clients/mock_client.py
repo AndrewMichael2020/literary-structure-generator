@@ -43,7 +43,11 @@ class MockClient(LLMClient):
             response = self._mock_motif_labels(prompt)
         elif "name" in prompt.lower() and "imagery phrases" in prompt.lower():
             response = self._mock_imagery_names(prompt)
-        elif "paraphrase" in prompt.lower() or ("beat" in prompt.lower() and "function" in prompt.lower() and "paraphrase" in prompt.lower()):
+        elif "paraphrase" in prompt.lower() or (
+            "beat" in prompt.lower()
+            and "function" in prompt.lower()
+            and "paraphrase" in prompt.lower()
+        ):
             response = self._mock_beat_paraphrase(prompt)
         elif "stylefit" in prompt.lower() or "score" in prompt.lower():
             response = "0.75"
@@ -101,14 +105,14 @@ class MockClient(LLMClient):
             match = re.search(
                 r"\*\*original text:\*\*\s*```\s*(.+?)\s*```\s*\*\*constraints",
                 prompt,
-                re.DOTALL | re.IGNORECASE
+                re.DOTALL | re.IGNORECASE,
             )
             if match:
                 original_text = match.group(1).strip()
                 # Skip if it's the example from the template
                 if "doctor was very" not in original_text.lower():
                     return original_text
-        
+
         # Fallback: return placeholder that won't corrupt output
         return "[mock repaired text - repair pass would improve this]"
 
@@ -158,7 +162,7 @@ class MockClient(LLMClient):
         # Calculate how many sentences needed
         words_per_sentence = sum(len(s.split()) for s in sentences) / len(sentences)
         num_sentences = max(5, int(target_words / words_per_sentence))
-        
+
         result_sentences = []
         for i in range(num_sentences):
             result_sentences.append(sentences[i % len(sentences)])

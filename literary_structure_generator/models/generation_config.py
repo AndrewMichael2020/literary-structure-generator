@@ -117,7 +117,9 @@ class GenerationConfig(BaseModel):
     repair_steps: RepairSteps = Field(
         default_factory=RepairSteps, description="Repair and refinement settings"
     )
-    profanity: Profanity = Field(default_factory=Profanity, description="Profanity filtering settings")
+    profanity: Profanity = Field(
+        default_factory=Profanity, description="Profanity filtering settings"
+    )
     evaluator_suite: list[str] = Field(
         default_factory=lambda: [
             "stylefit",

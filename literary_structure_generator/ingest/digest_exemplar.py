@@ -493,7 +493,7 @@ def analyze_text(
 
         # Collect sample phrases from each category
         imagery_phrases = []
-        for category, phrases in list(imagery_palettes.items())[:5]:
+        for _category, phrases in list(imagery_palettes.items())[:5]:
             if phrases:
                 imagery_phrases.append(phrases[0])  # Representative phrase
 

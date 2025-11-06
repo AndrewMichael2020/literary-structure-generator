@@ -84,7 +84,7 @@ Generate prose for this beat matching the specified voice and style.
         parataxis_style = "balanced"
 
     # Format the template
-    prompt = template.format(
+    return template.format(
         function=beat_spec.function,
         summary=beat_spec.summary or beat_spec.function,
         target_words=beat_spec.target_words,
@@ -105,8 +105,6 @@ Generate prose for this beat matching the specified voice and style.
         imagery=imagery if imagery else "- (none specified)",
         props=props if props else "(none)",
     )
-
-    return prompt
 
 
 def generate_beat_text(
