@@ -10,7 +10,6 @@ Schema version: GenerationConfig@2
 Used to control the generation and optimization process.
 """
 
-
 from pydantic import BaseModel, Field
 
 

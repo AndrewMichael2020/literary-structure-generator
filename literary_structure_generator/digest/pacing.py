@@ -11,7 +11,6 @@ Features extracted:
 """
 
 
-
 def calculate_pacing_curve(text: str, num_bins: int = 20) -> list[float]:
     """
     Calculate pacing intensity curve over story progression.

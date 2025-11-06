@@ -105,7 +105,7 @@ def map_form_parameters(
     beat_specs = []
     total_tokens = digest.meta.tokens
     beat_functions = []
-    
+
     for beat in digest.discourse.beats:
         span_length = beat.span[1] - beat.span[0]
         # Convert tokens to approximate words (tokens ~= words * 1.3)
@@ -126,12 +126,12 @@ def map_form_parameters(
             }
         )
         beat_functions.append(beat.function)
-    
+
     # Phase 3.2: LLM-enhanced beat paraphrasing
     # Generate concise beat summaries using LLM
     try:
         from literary_structure_generator.llm.adapters import paraphrase_beats
-        
+
         if beat_functions:
             beat_summaries = paraphrase_beats(
                 beat_functions,

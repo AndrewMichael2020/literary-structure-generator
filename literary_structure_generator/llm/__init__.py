@@ -12,17 +12,17 @@ from literary_structure_generator.llm.adapters import (
     label_motifs,
     name_imagery,
     paraphrase_beats,
-    stylefit_score,
     repair_pass,
+    stylefit_score,
 )
 from literary_structure_generator.llm.router import get_client, get_params
 
 __all__ = [
+    "get_client",
+    "get_params",
     "label_motifs",
     "name_imagery",
     "paraphrase_beats",
-    "stylefit_score",
     "repair_pass",
-    "get_client",
-    "get_params",
+    "stylefit_score",
 ]

@@ -13,7 +13,6 @@ Returns score 0.0-1.0 where 1.0 is maximally novel.
 """
 
 
-
 def calculate_simhash_distance(text1: str, text2: str, chunk_size: int = 256) -> int:
     """
     Calculate SimHash Hamming distance between texts.

@@ -9,7 +9,6 @@ Schema version: AuthorProfile@1
 Used to blend exemplar style with user's personal voice.
 """
 
-
 from pydantic import BaseModel, Field
 
 

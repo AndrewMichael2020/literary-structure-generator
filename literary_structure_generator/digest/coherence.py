@@ -12,7 +12,6 @@ Features extracted:
 """
 
 
-
 def extract_entities(text: str) -> list[str]:
     """
     Extract named entities and important references.

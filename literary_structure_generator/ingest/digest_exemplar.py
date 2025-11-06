@@ -450,7 +450,7 @@ def analyze_text(
     # Label motifs with thematic tags using LLM
     try:
         from literary_structure_generator.llm.adapters import label_motifs
-        
+
         motif_anchors = [m.motif for m in motif_map[:10]]  # Top 10 motifs
         if motif_anchors:
             motif_labels = label_motifs(
@@ -490,13 +490,13 @@ def analyze_text(
     # Generate evocative names for imagery categories using LLM
     try:
         from literary_structure_generator.llm.adapters import name_imagery
-        
+
         # Collect sample phrases from each category
         imagery_phrases = []
         for category, phrases in list(imagery_palettes.items())[:5]:
             if phrases:
                 imagery_phrases.append(phrases[0])  # Representative phrase
-        
+
         if imagery_phrases:
             imagery_names = name_imagery(
                 imagery_phrases,

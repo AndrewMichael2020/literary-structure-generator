@@ -5,7 +5,6 @@ Load, save, and validate AuthorProfile objects.
 Provides helper functions for profile management.
 """
 
-
 from literary_structure_generator.models.author_profile import AuthorProfile
 
 

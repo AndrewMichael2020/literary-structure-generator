@@ -54,7 +54,6 @@ class LLMClient(ABC):
         Raises:
             Exception: If API call fails
         """
-        pass
 
     @abstractmethod
     def get_usage(self) -> dict:
@@ -64,4 +63,3 @@ class LLMClient(ABC):
         Returns:
             Dictionary with 'prompt_tokens', 'completion_tokens', 'total_tokens'
         """
-        pass

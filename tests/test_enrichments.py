@@ -54,7 +54,7 @@ class TestEntityExtraction:
         """Test place entity classification."""
         entity_type = _classify_entity_type("Main Street", "")
         assert entity_type == "PLACE"
-        
+
         entity_type = _classify_entity_type("County Hospital", "")
         assert entity_type == "PLACE"
 
@@ -101,20 +101,18 @@ class TestEntityExtraction:
         James met Jim on Willow Street. "I saw the red car," James said to Jim.
         Later, James and Robert walked to County Hospital. "It was loud," said Robert.
         """
-        
+
         beats = [
             Beat(id="opening", span=[0, 50], function="introduce"),
             Beat(id="middle", span=[50, 100], function="develop"),
         ]
-        
-        entities, edges, stats = extract_entities(
-            text, beats, min_mentions=1, min_edge_weight=1
-        )
-        
+
+        entities, edges, stats = extract_entities(text, beats, min_mentions=1, min_edge_weight=1)
+
         # Should find people and places
         assert stats["num_entities"] > 0
         assert stats["num_edges"] >= 0
-        
+
         # Check that we have some entities
         entity_types = {e.type for e in entities}
         assert "PERSON" in entity_types or "PLACE" in entity_types
@@ -124,13 +122,11 @@ class TestEntityExtraction:
         text = """
         Alice and Bob met at the park. Alice said hello to Bob.
         """
-        
+
         beats = [Beat(id="test", span=[0, 100], function="test")]
-        
-        entities, edges, stats = extract_entities(
-            text, beats, min_mentions=1, min_edge_weight=1
-        )
-        
+
+        entities, edges, stats = extract_entities(text, beats, min_mentions=1, min_edge_weight=1)
+
         # Should have at least some edges
         assert stats["num_edges"] >= 0
 
@@ -145,12 +141,12 @@ class TestMotifExtraction:
         More blood seeped through the bandage. The cut was deep.
         Blood and pain filled his thoughts.
         """
-        
+
         motifs = extract_motifs(text, top_k=5)
-        
+
         # Should extract some motifs
         assert len(motifs) > 0
-        
+
         # Motifs should have required fields
         for motif in motifs:
             assert motif.motif
@@ -158,13 +154,16 @@ class TestMotifExtraction:
 
     def test_extract_motifs_finds_recurring_terms(self):
         """Test that motifs capture recurring terms."""
-        text = """
+        text = (
+            """
         Light filled the room. Fluorescent lights buzzed overhead.
         The bright light hurt his eyes. He turned off the lights.
-        """ * 3  # Repeat to increase frequency
-        
+        """
+            * 3
+        )  # Repeat to increase frequency
+
         motifs = extract_motifs(text, top_k=10)
-        
+
         # Should find "light" or related terms
         motif_names = [m.motif for m in motifs]
         assert any("light" in m.lower() for m in motif_names)
@@ -179,12 +178,12 @@ class TestImageryExtraction:
         The fluorescent lights hummed. Blood dripped on the wet road.
         Dark clouds gathered overhead. A bright light shone through.
         """
-        
+
         palettes = extract_imagery_palettes(text, top_k_per_category=3)
-        
+
         # Should extract some categories
         assert len(palettes) > 0
-        
+
         # Each category should have imagery
         for category, images in palettes.items():
             assert len(images) > 0
@@ -192,13 +191,16 @@ class TestImageryExtraction:
 
     def test_extract_imagery_palettes_medical(self):
         """Test medical imagery extraction."""
-        text = """
+        text = (
+            """
         The nurse applied gauze to the wound. Blood seeped through.
         The hospital smelled of medicine and pain.
-        """ * 2
-        
+        """
+            * 2
+        )
+
         palettes = extract_imagery_palettes(text, top_k_per_category=5)
-        
+
         # Should have medical category
         if "medical" in palettes:
             assert len(palettes["medical"]) > 0
@@ -211,9 +213,9 @@ class TestImageryExtraction:
         The nurse brought medicine for the wound treatment.
         Blood tests showed elevated pain markers.
         """
-        
+
         domains = extract_lexical_domains(text)
-        
+
         # Should detect medical domain
         assert "medical" in domains or len(domains) >= 0
 
@@ -243,7 +245,7 @@ class TestValenceExtraction:
         """Test valence smoothing."""
         valences = [1.0, -1.0, 1.0, -1.0, 1.0]
         smoothed = _smooth_valence(valences, window=3)
-        
+
         # Smoothed values should be less extreme
         assert len(smoothed) == len(valences)
         assert all(abs(s) < 1.0 for s in smoothed[1:-1])
@@ -252,7 +254,7 @@ class TestValenceExtraction:
         """Test change point detection."""
         valences = [0.0, 0.0, 0.8, 0.8, -0.6, -0.6]
         change_points = _detect_change_points(valences, threshold=0.3)
-        
+
         # Should detect at least one change point
         assert len(change_points) >= 1
 
@@ -267,19 +269,19 @@ class TestValenceExtraction:
         
         It was terrible and awful.
         """
-        
+
         beats = [
             Beat(id="opening", span=[0, 50], function="happy"),
             Beat(id="closing", span=[50, 100], function="sad"),
         ]
-        
+
         valence_arc, surprise_curve = extract_valence_arc(text, beats)
-        
+
         # Should have valence data
         assert "per_paragraph" in valence_arc
         assert "per_beat" in valence_arc
         assert "overall_mean" in valence_arc
-        
+
         # Should have surprise curve
         assert len(surprise_curve) > 0
 
@@ -291,36 +293,36 @@ class TestIntegration:
         """Test that full digest pipeline works with enrichments."""
         from literary_structure_generator.ingest.digest_exemplar import analyze_text
         from pathlib import Path
-        
+
         # Use the emergency test file
         data_dir = Path(__file__).parent.parent / "data" / "exemplars"
         test_file = data_dir / "emergency_excerpt.txt"
-        
+
         if not test_file.exists():
             pytest.skip("Test data file not found")
-        
+
         # Analyze with enrichments
         digest = analyze_text(str(test_file), run_id="test_001", iteration=0)
-        
+
         # Check basic fields
         assert digest.meta.source == "emergency_excerpt"
         assert digest.meta.tokens > 0
-        
+
         # Check Phase 2.1 enrichments
         assert digest.coherence_graph is not None
         assert digest.coherence_graph.stats is not None
-        
+
         # Motifs should be extracted
         assert isinstance(digest.motif_map, list)
-        
+
         # Imagery palettes should exist
         assert isinstance(digest.imagery_palettes, dict)
-        
+
         # Valence arc should exist
         assert isinstance(digest.valence_arc, dict)
-        
+
         # Surprise curve should exist
         assert isinstance(digest.surprise_curve, list)
-        
+
         # Safety should be clean mode
         assert digest.safety.profanity_rate == 0.0

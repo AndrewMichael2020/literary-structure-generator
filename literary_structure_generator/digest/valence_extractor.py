@@ -113,7 +113,6 @@ def _compute_paragraph_valence(paragraph: str) -> float:
     return (positive_count - negative_count) / total_sentiment_words
 
 
-
 def _smooth_valence(valences: list[float], window: int = 3) -> list[float]:
     """
     Apply moving average smoothing to valence scores.

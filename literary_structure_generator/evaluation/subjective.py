@@ -13,7 +13,6 @@ Returns boolean judgments with short rationales.
 """
 
 
-
 def evaluate_ending_quality(text: str, model: str = "gpt-4") -> dict[str, any]:
     """
     Evaluate if ending re-colors earlier beats effectively.

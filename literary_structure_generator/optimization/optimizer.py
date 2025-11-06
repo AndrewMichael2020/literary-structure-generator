@@ -14,7 +14,6 @@ Optimizes GenerationConfig and StorySpec sliders based on EvalReport feedback.
 Each decision is logged via log_decision() for reproducibility.
 """
 
-
 from literary_structure_generator.models.eval_report import EvalReport
 from literary_structure_generator.models.generation_config import GenerationConfig
 from literary_structure_generator.models.story_spec import StorySpec

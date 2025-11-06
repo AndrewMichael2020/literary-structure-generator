@@ -26,9 +26,9 @@ class LLMCache:
             cache_path = Path.cwd() / "runs" / "llm_cache.db"
         else:
             cache_path = Path(cache_path)
-        
+
         cache_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         self.db_path = str(cache_path)
         self._init_db()
 
@@ -36,8 +36,9 @@ class LLMCache:
         """Initialize database schema."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
-        cursor.execute("""
+
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS llm_cache (
                 cache_key TEXT PRIMARY KEY,
                 component TEXT NOT NULL,
@@ -48,19 +49,24 @@ class LLMCache:
                 response TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-        """)
-        
+        """
+        )
+
         # Create indices for faster lookups
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_component 
             ON llm_cache(component)
-        """)
-        
-        cursor.execute("""
+        """
+        )
+
+        cursor.execute(
+            """
             CREATE INDEX IF NOT EXISTS idx_created_at 
             ON llm_cache(created_at)
-        """)
-        
+        """
+        )
+
         conn.commit()
         conn.close()
 
@@ -88,14 +94,14 @@ class LLMCache:
         # Create deterministic params hash
         params_str = json.dumps(params, sort_keys=True)
         params_hash = hashlib.sha256(params_str.encode()).hexdigest()[:16]
-        
+
         # Create input hash
         input_hash = hashlib.sha256(input_text.encode()).hexdigest()[:16]
-        
+
         # Combine all elements
         key_parts = [component, model, template_version, params_hash, input_hash]
         key_string = "|".join(key_parts)
-        
+
         return hashlib.sha256(key_string.encode()).hexdigest()
 
     def get(
@@ -119,21 +125,16 @@ class LLMCache:
         Returns:
             Cached response or None if not found
         """
-        cache_key = self._compute_cache_key(
-            component, model, template_version, params, input_text
-        )
-        
+        cache_key = self._compute_cache_key(component, model, template_version, params, input_text)
+
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
-        cursor.execute(
-            "SELECT response FROM llm_cache WHERE cache_key = ?",
-            (cache_key,)
-        )
-        
+
+        cursor.execute("SELECT response FROM llm_cache WHERE cache_key = ?", (cache_key,))
+
         result = cursor.fetchone()
         conn.close()
-        
+
         return result[0] if result else None
 
     def put(
@@ -156,18 +157,16 @@ class LLMCache:
             input_text: Input prompt
             response: LLM response to cache
         """
-        cache_key = self._compute_cache_key(
-            component, model, template_version, params, input_text
-        )
-        
+        cache_key = self._compute_cache_key(component, model, template_version, params, input_text)
+
         # Compute hashes for storage
         params_str = json.dumps(params, sort_keys=True)
         params_hash = hashlib.sha256(params_str.encode()).hexdigest()[:16]
         input_hash = hashlib.sha256(input_text.encode()).hexdigest()[:16]
-        
+
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         cursor.execute(
             """
             INSERT OR REPLACE INTO llm_cache 
@@ -176,7 +175,7 @@ class LLMCache:
             """,
             (cache_key, component, model, template_version, params_hash, input_hash, response),
         )
-        
+
         conn.commit()
         conn.close()
 
@@ -190,12 +189,12 @@ class LLMCache:
         """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         if component:
             cursor.execute("DELETE FROM llm_cache WHERE component = ?", (component,))
         else:
             cursor.execute("DELETE FROM llm_cache")
-        
+
         conn.commit()
         conn.close()
 
@@ -208,19 +207,21 @@ class LLMCache:
         """
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         cursor.execute("SELECT COUNT(*) FROM llm_cache")
         total_entries = cursor.fetchone()[0]
-        
-        cursor.execute("""
+
+        cursor.execute(
+            """
             SELECT component, COUNT(*) as count 
             FROM llm_cache 
             GROUP BY component
-        """)
+        """
+        )
         by_component = dict(cursor.fetchall())
-        
+
         conn.close()
-        
+
         return {
             "total_entries": total_entries,
             "by_component": by_component,

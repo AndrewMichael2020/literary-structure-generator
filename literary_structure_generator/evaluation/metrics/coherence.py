@@ -14,7 +14,6 @@ Returns score 0.0-1.0 where 1.0 is perfectly coherent.
 """
 
 
-
 def track_entities(text: str) -> dict[str, list[int]]:
     """
     Track entity mentions throughout text.
