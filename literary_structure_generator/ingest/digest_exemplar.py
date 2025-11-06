@@ -4,9 +4,10 @@ Exemplar Digest Pipeline
 Parses an exemplar story and produces a structured ExemplarDigest@2 JSON artifact
 describing style, form, and motifs.
 
-This module uses basic text analysis (nltk, re) to extract stylometric features,
-paragraph/sentence statistics, dialogue ratios, and basic structural information.
-No heavy NLP dependencies are used to keep the pipeline deterministic and lightweight.
+This module uses basic text processing (regex, collections.Counter) to extract
+stylometric features, paragraph/sentence statistics, dialogue ratios, and basic
+structural information. No heavy NLP dependencies are used to keep the pipeline
+deterministic and lightweight.
 """
 
 import re
@@ -94,14 +95,17 @@ def _compute_sentence_length_histogram(sentences: list[str]) -> list[int]:
         sentences: List of sentences
 
     Returns:
-        Histogram as list of counts (bins: 0-5, 6-10, 11-15, 16-20, 21-25, 26-30, 31-35, 36+ words)
+        Histogram as list of counts.
+        Bins represent word counts: [0-5], [6-10], [11-15], [16-20], [21-25],
+        [26-30], [31-35], [36+], with an extra bin for edge cases.
     """
+    # Bin boundaries (inclusive lower bounds)
     bins = [0, 6, 11, 16, 21, 26, 31, 36]
     histogram = [0] * (len(bins) + 1)
 
     for sentence in sentences:
         word_count = len(_tokenize_words(sentence))
-        # Find appropriate bin
+        # Find the highest bin threshold this word_count meets or exceeds
         bin_idx = 0
         for i, threshold in enumerate(bins):
             if word_count >= threshold:
