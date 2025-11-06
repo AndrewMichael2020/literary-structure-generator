@@ -1,0 +1,33 @@
+{
+  "schema": "AuthorProfile@1",
+  "lexicon": {
+    "prefer": [
+      "plain nouns",
+      "everyday verbs",
+      "concrete objects",
+      "sensory details"
+    ],
+    "avoid": [
+      "generally",
+      "very",
+      "really",
+      "somewhat",
+      "quite",
+      "rather"
+    ]
+  },
+  "syntax": {
+    "avg_sentence_len": 14,
+    "variance": 0.55,
+    "em_dash": "rare"
+  },
+  "register": {
+    "deadpan": 0.7,
+    "tender": 0.6,
+    "irony": 0.4
+  },
+  "profanity": {
+    "allowed": false,
+    "frequency": 0.0
+  }
+}
