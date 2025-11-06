@@ -150,7 +150,5 @@ def repair_text(
                 if lines[0].strip() in ["", "text", "markdown"]:
                     repaired = lines[1] if len(lines) > 1 else repaired
 
-    # Apply profanity filter to repaired text
-    repaired = structural_bleep(repaired.strip())
-
-    return repaired
+    # Apply profanity filter to repaired text and return
+    return structural_bleep(repaired.strip())

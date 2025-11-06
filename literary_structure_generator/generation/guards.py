@@ -78,61 +78,6 @@ def simhash_distance(a: str, b: str) -> int:
     return hamming_distance(hash_a, hash_b)
 
 
-# Profanity list (minimal set for demonstration)
-# TODO: Consider externalizing to configuration file for easier customization
-PROFANITY_LIST = {
-    "damn",
-    "hell",
-    "shit",
-    "fuck",
-    "fucking",
-    "bastard",
-    "bitch",
-    "ass",
-    "asshole",
-    "crap",
-}
-
-
-def clean_mode(text: str) -> str:
-    """
-    Apply Clean Mode filter to remove profanity.
-
-    Replaces profanity with neutral alternatives.
-
-    Args:
-        text: Input text
-
-    Returns:
-        Cleaned text with profanity replaced
-    """
-    if not text:
-        return text
-
-    # Replacement map
-    replacements = {
-        "damn": "darn",
-        "hell": "heck",
-        "shit": "stuff",
-        "fuck": "heck",
-        "fucking": "freaking",
-        "bastard": "jerk",
-        "bitch": "person",
-        "ass": "butt",
-        "asshole": "jerk",
-        "crap": "stuff",
-    }
-
-    # Create pattern for word boundaries
-    result = text
-    for word, replacement in replacements.items():
-        # Case-insensitive replacement with word boundaries
-        pattern = r"\b" + re.escape(word) + r"\b"
-        result = re.sub(pattern, replacement, result, flags=re.IGNORECASE)
-
-    return result
-
-
 def check_overlap_guard(
     text: str,
     exemplar: str,
