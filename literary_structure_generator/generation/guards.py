@@ -4,12 +4,13 @@ Overlap guard and Clean Mode filters
 Anti-plagiarism checks:
     - N-gram overlap detection
     - SimHash distance checking
-    - Clean mode profanity filter
+    - Profanity filtering with [bleep] replacement
 """
 
 import re
 
 from literary_structure_generator.utils.similarity import calculate_simhash, hamming_distance
+from literary_structure_generator.utils.profanity import structural_bleep
 
 
 def max_ngram_overlap(text: str, exemplar_text: str, n: int = 12) -> float:
@@ -180,6 +181,9 @@ def apply_clean_mode_if_needed(text: str, clean_mode_enabled: bool = True) -> st
     """
     Apply clean mode filter if enabled.
 
+    NOTE: This function now uses the universal structural_bleep profanity filter
+    for consistent [bleep] replacement across all outputs.
+
     Args:
         text: Input text
         clean_mode_enabled: Whether to apply filter (default: True)
@@ -189,4 +193,4 @@ def apply_clean_mode_if_needed(text: str, clean_mode_enabled: bool = True) -> st
     """
     if not clean_mode_enabled:
         return text
-    return clean_mode(text)
+    return structural_bleep(text)

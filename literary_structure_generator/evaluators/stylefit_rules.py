@@ -6,7 +6,7 @@ Heuristic checks against StorySpec for style conformance:
 - Target sentence length (± tolerance)
 - Parataxis ratio
 - Dialogue ratio tolerance
-- Clean Mode confirmation
+- Profanity compliance check with [bleep] detection
 
 Returns score 0..1
 """
@@ -15,6 +15,7 @@ import re
 from typing import Dict
 
 from literary_structure_generator.models.story_spec import StorySpec
+from literary_structure_generator.utils.profanity import count_bleeps, PROFANITY_LIST
 
 
 def check_person_consistency(text: str, target_person: str) -> float:
@@ -232,26 +233,22 @@ def check_dialogue_ratio(text: str, target_ratio: float, tolerance: float = 0.1)
 
 def check_clean_mode(text: str) -> bool:
     """
-    Check if text passes clean mode (no profanity).
+    Check if text passes clean mode (no unfiltered profanity).
+    
+    Uses the universal profanity list to detect any remaining profanity.
+    Text should have [bleep] replacements if profanity was present.
     
     Args:
         text: Text to check
         
     Returns:
-        True if clean, False otherwise
+        True if clean (no unfiltered profanity), False otherwise
     """
-    # Simple profanity check (extend as needed)
-    profanity_words = [
-        r'\bdamn\b', r'\bhell\b', r'\bass\b', r'\bshit\b', r'\bfuck\b',
-        r'\bbitch\b', r'\bbastard\b', r'\bcrap\b'
-    ]
+    # Use the universal profanity counting function
+    profanity_count = count_bleeps(text)
     
-    text_lower = text.lower()
-    for word_pattern in profanity_words:
-        if re.search(word_pattern, text_lower):
-            return False
-    
-    return True
+    # If profanity is detected, text is not clean
+    return profanity_count == 0
 
 
 def evaluate_stylefit_rules(text: str, spec: StorySpec) -> Dict[str, float]:
