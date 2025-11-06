@@ -7,6 +7,7 @@ Modules:
     - text_utils: Tokenization, n-gram extraction, text preprocessing
     - similarity: SimHash, Levenshtein, cosine similarity
     - io_utils: JSON serialization, file handling
+    - decision_logger: Agent decision logging utilities
 """
 
-__all__ = ["text_utils", "similarity", "io_utils"]
+__all__ = ["text_utils", "similarity", "io_utils", "decision_logger"]

@@ -9,12 +9,15 @@ Features:
     - Beat shuffle for variation
     - Spec jitter for exploration
     - Seed management for reproducibility
+
+Each decision is logged via log_decision() for reproducibility.
 """
 
 from typing import List, Dict, Optional
 
 from literary_structure_generator.models.story_spec import StorySpec
 from literary_structure_generator.models.generation_config import GenerationConfig
+from literary_structure_generator.utils.decision_logger import log_decision
 
 
 def generate_candidate(
@@ -22,6 +25,8 @@ def generate_candidate(
     config: GenerationConfig,
     candidate_id: str,
     seed: int,
+    run_id: str = "run_001",
+    iteration: int = 0,
 ) -> Dict[str, any]:
     """
     Generate a single candidate story.
@@ -31,10 +36,28 @@ def generate_candidate(
         config: GenerationConfig with parameters
         candidate_id: Unique identifier for this candidate
         seed: Random seed for this candidate
+        run_id: Unique run identifier for logging
+        iteration: Iteration number for logging
 
     Returns:
         Dictionary with candidate_id, text, and metadata
     """
+    # Log decision about temperature setting for this candidate
+    temp_range = config.per_beat_generation.temperature
+    log_decision(
+        run_id=run_id,
+        iteration=iteration,
+        agent="Generator",
+        decision=f"Generate candidate {candidate_id} with seed {seed}",
+        reasoning=f"Using temperature range {temp_range} for beat-by-beat generation",
+        parameters={
+            "candidate_id": candidate_id,
+            "seed": seed,
+            "temperature_range": temp_range,
+            "top_p": config.per_beat_generation.top_p,
+        },
+    )
+
     # TODO: Implement single candidate generation
     # Should orchestrate beat-by-beat generation
     raise NotImplementedError("Candidate generation not yet implemented")
@@ -74,6 +97,7 @@ def generate_ensemble(
     spec: StorySpec,
     config: GenerationConfig,
     run_id: str,
+    iteration: int = 0,
 ) -> List[Dict[str, any]]:
     """
     Generate ensemble of candidate stories.
@@ -82,10 +106,29 @@ def generate_ensemble(
         spec: StorySpec to generate from
         config: GenerationConfig with parameters
         run_id: Unique identifier for this run
+        iteration: Iteration number for logging
 
     Returns:
         List of candidate dictionaries
     """
+    # Log decision about ensemble size and diversity
+    log_decision(
+        run_id=run_id,
+        iteration=iteration,
+        agent="Generator",
+        decision=f"Generate ensemble of {config.num_candidates} candidates",
+        reasoning=(
+            f"Using ensemble of {config.num_candidates} candidates with diversity controls: "
+            f"spec_jitter={config.diversity.spec_jitter}, beat_shuffle={config.diversity.beat_shuffle}"
+        ),
+        parameters={
+            "num_candidates": config.num_candidates,
+            "spec_jitter": config.diversity.spec_jitter,
+            "beat_shuffle": config.diversity.beat_shuffle,
+            "seed": config.seed,
+        },
+    )
+
     # TODO: Implement ensemble generation
     # Should generate num_candidates in parallel
     # Apply diversity controls (jitter, shuffle, temp sweeps)

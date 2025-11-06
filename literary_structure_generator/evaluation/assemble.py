@@ -11,6 +11,8 @@ Workflow:
     5. Analyze drift vs spec
     6. Generate tuning suggestions
     7. Create and save EvalReport
+
+Each decision is logged via log_decision() for reproducibility.
 """
 
 from typing import Optional
@@ -19,6 +21,7 @@ from literary_structure_generator.models.eval_report import EvalReport
 from literary_structure_generator.models.story_spec import StorySpec
 from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 from literary_structure_generator.models.generation_config import GenerationConfig
+from literary_structure_generator.utils.decision_logger import log_decision
 
 
 def run_automated_metrics(
@@ -115,6 +118,7 @@ def assemble_eval_report(
     exemplar_text: str,
     config: GenerationConfig,
     output_path: Optional[str] = None,
+    iteration: int = 0,
 ) -> EvalReport:
     """
     Main entry point: assemble complete EvalReport for a candidate.
@@ -128,9 +132,27 @@ def assemble_eval_report(
         exemplar_text: Original exemplar text
         config: GenerationConfig used
         output_path: Optional path to save report JSON
+        iteration: Iteration number for logging
 
     Returns:
         Complete EvalReport object
     """
+    # Log decision about evaluation suite
+    log_decision(
+        run_id=run_id,
+        iteration=iteration,
+        agent="Evaluator",
+        decision=f"Evaluate candidate {candidate_id} with {len(config.evaluator_suite)} metrics",
+        reasoning=(
+            f"Running evaluation suite: {', '.join(config.evaluator_suite)}. "
+            f"Weighted by: {config.objective_weights}"
+        ),
+        parameters={
+            "candidate_id": candidate_id,
+            "evaluator_suite": config.evaluator_suite,
+            "objective_weights": config.objective_weights,
+        },
+    )
+
     # TODO: Implement full evaluation pipeline orchestration
     raise NotImplementedError("Eval report assembly not yet implemented")

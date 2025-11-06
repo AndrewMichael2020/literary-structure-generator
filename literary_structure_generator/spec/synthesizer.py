@@ -12,6 +12,8 @@ Workflow:
     5. Initialize content section with placeholders
     6. Set anti-plagiarism constraints
     7. Validate and save StorySpec
+
+Each decision is logged via log_decision() for reproducibility.
 """
 
 from typing import Optional
@@ -19,6 +21,7 @@ from typing import Optional
 from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 from literary_structure_generator.models.story_spec import StorySpec
 from literary_structure_generator.models.author_profile import AuthorProfile
+from literary_structure_generator.utils.decision_logger import log_decision
 
 
 def map_voice_parameters(digest: ExemplarDigest, profile: Optional[AuthorProfile] = None) -> dict:
@@ -90,6 +93,8 @@ def synthesize_spec(
     profile: Optional[AuthorProfile] = None,
     alpha_exemplar: float = 0.7,
     output_path: Optional[str] = None,
+    run_id: str = "run_001",
+    iteration: int = 0,
 ) -> StorySpec:
     """
     Main entry point: synthesize StorySpec from ExemplarDigest.
@@ -101,9 +106,29 @@ def synthesize_spec(
         profile: Optional AuthorProfile to blend with
         alpha_exemplar: Blending weight (0=all author, 1=all exemplar)
         output_path: Optional path to save spec JSON
+        run_id: Unique run identifier for logging
+        iteration: Iteration number for logging
 
     Returns:
         Complete StorySpec object
     """
+    # Log decision about blending strategy
+    log_decision(
+        run_id=run_id,
+        iteration=iteration,
+        agent="SpecSynth",
+        decision=f"Use alpha_exemplar={alpha_exemplar} for blending",
+        reasoning=(
+            f"Blending exemplar digest with author profile using {alpha_exemplar:.0%} exemplar weight. "
+            f"This balances structural learning from exemplar with author's voice preferences."
+        ),
+        parameters={
+            "alpha_exemplar": alpha_exemplar,
+            "has_author_profile": profile is not None,
+            "seed": seed,
+        },
+        metadata={"story_id": story_id},
+    )
+
     # TODO: Implement full synthesis pipeline
     raise NotImplementedError("Spec synthesis not yet implemented")
