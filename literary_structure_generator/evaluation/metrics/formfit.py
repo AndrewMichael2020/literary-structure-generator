@@ -13,12 +13,11 @@ Features checked:
 Returns score 0.0-1.0 where 1.0 is perfect adherence.
 """
 
-from typing import Dict
 
 from literary_structure_generator.models.story_spec import StorySpec
 
 
-def check_beat_coverage(text: str, spec: StorySpec) -> Dict[str, any]:
+def check_beat_coverage(text: str, spec: StorySpec) -> dict[str, any]:
     """
     Check if all specified beats are present.
 
@@ -33,7 +32,7 @@ def check_beat_coverage(text: str, spec: StorySpec) -> Dict[str, any]:
     raise NotImplementedError("Beat coverage checking not yet implemented")
 
 
-def check_beat_lengths(text: str, spec: StorySpec) -> Dict[str, any]:
+def check_beat_lengths(text: str, spec: StorySpec) -> dict[str, any]:
     """
     Check if beat lengths match targets.
 
@@ -76,7 +75,7 @@ def calculate_dialogue_ratio(text: str) -> float:
     raise NotImplementedError("Dialogue ratio calculation not yet implemented")
 
 
-def calculate_formfit(text: str, spec: StorySpec) -> Dict[str, float]:
+def calculate_formfit(text: str, spec: StorySpec) -> dict[str, float]:
     """
     Calculate overall formfit score.
 

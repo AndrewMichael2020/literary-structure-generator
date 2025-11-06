@@ -10,9 +10,9 @@ Features:
     - Artifact directory management
 """
 
-import json
-from typing import Any, Type, TypeVar
 from pathlib import Path
+from typing import TypeVar
+
 from pydantic import BaseModel
 
 T = TypeVar("T", bound=BaseModel)
@@ -31,7 +31,7 @@ def save_json(obj: BaseModel, filepath: str, indent: int = 2) -> None:
     raise NotImplementedError("JSON saving not yet implemented")
 
 
-def load_json(filepath: str, model_class: Type[T]) -> T:
+def load_json(filepath: str, model_class: type[T]) -> T:
     """
     Load and validate JSON file as Pydantic model.
 

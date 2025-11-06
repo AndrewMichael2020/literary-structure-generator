@@ -38,9 +38,7 @@ class ReasonLog(BaseModel):
         description="Agent name: Digest|SpecSynth|Generator|Evaluator|Optimizer",
     )
     decision: str = Field(..., description="Brief description of the decision made")
-    reasoning: str = Field(
-        ..., description="Explanation of why this decision was made"
-    )
+    reasoning: str = Field(..., description="Explanation of why this decision was made")
     parameters: dict[str, Any] = Field(
         default_factory=dict,
         description="Relevant parameters that influenced the decision",
@@ -66,8 +64,7 @@ class ReasonLog(BaseModel):
                 "agent": "SpecSynth",
                 "decision": "Set voice.person to 'first' based on exemplar digest",
                 "reasoning": (
-                    "Exemplar digest shows 95% first-person pronouns, "
-                    "strong intimate distance"
+                    "Exemplar digest shows 95% first-person pronouns, strong intimate distance"
                 ),
                 "parameters": {
                     "exemplar_first_person_ratio": 0.95,

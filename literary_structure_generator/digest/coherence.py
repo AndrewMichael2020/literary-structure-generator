@@ -11,10 +11,9 @@ Features extracted:
     - Contradiction detection
 """
 
-from typing import Dict, List
 
 
-def extract_entities(text: str) -> List[str]:
+def extract_entities(text: str) -> list[str]:
     """
     Extract named entities and important references.
 
@@ -28,7 +27,7 @@ def extract_entities(text: str) -> List[str]:
     raise NotImplementedError("Entity extraction not yet implemented")
 
 
-def build_coherence_graph(text: str) -> Dict[str, any]:
+def build_coherence_graph(text: str) -> dict[str, any]:
     """
     Build coherence graph with entities and relationships.
 
@@ -42,7 +41,7 @@ def build_coherence_graph(text: str) -> Dict[str, any]:
     raise NotImplementedError("Coherence graph construction not yet implemented")
 
 
-def resolve_pronoun_chains(text: str) -> Dict[str, List[int]]:
+def resolve_pronoun_chains(text: str) -> dict[str, list[int]]:
     """
     Resolve pronoun coreference chains.
 
@@ -56,7 +55,7 @@ def resolve_pronoun_chains(text: str) -> Dict[str, List[int]]:
     raise NotImplementedError("Pronoun chain resolution not yet implemented")
 
 
-def extract_temporal_markers(text: str) -> List[Dict[str, any]]:
+def extract_temporal_markers(text: str) -> list[dict[str, any]]:
     """
     Extract temporal coherence markers (then, later, earlier, etc.).
 
@@ -70,7 +69,7 @@ def extract_temporal_markers(text: str) -> List[Dict[str, any]]:
     raise NotImplementedError("Temporal marker extraction not yet implemented")
 
 
-def detect_contradictions(text: str) -> List[str]:
+def detect_contradictions(text: str) -> list[str]:
     """
     Detect potential logical contradictions in the text.
 

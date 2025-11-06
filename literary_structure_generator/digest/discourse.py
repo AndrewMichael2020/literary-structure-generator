@@ -14,10 +14,9 @@ Features extracted:
     - Anaphora chain statistics
 """
 
-from typing import Dict, List
 
 
-def detect_beats(text: str) -> List[Dict[str, any]]:
+def detect_beats(text: str) -> list[dict[str, any]]:
     """
     Detect structural beats in the text.
 
@@ -31,7 +30,7 @@ def detect_beats(text: str) -> List[Dict[str, any]]:
     raise NotImplementedError("Beat detection not yet implemented")
 
 
-def detect_scene_summary_switches(text: str) -> List[int]:
+def detect_scene_summary_switches(text: str) -> list[int]:
     """
     Detect positions where text switches between scene and summary modes.
 
@@ -59,7 +58,7 @@ def calculate_dialogue_ratio(text: str) -> float:
     raise NotImplementedError("Dialogue ratio calculation not yet implemented")
 
 
-def analyze_tense_distribution(text: str) -> Dict[str, float]:
+def analyze_tense_distribution(text: str) -> dict[str, float]:
     """
     Analyze distribution of verb tenses.
 
@@ -101,7 +100,7 @@ def measure_free_indirect_markers(text: str) -> float:
     raise NotImplementedError("Free indirect discourse marker detection not yet implemented")
 
 
-def extract_deictic_frequencies(text: str) -> Dict[str, float]:
+def extract_deictic_frequencies(text: str) -> dict[str, float]:
     """
     Extract frequencies of deictic expressions (now, here, etc.).
 
@@ -115,7 +114,7 @@ def extract_deictic_frequencies(text: str) -> Dict[str, float]:
     raise NotImplementedError("Deictic frequency extraction not yet implemented")
 
 
-def analyze_anaphora_chains(text: str) -> Dict[str, float]:
+def analyze_anaphora_chains(text: str) -> dict[str, float]:
     """
     Analyze anaphora chain statistics (average and max chain length).
 

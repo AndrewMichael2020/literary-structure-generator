@@ -17,7 +17,6 @@ Enforces hard constraints:
 Returns pass/fail and detailed metrics.
 """
 
-from typing import Dict, Set
 
 
 def find_max_shared_ngram(text1: str, text2: str, max_n: int = 20) -> int:
@@ -51,7 +50,7 @@ def calculate_overlap_percentage(text1: str, text2: str) -> float:
     raise NotImplementedError("Overlap percentage calculation not yet implemented")
 
 
-def find_levenshtein_bursts(text1: str, text2: str, threshold: float = 0.9) -> List[Dict]:
+def find_levenshtein_bursts(text1: str, text2: str, threshold: float = 0.9) -> List[dict]:
     """
     Find Levenshtein similarity bursts (near-verbatim chunks).
 
@@ -73,7 +72,7 @@ def check_overlap_guard(
     max_ngram: int = 12,
     max_overlap_pct: float = 0.03,
     min_simhash_hamming: int = 18,
-) -> Dict[str, any]:
+) -> dict[str, any]:
     """
     Perform all anti-plagiarism checks.
 

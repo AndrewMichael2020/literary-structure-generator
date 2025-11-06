@@ -10,4 +10,4 @@ Modules:
     - decision_logger: Agent decision logging utilities
 """
 
-__all__ = ["text_utils", "similarity", "io_utils", "decision_logger"]
+__all__ = ["decision_logger", "io_utils", "similarity", "text_utils"]

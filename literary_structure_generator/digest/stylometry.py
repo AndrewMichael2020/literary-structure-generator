@@ -17,10 +17,9 @@ Features extracted:
 Uses spaCy for linguistic analysis.
 """
 
-from typing import Dict, List
 
 
-def analyze_sentence_lengths(text: str) -> Dict[str, List[int]]:
+def analyze_sentence_lengths(text: str) -> dict[str, list[int]]:
     """
     Analyze sentence length distribution.
 
@@ -62,7 +61,7 @@ def calculate_mtld(text: str) -> float:
     raise NotImplementedError("MTLD calculation not yet implemented")
 
 
-def extract_function_word_profile(text: str) -> Dict[str, float]:
+def extract_function_word_profile(text: str) -> dict[str, float]:
     """
     Extract frequency profile of function words.
 
@@ -76,7 +75,7 @@ def extract_function_word_profile(text: str) -> Dict[str, float]:
     raise NotImplementedError("Function word profile extraction not yet implemented")
 
 
-def extract_pos_trigrams(text: str, top_n: int = 20) -> List[List[str]]:
+def extract_pos_trigrams(text: str, top_n: int = 20) -> list[list[str]]:
     """
     Extract most common part-of-speech trigrams.
 
@@ -91,7 +90,7 @@ def extract_pos_trigrams(text: str, top_n: int = 20) -> List[List[str]]:
     raise NotImplementedError("POS trigram extraction not yet implemented")
 
 
-def analyze_dependency_arcs(text: str) -> Dict[str, float]:
+def analyze_dependency_arcs(text: str) -> dict[str, float]:
     """
     Analyze dependency arc patterns (parataxis, advcl, ccomp, etc.).
 
@@ -105,7 +104,7 @@ def analyze_dependency_arcs(text: str) -> Dict[str, float]:
     raise NotImplementedError("Dependency arc analysis not yet implemented")
 
 
-def analyze_punctuation_density(text: str) -> Dict[str, float]:
+def analyze_punctuation_density(text: str) -> dict[str, float]:
     """
     Analyze punctuation density (per 100 words).
 
@@ -119,7 +118,7 @@ def analyze_punctuation_density(text: str) -> Dict[str, float]:
     raise NotImplementedError("Punctuation density analysis not yet implemented")
 
 
-def analyze_figurative_density(text: str) -> Dict[str, float]:
+def analyze_figurative_density(text: str) -> dict[str, float]:
     """
     Analyze density of figurative language (simile, metaphor, personification).
 

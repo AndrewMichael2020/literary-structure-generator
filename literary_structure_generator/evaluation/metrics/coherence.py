@@ -13,10 +13,9 @@ Features checked:
 Returns score 0.0-1.0 where 1.0 is perfectly coherent.
 """
 
-from typing import Dict, List
 
 
-def track_entities(text: str) -> Dict[str, List[int]]:
+def track_entities(text: str) -> dict[str, list[int]]:
     """
     Track entity mentions throughout text.
 
@@ -30,7 +29,7 @@ def track_entities(text: str) -> Dict[str, List[int]]:
     raise NotImplementedError("Entity tracking not yet implemented")
 
 
-def check_pronoun_resolution(text: str) -> List[str]:
+def check_pronoun_resolution(text: str) -> list[str]:
     """
     Check for unclear pronoun antecedents.
 
@@ -44,7 +43,7 @@ def check_pronoun_resolution(text: str) -> List[str]:
     raise NotImplementedError("Pronoun resolution checking not yet implemented")
 
 
-def check_temporal_consistency(text: str) -> List[str]:
+def check_temporal_consistency(text: str) -> list[str]:
     """
     Check for temporal contradictions.
 
@@ -58,7 +57,7 @@ def check_temporal_consistency(text: str) -> List[str]:
     raise NotImplementedError("Temporal consistency checking not yet implemented")
 
 
-def check_pov_consistency(text: str, expected_pov: str) -> List[str]:
+def check_pov_consistency(text: str, expected_pov: str) -> list[str]:
     """
     Check for POV shifts or inconsistencies.
 
@@ -73,7 +72,7 @@ def check_pov_consistency(text: str, expected_pov: str) -> List[str]:
     raise NotImplementedError("POV consistency checking not yet implemented")
 
 
-def calculate_coherence(text: str, spec: any) -> Dict[str, any]:
+def calculate_coherence(text: str, spec: any) -> dict[str, any]:
     """
     Calculate overall coherence score.
 

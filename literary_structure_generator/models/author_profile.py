@@ -9,7 +9,6 @@ Schema version: AuthorProfile@1
 Used to blend exemplar style with user's personal voice.
 """
 
-from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -17,10 +16,8 @@ from pydantic import BaseModel, Field
 class Lexicon(BaseModel):
     """Lexical preferences."""
 
-    prefer: List[str] = Field(
-        default_factory=list, description="Preferred word types or patterns"
-    )
-    avoid: List[str] = Field(default_factory=list, description="Words or patterns to avoid")
+    prefer: list[str] = Field(default_factory=list, description="Preferred word types or patterns")
+    avoid: list[str] = Field(default_factory=list, description="Words or patterns to avoid")
 
 
 class Syntax(BaseModel):
@@ -55,15 +52,19 @@ class AuthorProfile(BaseModel):
     Blended with exemplar style to create personalized StorySpec.
     """
 
-    schema_version: str = Field(default="AuthorProfile@1", description="Schema version identifier", alias="schema")
+    schema_version: str = Field(
+        default="AuthorProfile@1", description="Schema version identifier", alias="schema"
+    )
     lexicon: Lexicon = Field(default_factory=Lexicon, description="Lexical preferences")
     syntax: Syntax = Field(default_factory=Syntax, description="Syntactic preferences")
-    register_sliders: Register = Field(default_factory=Register, description="Register and tone", alias="register")
+    register_sliders: Register = Field(
+        default_factory=Register, description="Register and tone", alias="register"
+    )
     profanity: Profanity = Field(default_factory=Profanity, description="Profanity policy")
 
     class Config:
         """Pydantic config."""
-        
+
         populate_by_name = True
 
         json_schema_extra = {

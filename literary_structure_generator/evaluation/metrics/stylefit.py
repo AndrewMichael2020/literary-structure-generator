@@ -13,10 +13,9 @@ Features compared:
 Returns score 0.0-1.0 where 1.0 is perfect match.
 """
 
-from typing import Dict
 
-from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 from literary_structure_generator.models.author_profile import AuthorProfile
+from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 
 
 def calculate_sentence_length_similarity(text: str, target_dist: list) -> float:
@@ -84,7 +83,7 @@ def calculate_stylefit(
     digest: ExemplarDigest,
     profile: AuthorProfile = None,
     alpha_digest: float = 0.7,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """
     Calculate overall stylefit score.
 

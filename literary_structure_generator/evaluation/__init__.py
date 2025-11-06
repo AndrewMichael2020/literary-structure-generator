@@ -14,4 +14,4 @@ Modules:
     - assemble: Orchestrate evaluation and generate EvalReport
 """
 
-__all__ = ["metrics", "subjective", "assemble"]
+__all__ = ["assemble", "metrics", "subjective"]

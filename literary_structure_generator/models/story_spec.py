@@ -9,7 +9,7 @@ Schema version: StorySpec@2
 Used by the generator to produce candidate stories.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -20,7 +20,7 @@ class MetaInfo(BaseModel):
     story_id: str = Field(..., description="Unique identifier for this story")
     seed: int = Field(..., description="Random seed for reproducibility")
     version: str = Field(default="2.0", description="Spec version")
-    derived_from: Dict[str, Any] = Field(
+    derived_from: dict[str, Any] = Field(
         default_factory=dict, description="Source exemplar and digest version"
     )
 
@@ -29,13 +29,13 @@ class DialogueStyle(BaseModel):
     """Dialogue formatting preferences."""
 
     quote_marks: str = Field(default="double", description="Quote mark style")
-    tag_verbs_allowed: List[str] = Field(
+    tag_verbs_allowed: list[str] = Field(
         default_factory=lambda: ["said", "asked"], description="Allowed dialogue tag verbs"
     )
     ban_adverbs_after_tags: bool = Field(
         default=True, description="Whether to ban adverbs after dialogue tags"
     )
-    beats_per_dialogue: Dict[str, int] = Field(
+    beats_per_dialogue: dict[str, int] = Field(
         default_factory=lambda: {"min": 0, "max": 2},
         description="Min/max action beats per dialogue line",
     )
@@ -95,7 +95,7 @@ class Voice(BaseModel):
     distance: str = Field(
         default="intimate", description="Narrative distance: intimate|close|medium|distant"
     )
-    register_sliders: Dict[str, float] = Field(
+    register_sliders: dict[str, float] = Field(
         default_factory=lambda: {"lyric": 0.3, "deadpan": 0.7, "irony": 0.5, "tender": 0.6},
         description="Register sliders (0-1)",
         alias="register",
@@ -129,9 +129,7 @@ class Viewpoint(BaseModel):
     """Viewpoint/POV preferences."""
 
     fixed: bool = Field(default=True, description="Whether POV is fixed")
-    allowed_shifts: List[str] = Field(
-        default_factory=list, description="Allowed POV shift points"
-    )
+    allowed_shifts: list[str] = Field(default_factory=list, description="Allowed POV shift points")
 
 
 class Paragraphing(BaseModel):
@@ -145,8 +143,8 @@ class Form(BaseModel):
     """Form and structure parameters."""
 
     structure: str = Field(default="episodic", description="Overall structure type")
-    beat_map: List[BeatSpec] = Field(default_factory=list, description="Beat specifications")
-    scene_ratio: Dict[str, float] = Field(
+    beat_map: list[BeatSpec] = Field(default_factory=list, description="Beat specifications")
+    scene_ratio: dict[str, float] = Field(
         default_factory=lambda: {"scene": 0.7, "summary": 0.3},
         description="Scene vs summary ratio",
     )
@@ -156,9 +154,7 @@ class Form(BaseModel):
     paragraphing: Paragraphing = Field(
         default_factory=Paragraphing, description="Paragraph structure"
     )
-    transitions: List[str] = Field(
-        default_factory=list, description="Preferred transition types"
-    )
+    transitions: list[str] = Field(default_factory=list, description="Preferred transition types")
 
 
 class Character(BaseModel):
@@ -168,8 +164,8 @@ class Character(BaseModel):
     role: str = Field(..., description="Narrative role")
     goal: str = Field(default="", description="Character goal")
     wound: str = Field(default="", description="Character wound or flaw")
-    quirks: List[str] = Field(default_factory=list, description="Character quirks")
-    diction_quirks: List[str] = Field(default_factory=list, description="Speech patterns")
+    quirks: list[str] = Field(default_factory=list, description="Character quirks")
+    diction_quirks: list[str] = Field(default_factory=list, description="Speech patterns")
 
 
 class Setting(BaseModel):
@@ -177,7 +173,7 @@ class Setting(BaseModel):
 
     place: str = Field(..., description="Location")
     time: str = Field(..., description="Time period or seasonal marker")
-    weather_budget: List[str] = Field(default_factory=list, description="Allowed weather elements")
+    weather_budget: list[str] = Field(default_factory=list, description="Allowed weather elements")
 
 
 class SensoryQuotas(BaseModel):
@@ -200,13 +196,13 @@ class Content(BaseModel):
     """Content parameters: setting, characters, themes."""
 
     setting: Setting = Field(..., description="Setting specification")
-    characters: List[Character] = Field(default_factory=list, description="Character list")
-    motifs: List[str] = Field(default_factory=list, description="Key motifs and themes")
-    imagery_palette: List[str] = Field(default_factory=list, description="Imagery palette")
+    characters: list[Character] = Field(default_factory=list, description="Character list")
+    motifs: list[str] = Field(default_factory=list, description="Key motifs and themes")
+    imagery_palette: list[str] = Field(default_factory=list, description="Imagery palette")
     symbol_budget: SymbolBudget = Field(
         default_factory=SymbolBudget, description="Symbol constraints"
     )
-    props: List[str] = Field(default_factory=list, description="Important props")
+    props: list[str] = Field(default_factory=list, description="Important props")
     sensory_quotas: SensoryQuotas = Field(
         default_factory=SensoryQuotas, description="Sensory detail quotas"
     )
@@ -231,8 +227,8 @@ class LengthConstraints(BaseModel):
 class SafetyLexicon(BaseModel):
     """Safety and content filtering."""
 
-    taboo: List[str] = Field(default_factory=list, description="Taboo words")
-    ban_lists: List[str] = Field(default_factory=list, description="Ban lists to apply")
+    taboo: list[str] = Field(default_factory=list, description="Taboo words")
+    ban_lists: list[str] = Field(default_factory=list, description="Ban lists to apply")
 
 
 class ImageGrounding(BaseModel):
@@ -250,12 +246,12 @@ class Constraints(BaseModel):
     length_words: LengthConstraints = Field(
         default_factory=LengthConstraints, description="Length constraints"
     )
-    forbidden: List[str] = Field(default_factory=list, description="Forbidden elements")
-    must_include: List[str] = Field(default_factory=list, description="Required elements")
+    forbidden: list[str] = Field(default_factory=list, description="Forbidden elements")
+    must_include: list[str] = Field(default_factory=list, description="Required elements")
     safety_lexicon: SafetyLexicon = Field(
         default_factory=SafetyLexicon, description="Safety filtering"
     )
-    external_knowledge: Dict[str, bool] = Field(
+    external_knowledge: dict[str, bool] = Field(
         default_factory=lambda: {"allowed": False}, description="External knowledge policy"
     )
     image_grounding: ImageGrounding = Field(
@@ -271,7 +267,9 @@ class StorySpec(BaseModel):
     Combines voice, form, content, and constraints into a portable, serializable format.
     """
 
-    schema_version: str = Field(default="StorySpec@2", description="Schema version identifier", alias="schema")
+    schema_version: str = Field(
+        default="StorySpec@2", description="Schema version identifier", alias="schema"
+    )
     meta: MetaInfo = Field(..., description="Metadata")
     voice: Voice = Field(default_factory=Voice, description="Voice and narrative style")
     form: Form = Field(default_factory=Form, description="Form and structure")
@@ -280,7 +278,7 @@ class StorySpec(BaseModel):
 
     class Config:
         """Pydantic config."""
-        
+
         populate_by_name = True
 
         json_schema_extra = {

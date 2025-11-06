@@ -18,9 +18,9 @@ Each decision is logged via log_decision() for reproducibility.
 from typing import Optional
 
 from literary_structure_generator.models.eval_report import EvalReport
-from literary_structure_generator.models.story_spec import StorySpec
 from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 from literary_structure_generator.models.generation_config import GenerationConfig
+from literary_structure_generator.models.story_spec import StorySpec
 from literary_structure_generator.utils.decision_logger import log_decision
 
 
@@ -93,7 +93,9 @@ def analyze_drift(text: str, spec: StorySpec) -> list:
     raise NotImplementedError("Drift analysis not yet implemented")
 
 
-def generate_tuning_suggestions(metric_scores: dict, drift_items: list, config: GenerationConfig) -> list:
+def generate_tuning_suggestions(
+    metric_scores: dict, drift_items: list, config: GenerationConfig
+) -> list:
     """
     Generate tuning suggestions for next iteration.
 

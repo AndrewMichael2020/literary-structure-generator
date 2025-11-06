@@ -14,11 +14,10 @@ Optimizes GenerationConfig and StorySpec sliders based on EvalReport feedback.
 Each decision is logged via log_decision() for reproducibility.
 """
 
-from typing import List, Dict, Optional
 
+from literary_structure_generator.models.eval_report import EvalReport
 from literary_structure_generator.models.generation_config import GenerationConfig
 from literary_structure_generator.models.story_spec import StorySpec
-from literary_structure_generator.models.eval_report import EvalReport
 from literary_structure_generator.utils.decision_logger import log_decision
 
 
@@ -36,7 +35,7 @@ def initialize_optimizer_state(config: GenerationConfig) -> dict:
     raise NotImplementedError("Optimizer state initialization not yet implemented")
 
 
-def calculate_gradients(eval_reports: List[EvalReport], config: GenerationConfig) -> dict:
+def calculate_gradients(eval_reports: list[EvalReport], config: GenerationConfig) -> dict:
     """
     Calculate parameter gradients from evaluation feedback.
 
@@ -137,7 +136,7 @@ def update_spec(
 
 
 def check_convergence(
-    eval_reports: List[EvalReport],
+    eval_reports: list[EvalReport],
     patience: int = 3,
     min_improvement: float = 0.005,
 ) -> bool:
@@ -163,7 +162,7 @@ def optimize(
     exemplar_text: str,
     run_id: str,
     output_dir: str,
-) -> Dict[str, any]:
+) -> dict[str, any]:
     """
     Main optimization loop.
 

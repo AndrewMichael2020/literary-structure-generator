@@ -11,4 +11,4 @@ Modules:
     - overlap_guard: Anti-plagiarism checks
 """
 
-__all__ = ["stylefit", "formfit", "coherence", "freshness", "overlap_guard"]
+__all__ = ["coherence", "formfit", "freshness", "overlap_guard", "stylefit"]

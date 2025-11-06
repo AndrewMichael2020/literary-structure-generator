@@ -18,9 +18,9 @@ Each decision is logged via log_decision() for reproducibility.
 
 from typing import Optional
 
+from literary_structure_generator.models.author_profile import AuthorProfile
 from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 from literary_structure_generator.models.story_spec import StorySpec
-from literary_structure_generator.models.author_profile import AuthorProfile
 from literary_structure_generator.utils.decision_logger import log_decision
 
 
