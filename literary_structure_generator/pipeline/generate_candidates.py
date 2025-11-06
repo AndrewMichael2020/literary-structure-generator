@@ -121,8 +121,8 @@ def generate_single_candidate(
 
     # Step 5: Evaluate using Phase 5
     # Extract seeds for repro (use 0 as default if not present)
-    DEFAULT_SEED = 0
-    per_beat_seeds = [br.get("metadata", {}).get("seed", DEFAULT_SEED) for br in beat_results]
+    default_seed = 0
+    per_beat_seeds = [br.get("metadata", {}).get("seed", default_seed) for br in beat_results]
 
     draft_dict = {
         "text": repaired,
