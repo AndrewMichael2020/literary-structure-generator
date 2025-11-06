@@ -78,6 +78,7 @@ def simhash_distance(a: str, b: str) -> int:
 
 
 # Profanity list (minimal set for demonstration)
+# TODO: Consider externalizing to configuration file for easier customization
 PROFANITY_LIST = {
     "damn",
     "hell",

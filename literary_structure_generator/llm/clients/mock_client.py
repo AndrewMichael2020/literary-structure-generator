@@ -1,5 +1,7 @@
 """Mock LLM client for deterministic testing."""
 
+import re
+
 from literary_structure_generator.llm.base import LLMClient
 
 
@@ -95,7 +97,6 @@ class MockClient(LLMClient):
         """Generate mock repair output."""
         # Extract original text between **Original Text:** and **Constraints:**
         if "**original text:**" in prompt.lower():
-            import re
             # Try to find text between markers
             match = re.search(
                 r"\*\*original text:\*\*\s*```\s*(.+?)\s*```\s*\*\*constraints",
@@ -116,7 +117,6 @@ class MockClient(LLMClient):
         # Extract target words if present
         target_words = 200
         if "target words:" in prompt.lower():
-            import re
             match = re.search(r"target words:\*\*\s*(\d+)", prompt, re.IGNORECASE)
             if match:
                 target_words = int(match.group(1))
@@ -124,7 +124,6 @@ class MockClient(LLMClient):
         # Generate mock prose based on function if available
         function = "scene"
         if "function:**" in prompt:
-            import re
             match = re.search(r"function:\*\*\s*(.+?)[\n*]", prompt, re.IGNORECASE)
             if match:
                 function = match.group(1).strip()
