@@ -9,6 +9,24 @@ The Literary Structure Generator is an agentic workflow system for literary shor
 - Swap in new content (setting, characters, themes)
 - Generate stories with learned form but original content
 
+## Current Status
+
+**Phase 7 Complete** ✅ — Full pipeline operational from exemplar analysis through iterative optimization.
+
+### Completed Implementation
+
+All core phases (1-7) are now implemented and tested:
+- ✅ Phase 1: Foundation & scaffolding
+- ✅ Phase 2: ExemplarDigest pipeline with heuristic and LLM-enhanced analysis
+- ✅ Phase 3: StorySpec synthesis with LLM adapters, routing, and drift controls
+- ✅ Phase 4: Beat-by-beat draft generation with guards and repair passes
+- ✅ Phase 5: Comprehensive evaluation suite (heuristic + LLM metrics)
+- ✅ Phase 6: Multi-candidate generation pipeline
+- ✅ Phase 7: Iterative optimization loop with early stopping
+
+**Test Coverage**: 81% (240+ tests, all passing)
+**Reproducibility**: Full decision logging and artifact persistence
+
 ## Architecture
 
 ### Core Pipeline
@@ -261,39 +279,240 @@ Logs stored in `runs/{run_id}/reason_log_{iteration}.json`.
 
 ## Project Status
 
-**Phase 3.2 Complete** ✅
+**Phase 7 Complete** ✅ — Full Pipeline Operational
 
-### Completed
+### Completed Phases
 - ✅ Phase 1: Foundation & scaffolding
 - ✅ Phase 2: ExemplarDigest pipeline
 - ✅ Phase 3: StorySpec synthesis
-- ✅ **Phase 3.2: LLM adapters with routing and drift controls**
+- ✅ Phase 3.2: LLM adapters with routing and drift controls
+- ✅ Phase 4: Beat-by-beat draft generation
+- ✅ Phase 5: Comprehensive evaluation suite
+- ✅ Phase 6: Multi-candidate generation pipeline
+- ✅ Phase 7: Iterative optimization loop
 
-### In Progress
-- Phase 4: Draft generation
-- Phase 5: Evaluation suite
-- Phase 6: Optimization loop
+### Production-Ready Features
+- Complete digest-to-story pipeline
+- Multi-candidate generation with selection
+- Iterative quality optimization
+- Full decision logging and reproducibility
+- Offline testing with MockClient
+- 81% test coverage (240+ tests)
+
+## Decision Logging Implementation
+
+### Overview
+The system includes structured decision logging for complete reproducibility and traceability of agent decisions across workflow runs and iterations.
+
+### Core Implementation
+
+**ReasonLog Model** (`models/reason_log.py`)
+- Pydantic ReasonLog@1 schema
+- Captures: timestamp, run_id, iteration, agent, decision, reasoning, parameters, outcome, metadata
+- Full JSON serialization with timezone-aware timestamps
+
+**Decision Logger** (`utils/decision_logger.py`)
+- `log_decision()`: Creates and saves decision logs
+- `load_decision_logs()`: Loads and filters logs
+- No circular imports - imports only models
+
+### Directory Structure
+
+Decision logs are organized as follows:
+```
+runs/
+└── {run_id}/
+    ├── iter_0/
+    │   └── reason_logs/
+    │       ├── Digest_{timestamp}.json
+    │       ├── SpecSynth_{timestamp}.json
+    │       ├── Generator_{timestamp}.json
+    │       ├── Evaluator_{timestamp}.json
+    │       └── Optimizer_{timestamp}.json
+    ├── iter_1/
+    │   └── reason_logs/
+    └── ...
+```
+
+### Agent Integration
+
+All agents log decisions via `utils/decision_logger.py`:
+
+```python
+from literary_structure_generator.utils.decision_logger import log_decision
+
+log_decision(
+    run_id="run_001",
+    iteration=0,
+    agent="Digest",
+    decision="Extracted 10 motifs",
+    reasoning="Used TF-IDF + PMI ranking",
+    parameters={"top_k": 10},
+    metadata={"stage": "motif_extraction"}
+)
+```
+
+Logs stored in `runs/{run_id}/iter_{iteration}/reason_logs/`.
+
+**Integrated Agents:**
+- `digest/assemble.py` - Digest pipeline decisions
+- `spec/synthesizer.py` - Spec synthesis decisions
+- `generation/ensemble.py` - Generation decisions
+- `evaluation/assemble.py` - Evaluation decisions
+- `optimization/optimizer.py` - Optimization decisions
+
+### Usage Examples
+
+```python
+from literary_structure_generator.utils.decision_logger import load_decision_logs
+
+# Load all logs for a run
+all_logs = load_decision_logs("run_001")
+
+# Filter by agent
+spec_logs = load_decision_logs("run_001", agent="SpecSynth")
+
+# Filter by iteration
+iter_0_logs = load_decision_logs("run_001", iteration=0)
+```
+
+## Phase-Specific Implementation Details
+
+### Phase 4: Draft Generation (Complete)
+
+**Core Modules:**
+- `generation/draft_generator.py` - Beat-by-beat LLM generation with retry logic
+- `generation/guards.py` - Anti-plagiarism guards (n-gram overlap, SimHash)
+- `generation/repair.py` - LLM-based quality improvement
+- `utils/similarity.py` - SimHash fingerprint generation
+
+**Key Features:**
+- Per-beat structured prompting with StorySpec constraints
+- Anti-plagiarism guards: max n-gram ≤12, overlap ≤3%, SimHash distance ≥18
+- Profanity filtering with `[bleep]` replacement
+- Automatic retry up to 2 times on guard failure
+- GPT-5 model compatibility (auto-filters temperature param)
+- Complete artifact management in `/runs/{story_id}/`
+
+**Test Coverage:** 93-98% for generation modules (43 new tests)
+
+### Phase 5: Evaluation Suite (Complete)
+
+**Evaluator Modules:**
+- `evaluators/stylefit_rules.py` - Heuristic style checks (POV, tense, syntax)
+- `evaluators/formfit.py` - Structural adherence (beat lengths, dialogue ratio)
+- `evaluators/coherence_graph_fit.py` - Entity continuity tracking
+- `evaluators/motif_imagery_coverage.py` - Thematic coverage analysis
+- `evaluators/cadence_pacing.py` - Rhythm and pacing checks
+- `evaluators/overlap_guard_eval.py` - Anti-plagiarism validation
+- `evaluators/stylefit_llm.py` - LLM-based style scoring (optional)
+- `evaluators/evaluate.py` - Main orchestrator
+
+**Multi-Metric Scoring:**
+- Stylefit (30%): Voice, tense, syntax, dialogue
+- Formfit (30%): Beat structure, length, function
+- Coherence (25%): Entity continuity
+- Freshness (10%): Overlap guard pass/fail
+- Cadence (5%): Rhythm and pacing
+- Optional: Motif coverage, LLM stylefit
+
+**Key Features:**
+- Deterministic heuristics for reproducibility
+- Per-beat scoring and analysis
+- Red flags for quality issues
+- Actionable tuning suggestions
+- EvalReport@2 schema compliance
+- Persistence to `/runs/{run_id}/{candidate_id}_eval.json`
+
+**Test Coverage:** 81% overall (50 new Phase 5 tests)
+
+### Phase 6: Multi-Candidate Pipeline (Complete)
+
+**Core Module:**
+- `pipeline/generate_candidates.py` - Multi-candidate orchestration
+
+**Pipeline Steps:**
+1. Generate N candidates (default: 3)
+2. Per-candidate: beat generation → stitch → guards → repair → evaluate
+3. Select best candidate based on overall score and freshness
+4. Persist all artifacts
+
+**Key Features:**
+- Parallel-ready candidate generation
+- Complete evaluation for each candidate
+- Best candidate selection logic
+- Full artifact persistence to `/runs/{run_id}/`
+- LLM routing integration
+- GPT-5 parameter filtering
+
+**Test Coverage:** 97% for generate_candidates.py (10 comprehensive tests)
+
+### Phase 7: Optimization Loop (Complete)
+
+**Core Module:**
+- `optimization/optimizer.py` - Iterative refinement engine
+
+**Optimizer Class:**
+- `suggest(spec, report)`: Returns updated StorySpec with directed adjustments
+- `run(spec, digest, exemplar_text, config, output_dir)`: Multi-iteration optimization loop
+
+**Adjustable Parameters:**
+- Beat target words (±5-15%)
+- Average sentence length (±1-2 tokens)
+- Dialogue ratio (±0.03)
+- Generation temperature (±0.05)
+- Objective weights (rebalanced)
+
+**Key Features:**
+- Deterministic heuristics for predictability
+- Small incremental adjustments for stability
+- Early stopping (improvement < threshold for 2 iterations)
+- Decision logging for all adjustments
+- Complete artifact persistence
+
+**Test Coverage:** 95% for optimizer.py (11 comprehensive tests)
 
 ## Key Files
 
 ### Entry Points
 - `ingest/digest_exemplar.py::analyze_text()` - Main digest function
 - `spec/synthesizer.py::synthesize_spec()` - Main spec synthesis
+- `generation/draft_generator.py::run_draft_generation()` - Draft generation
+- `evaluators/evaluate.py::evaluate_draft()` - Evaluation orchestrator
+- `pipeline/generate_candidates.py::generate_candidates()` - Multi-candidate pipeline
+- `optimization/optimizer.py::Optimizer.run()` - Optimization loop
 
 ### Configuration
 - `llm/config/llm_routing.json` - LLM routing config
 - `prompts/*.v1.md` - Prompt templates
+
+### Core Models
+- `models/exemplar_digest.py` - ExemplarDigest@2
+- `models/story_spec.py` - StorySpec@2
+- `models/generation_config.py` - GenerationConfig@2
+- `models/eval_report.py` - EvalReport@2
+- `models/author_profile.py` - AuthorProfile@1
+- `models/reason_log.py` - ReasonLog@1
 
 ### Tests
 - `tests/test_digest_exemplar.py` - Digest pipeline tests
 - `tests/test_spec_synthesis.py` - Spec synthesis tests
 - `tests/test_llm_integration.py` - LLM integration tests
 - `tests/test_enrichments.py` - Motif/imagery/valence tests
+- `tests/test_phase4_generation.py` - Draft generation tests
+- `tests/test_phase5_evaluation.py` - Evaluation suite tests
+- `tests/test_phase6_pipeline.py` - Multi-candidate pipeline tests
+- `tests/test_phase7_optimizer.py` - Optimization loop tests
+- `tests/test_reason_log.py` - Decision logging tests
+- `tests/test_workflow_logging.py` - Integration logging tests
 
 ### Documentation
-- `README.md` - User guide
-- `ROADMAP.md` - Implementation plan
-- `DECISION_LOGGING.md` - Decision logging spec
+- `README.md` - User guide and quick start
+- `ROADMAP.md` - Implementation plan and roadmap
+- `docs/architecture.md` - System architecture diagrams
+- `docs/PHASE4_GUIDE.md` - Phase 4 usage guide
+- `docs/PHASE6_PIPELINE.md` - Phase 6 pipeline documentation
+- `COPILOT_CONTEXT.md` - This file (complete context for GitHub Copilot)
 
 ## Common Patterns
 
