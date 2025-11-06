@@ -1,6 +1,24 @@
 # Literary Structure Generator
 
+[![CI](https://github.com/AndrewMichael2020/literary-structure-generator/actions/workflows/ci.yml/badge.svg)](https://github.com/AndrewMichael2020/literary-structure-generator/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/AndrewMichael2020/literary-structure-generator/actions/workflows/codeql.yml/badge.svg)](https://github.com/AndrewMichael2020/literary-structure-generator/actions/workflows/codeql.yml)
+[![Coverage](https://codecov.io/gh/AndrewMichael2020/literary-structure-generator/branch/main/graph/badge.svg)](https://codecov.io/gh/AndrewMichael2020/literary-structure-generator)
+![Lint: Ruff](https://img.shields.io/badge/lint-ruff-46a2f1)
+![Style: Black](https://img.shields.io/badge/style-black-000000)
+![Types: mypy](https://img.shields.io/badge/types-mypy-2A6DB2)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Issues](https://img.shields.io/github/issues/AndrewMichael2020/literary-structure-generator)
+![Last commit](https://img.shields.io/github/last-commit/AndrewMichael2020/literary-structure-generator)
+
 An agentic workflow for literary short-story generation that learns structural DNA from exemplar texts and generates new stories with similar form but original content.
+
+---
+
+**Project Status**  
+Current Phase: 7.1 — Docs & Quality Polish  
+Coverage: ≥ 95%
+
+---
 
 ## Overview
 
@@ -29,12 +47,17 @@ Exemplar → Digest → StorySpec → Generate Candidates → Evaluate → Optim
 - SimHash Hamming distance ≥ 18 for 256-bit chunks
 - No verbatim text stored in artifacts
 
+### Profanity Handling
+**Content Safety Policy**: Profanity is replaced with `[bleep]` when required for narrative authenticity. This universal filtering system maintains tone and rhythm while ensuring appropriate content across all outputs.
+
 ### Reproducibility
 - Same seed + config → same output
 - All artifacts JSON-serializable
 - Version tracking for schemas
 
 ## Architecture
+
+For detailed architecture documentation including system diagrams, see [docs/architecture.md](docs/architecture.md).
 
 ### Core Data Artifacts (Pydantic Models)
 
@@ -280,7 +303,10 @@ mypy literary_structure_generator/
 
 ## Documentation
 
+- [Architecture](docs/architecture.md): System diagrams and component relationships
 - [ROADMAP.md](ROADMAP.md): Detailed implementation roadmap
+- [CONTRIBUTING.md](CONTRIBUTING.md): Development setup and contribution guidelines
+- [SECURITY.md](SECURITY.md): Security policy and best practices
 - [agentic_short_story_system_instruct_v_0.md](agentic_short_story_system_instruct_v_0.md): Original concept document
 - [examples/](examples/): Example configurations and outputs
 
@@ -290,13 +316,13 @@ MIT License - see [LICENSE](LICENSE) for details
 
 ## Contributing
 
-This project is in early development. Contributions welcome!
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing guidelines, and PR process.
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+This project is in active development. Contributions welcome!
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for security policy, responsible disclosure, and best practices.
 
 ## Citation
 

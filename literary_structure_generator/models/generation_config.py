@@ -83,6 +83,17 @@ class Caching(BaseModel):
     digest_cache: bool = Field(default=True, description="Whether to cache digest")
 
 
+class Profanity(BaseModel):
+    """Profanity filtering settings."""
+
+    enabled: bool = Field(
+        default=True, description="Whether profanity filtering is enabled (always recommended)"
+    )
+    substitution: str = Field(
+        default="[bleep]", description="Substitution string for profanity replacement"
+    )
+
+
 class GenerationConfig(BaseModel):
     """
     GenerationConfig@2 schema
@@ -106,6 +117,7 @@ class GenerationConfig(BaseModel):
     repair_steps: RepairSteps = Field(
         default_factory=RepairSteps, description="Repair and refinement settings"
     )
+    profanity: Profanity = Field(default_factory=Profanity, description="Profanity filtering settings")
     evaluator_suite: list[str] = Field(
         default_factory=lambda: [
             "stylefit",

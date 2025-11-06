@@ -25,6 +25,7 @@ from typing import Optional
 from literary_structure_generator.llm.cache import LLMCache
 from literary_structure_generator.llm.router import get_client, get_params
 from literary_structure_generator.utils.decision_logger import log_decision
+from literary_structure_generator.utils.profanity import structural_bleep
 
 # Global cache instance
 _cache: Optional[LLMCache] = None
@@ -189,6 +190,9 @@ def label_motifs(
         if use_cache:
             cache.put(component, params["model"], version, params, prompt, response)
 
+    # Apply profanity filter to all labels
+    labels = [structural_bleep(label) for label in labels]
+
     # Compute checksum
     checksum = _compute_semantic_checksum(labels)
 
@@ -250,6 +254,9 @@ def name_imagery(
         # Store in cache
         if use_cache:
             cache.put(component, params["model"], version, params, prompt, response)
+
+    # Apply profanity filter to all names
+    names = [structural_bleep(name) for name in names]
 
     # Compute checksum
     checksum = _compute_semantic_checksum(names)
@@ -315,6 +322,9 @@ def paraphrase_beats(
         # Store in cache
         if use_cache:
             cache.put(component, params["model"], version, params, prompt, response)
+
+    # Apply profanity filter to all summaries
+    summaries = [structural_bleep(summary) for summary in summaries]
 
     # Compute checksum
     checksum = _compute_semantic_checksum(summaries)
@@ -443,7 +453,10 @@ def repair_pass(
         if use_cache:
             cache.put(component, params["model"], version, params, prompt, repaired)
 
+    # Apply profanity filter to repaired text
+    repaired = structural_bleep(repaired.strip())
+
     # Log call (no checksum for single text)
     _log_llm_call(component, params["model"], version, params, input_hash, None, run_id, iteration)
 
-    return repaired.strip()
+    return repaired

@@ -6,12 +6,14 @@ LLM-based repair for generated text:
     - Balance paragraph rhythm
     - Avoid unearned epiphanies
     - Cadence checking
+    - Profanity filtering with [bleep] replacement
 """
 
 from typing import Optional
 
 from literary_structure_generator.llm.router import get_client
 from literary_structure_generator.models.story_spec import StorySpec
+from literary_structure_generator.utils.profanity import structural_bleep
 
 
 def calculate_paragraph_variance(text: str) -> float:
@@ -148,4 +150,5 @@ def repair_text(
                 if lines[0].strip() in ["", "text", "markdown"]:
                     repaired = lines[1] if len(lines) > 1 else repaired
 
-    return repaired.strip()
+    # Apply profanity filter to repaired text and return
+    return structural_bleep(repaired.strip())

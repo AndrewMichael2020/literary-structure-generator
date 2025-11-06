@@ -22,10 +22,10 @@ from literary_structure_generator.generation.draft_generator import (
 from literary_structure_generator.generation.guards import (
     apply_clean_mode_if_needed,
     check_overlap_guard,
-    clean_mode,
     max_ngram_overlap,
     simhash_distance,
 )
+from literary_structure_generator.utils.profanity import structural_bleep
 from literary_structure_generator.generation.repair import (
     calculate_paragraph_variance,
     repair_text,
@@ -126,24 +126,25 @@ class TestGuards:
         assert distance > 18  # Should be well above minimum threshold
 
     def test_clean_mode_no_profanity(self):
-        """Test clean mode with clean text."""
+        """Test structural_bleep with clean text."""
         text = "This is a clean sentence."
-        cleaned = clean_mode(text)
+        cleaned = structural_bleep(text)
         assert cleaned == text
 
     def test_clean_mode_profanity_replacement(self):
-        """Test clean mode replaces profanity."""
+        """Test structural_bleep replaces profanity."""
         text = "What the hell is going on?"
-        cleaned = clean_mode(text)
+        cleaned = structural_bleep(text)
         assert "hell" not in cleaned.lower()
-        assert "heck" in cleaned.lower()
+        assert "[bleep]" in cleaned
 
     def test_clean_mode_multiple_profanity(self):
-        """Test clean mode with multiple profanity words."""
+        """Test structural_bleep with multiple profanity words."""
         text = "Damn this shit"
-        cleaned = clean_mode(text)
+        cleaned = structural_bleep(text)
         assert "damn" not in cleaned.lower()
         assert "shit" not in cleaned.lower()
+        assert cleaned.count("[bleep]") == 2
 
     def test_check_overlap_guard_pass(self):
         """Test overlap guard passing."""
@@ -166,6 +167,7 @@ class TestGuards:
         text = "What the hell"
         cleaned = apply_clean_mode_if_needed(text, clean_mode_enabled=True)
         assert "hell" not in cleaned.lower()
+        assert "[bleep]" in cleaned
 
     def test_apply_clean_mode_if_needed_disabled(self):
         """Test clean mode not applied when disabled."""
@@ -396,8 +398,8 @@ class TestEdgeCases:
         assert hash_val == 0
 
     def test_clean_mode_empty_text(self):
-        """Test clean mode with empty text."""
-        cleaned = clean_mode("")
+        """Test structural_bleep with empty text."""
+        cleaned = structural_bleep("")
         assert cleaned == ""
 
     def test_max_ngram_overlap_single_word(self):
