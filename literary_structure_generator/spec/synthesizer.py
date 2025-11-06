@@ -85,12 +85,18 @@ def map_voice_parameters(digest: ExemplarDigest, profile: Optional[AuthorProfile
     return voice_params
 
 
-def map_form_parameters(digest: ExemplarDigest) -> dict:
+def map_form_parameters(
+    digest: ExemplarDigest,
+    run_id: str = "run_001",
+    iteration: int = 0,
+) -> dict:
     """
     Map digest discourse structure to form parameters.
 
     Args:
         digest: ExemplarDigest to map from
+        run_id: Run identifier for LLM logging
+        iteration: Iteration number
 
     Returns:
         Dictionary with form parameters
@@ -98,6 +104,8 @@ def map_form_parameters(digest: ExemplarDigest) -> dict:
     # Convert beats from digest to beat specs
     beat_specs = []
     total_tokens = digest.meta.tokens
+    beat_functions = []
+
     for beat in digest.discourse.beats:
         span_length = beat.span[1] - beat.span[0]
         # Convert tokens to approximate words (tokens ~= words * 1.3)
@@ -117,6 +125,30 @@ def map_form_parameters(digest: ExemplarDigest) -> dict:
                 "cadence": cadence,
             }
         )
+        beat_functions.append(beat.function)
+
+    # Phase 3.2: LLM-enhanced beat paraphrasing
+    # Generate concise beat summaries using LLM
+    try:
+        from literary_structure_generator.llm.adapters import paraphrase_beats
+
+        if beat_functions:
+            beat_summaries = paraphrase_beats(
+                beat_functions,
+                register_hint="neutral",
+                run_id=run_id,
+                iteration=iteration,
+                use_cache=True,
+            )
+            # Add summaries to beat specs
+            for i, summary in enumerate(beat_summaries):
+                if i < len(beat_specs):
+                    beat_specs[i]["summary"] = summary
+    except Exception:
+        # LLM is optional - continue if it fails
+        # Add default summaries
+        for spec in beat_specs:
+            spec["summary"] = spec["function"]
 
     # Calculate paragraph stats
     para_len_hist = digest.pacing.paragraph_len_hist
@@ -285,7 +317,7 @@ def synthesize_spec(
     )
 
     # Map digest to form parameters
-    form_params = map_form_parameters(digest)
+    form_params = map_form_parameters(digest, run_id=run_id, iteration=iteration)
     log_decision(
         run_id=run_id,
         iteration=iteration,

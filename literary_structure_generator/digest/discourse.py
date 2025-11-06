@@ -15,7 +15,6 @@ Features extracted:
 """
 
 
-
 def detect_beats(text: str) -> list[dict[str, any]]:
     """
     Detect structural beats in the text.

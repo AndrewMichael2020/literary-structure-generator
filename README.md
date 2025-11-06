@@ -73,6 +73,7 @@ Exemplar → Digest → StorySpec → Generate Candidates → Evaluate → Optim
 - **profiles/**: AuthorProfile management and learning
 - **orchestrators/**: End-to-end workflow automation
 - **utils/**: Shared utilities (text processing, similarity, I/O)
+- **llm/**: LLM integration with routing, caching, and drift controls
 
 ## Installation
 
@@ -90,6 +91,60 @@ pip install -r requirements-dev.txt
 # Download spaCy language model
 python -m spacy download en_core_web_sm
 ```
+
+## LLM Configuration
+
+The system uses LLM adapters for motif labeling, imagery naming, and beat summarization. By default, it uses a **mock client** for offline/deterministic testing.
+
+### Using OpenAI API (Optional)
+
+To use OpenAI models instead of the mock client:
+
+1. Set your API key:
+   ```bash
+   export OPENAI_API_KEY='your-api-key-here'
+   ```
+
+2. Update `literary_structure_generator/llm/config/llm_routing.json`:
+   ```json
+   {
+     "global": {
+       "provider": "openai",
+       "temperature": 0.2,
+       "max_tokens": 512
+     }
+   }
+   ```
+
+### LLM Routing Configuration
+
+Configure per-component model selection in `llm/config/llm_routing.json`:
+
+```json
+{
+  "global": {
+    "provider": "mock",
+    "temperature": 0.2,
+    "top_p": 0.9,
+    "max_tokens": 512,
+    "seed": 137
+  },
+  "components": {
+    "motif_labeler": { "model": "gpt-4o-mini" },
+    "imagery_namer": { "model": "gpt-4o-mini" },
+    "beat_paraphraser": { "model": "gpt-4o", "max_tokens": 256 }
+  }
+}
+```
+
+### Drift Controls
+
+The LLM integration includes drift control mechanisms:
+- **Prompt versioning**: Templates in `prompts/` with version headers
+- **Sampling caps**: Default temperature ≤ 0.3 for stability
+- **Semantic checksums**: SHA256 over normalized outputs
+- **Caching**: SQLite-based cache in `runs/llm_cache.db`
+- **Logging**: All LLM calls tracked with params_hash and input_hash
 
 ## Quick Start
 
@@ -160,7 +215,7 @@ python -m literary_structure_generator.orchestrators.full_pipeline \
 
 ## Project Status
 
-**Current Phase**: Phase 3 Complete ✅
+**Current Phase**: Phase 3.2 Complete ✅
 
 ### Completed Phases:
 - ✅ **Phase 1**: Foundation & Scaffolding
@@ -182,11 +237,13 @@ python -m literary_structure_generator.orchestrators.full_pipeline \
   - Content section initialization
   - Anti-plagiarism constraint setup
   - Full synthesis pipeline with decision logging
+  - **Phase 3.2**: LLM adapters with routing and drift controls ✅
 
 ### Available Tools:
 - `scripts/demo_digest.py` - Generate ExemplarDigest from Emergency.txt
 - `scripts/demo_spec_synthesis.py` - Synthesize StorySpec from digest
-- Test coverage: 73% (80 tests passing)
+- LLM adapters for motif labeling, imagery naming, and beat summarization
+- Test coverage: 75% (115 tests passing)
 
 **Next Steps** (see [ROADMAP.md](ROADMAP.md)):
 - Phase 4: Implement draft generation

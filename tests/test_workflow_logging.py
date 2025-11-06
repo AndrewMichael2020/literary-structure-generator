@@ -79,7 +79,9 @@ def test_workflow_decision_logging():
 
         # Load and verify all logs
         all_logs = load_decision_logs(run_id, output_dir=test_dir)
-        assert len(all_logs) == 7  # 1 Digest + 1 SpecSynth + 3 Generator + 1 Evaluator + 1 Optimizer
+        assert (
+            len(all_logs) == 7
+        )  # 1 Digest + 1 SpecSynth + 3 Generator + 1 Evaluator + 1 Optimizer
 
         # Verify each agent has logs
         digest_logs = load_decision_logs(run_id, agent="Digest", output_dir=test_dir)

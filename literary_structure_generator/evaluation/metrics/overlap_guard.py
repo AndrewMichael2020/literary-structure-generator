@@ -18,7 +18,6 @@ Returns pass/fail and detailed metrics.
 """
 
 
-
 def find_max_shared_ngram(text1: str, text2: str, max_n: int = 20) -> int:
     """
     Find the maximum shared n-gram length between two texts.

@@ -11,7 +11,6 @@ Features:
 """
 
 
-
 def calculate_simhash(text: str, num_bits: int = 256) -> int:
     """
     Calculate SimHash fingerprint of text.

@@ -13,7 +13,6 @@ Features:
 Each decision is logged via log_decision() for reproducibility.
 """
 
-
 from literary_structure_generator.models.generation_config import GenerationConfig
 from literary_structure_generator.models.story_spec import StorySpec
 from literary_structure_generator.utils.decision_logger import log_decision

@@ -21,17 +21,13 @@ class TestExemplarDigest:
 
     def test_create_minimal_digest(self):
         """Test creating digest with minimal required fields."""
-        digest = ExemplarDigest(
-            meta={"source": "Emergency", "tokens": 0, "paragraphs": 0}
-        )
+        digest = ExemplarDigest(meta={"source": "Emergency", "tokens": 0, "paragraphs": 0})
         assert digest.schema_version == "ExemplarDigest@2"
         assert digest.meta.source == "Emergency"
 
     def test_digest_serialization(self):
         """Test JSON serialization/deserialization."""
-        digest = ExemplarDigest(
-            meta={"source": "Test", "tokens": 100, "paragraphs": 10}
-        )
+        digest = ExemplarDigest(meta={"source": "Test", "tokens": 100, "paragraphs": 10})
         json_data = digest.model_dump_json()
         loaded = ExemplarDigest.model_validate_json(json_data)
         assert loaded.meta.source == "Test"

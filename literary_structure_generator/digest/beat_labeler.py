@@ -14,7 +14,6 @@ Outputs beat map with IDs, spans, and narrative functions.
 """
 
 
-
 def label_beats_with_llm(text: str, model: str = "gpt-4") -> list[dict[str, any]]:
     """
     Use LLM to identify and label structural beats in text.

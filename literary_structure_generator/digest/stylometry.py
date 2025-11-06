@@ -18,7 +18,6 @@ Uses spaCy for linguistic analysis.
 """
 
 
-
 def analyze_sentence_lengths(text: str) -> dict[str, list[int]]:
     """
     Analyze sentence length distribution.

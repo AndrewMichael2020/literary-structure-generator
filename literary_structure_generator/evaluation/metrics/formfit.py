@@ -13,7 +13,6 @@ Features checked:
 Returns score 0.0-1.0 where 1.0 is perfect adherence.
 """
 
-
 from literary_structure_generator.models.story_spec import StorySpec
 
 

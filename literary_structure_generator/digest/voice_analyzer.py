@@ -12,7 +12,6 @@ Analyzes:
 """
 
 
-
 def analyze_pov(text: str) -> str:
     """
     Detect narrative point of view.

@@ -115,6 +115,9 @@ class BeatSpec(BaseModel):
     target_words: int = Field(..., description="Target word count for this beat")
     function: str = Field(..., description="Narrative function")
     cadence: str = Field(..., description="Cadence: short|mixed|long")
+    summary: str = Field(
+        default="", description="Concise beat summary (LLM-generated or function)"
+    )
 
 
 class TimeWeave(BaseModel):

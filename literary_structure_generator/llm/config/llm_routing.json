@@ -1,0 +1,34 @@
+{
+  "global": {
+    "provider": "mock",
+    "timeout_s": 20,
+    "seed": 137,
+    "temperature": 0.2,
+    "top_p": 0.9,
+    "max_tokens": 512
+  },
+  "components": {
+    "motif_labeler": {
+      "model": "gpt-4o-mini",
+      "temperature": 0.2
+    },
+    "imagery_namer": {
+      "model": "gpt-4o-mini",
+      "temperature": 0.2
+    },
+    "beat_paraphraser": {
+      "model": "gpt-4o",
+      "max_tokens": 256,
+      "temperature": 0.25
+    },
+    "stylefit": {
+      "model": "gpt-4o",
+      "temperature": 0.2
+    },
+    "repair_pass": {
+      "model": "claude-opus-4",
+      "temperature": 0.3,
+      "max_tokens": 800
+    }
+  }
+}

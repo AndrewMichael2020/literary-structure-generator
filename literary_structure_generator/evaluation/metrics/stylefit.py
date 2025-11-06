@@ -13,7 +13,6 @@ Features compared:
 Returns score 0.0-1.0 where 1.0 is perfect match.
 """
 
-
 from literary_structure_generator.models.author_profile import AuthorProfile
 from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 

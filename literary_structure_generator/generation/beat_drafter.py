@@ -11,7 +11,6 @@ Features:
     - Transition hints between beats
 """
 
-
 from literary_structure_generator.models.story_spec import StorySpec
 
 

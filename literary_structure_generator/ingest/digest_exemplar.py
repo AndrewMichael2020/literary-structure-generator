@@ -446,10 +446,85 @@ def analyze_text(
     # Extract motifs
     motif_map = extract_motifs(text, run_id=run_id, iteration=iteration, top_k=20)
 
+    # Phase 3.2: LLM-enhanced motif labeling
+    # Label motifs with thematic tags using LLM
+    try:
+        from literary_structure_generator.llm.adapters import label_motifs
+
+        motif_anchors = [m.motif for m in motif_map[:10]]  # Top 10 motifs
+        if motif_anchors:
+            motif_labels = label_motifs(
+                motif_anchors,
+                run_id=run_id,
+                iteration=iteration,
+                use_cache=True,
+            )
+            # Add labels to motif metadata (stored in decision log)
+            log_decision(
+                run_id=run_id,
+                iteration=iteration,
+                agent="Digest",
+                decision=f"LLM-labeled {len(motif_labels)} motifs",
+                reasoning="Enhanced motif extraction with semantic labels",
+                parameters={"labels": motif_labels[:5]},
+                metadata={"stage": "llm_motif_labeling"},
+            )
+    except Exception as e:
+        # LLM is optional - continue if it fails
+        log_decision(
+            run_id=run_id,
+            iteration=iteration,
+            agent="Digest",
+            decision=f"Skipped LLM motif labeling: {e}",
+            reasoning="LLM adapters are optional for digest",
+            parameters={},
+            metadata={"stage": "llm_motif_labeling_skip"},
+        )
+
     # Extract imagery palettes
     imagery_palettes = extract_imagery_palettes(
         text, run_id=run_id, iteration=iteration, top_k_per_category=5
     )
+
+    # Phase 3.2: LLM-enhanced imagery naming
+    # Generate evocative names for imagery categories using LLM
+    try:
+        from literary_structure_generator.llm.adapters import name_imagery
+
+        # Collect sample phrases from each category
+        imagery_phrases = []
+        for category, phrases in list(imagery_palettes.items())[:5]:
+            if phrases:
+                imagery_phrases.append(phrases[0])  # Representative phrase
+
+        if imagery_phrases:
+            imagery_names = name_imagery(
+                imagery_phrases,
+                run_id=run_id,
+                iteration=iteration,
+                use_cache=True,
+            )
+            # Add names to imagery metadata (stored in decision log)
+            log_decision(
+                run_id=run_id,
+                iteration=iteration,
+                agent="Digest",
+                decision=f"LLM-named {len(imagery_names)} imagery categories",
+                reasoning="Enhanced imagery palettes with evocative names",
+                parameters={"names": imagery_names[:5]},
+                metadata={"stage": "llm_imagery_naming"},
+            )
+    except Exception as e:
+        # LLM is optional - continue if it fails
+        log_decision(
+            run_id=run_id,
+            iteration=iteration,
+            agent="Digest",
+            decision=f"Skipped LLM imagery naming: {e}",
+            reasoning="LLM adapters are optional for digest",
+            parameters={},
+            metadata={"stage": "llm_imagery_naming_skip"},
+        )
 
     # Extract lexical domains
     lexical_domains = extract_lexical_domains(text)
