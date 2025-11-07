@@ -213,7 +213,7 @@ def generate_candidates(
     Generate N candidate drafts, evaluate them, and select the best.
 
     Main orchestrator for Phase 6 multi-candidate generation pipeline.
-    
+
     If repair_pass has finalists_only configured, repair is applied only to
     the top-K candidates after initial evaluation.
 
@@ -244,12 +244,12 @@ def generate_candidates(
 
     # Create GenerationConfig
     config = GenerationConfig()
-    
+
     # Check if repair_pass has finalists_only configured
     from literary_structure_generator.llm.router import get_params
     repair_params = get_params("repair_pass")
     finalists_only = repair_params.get("finalists_only", None)
-    
+
     # Determine if we should use finalists-only mode
     use_finalists_mode = finalists_only is not None and finalists_only > 0
 
@@ -269,7 +269,7 @@ def generate_candidates(
         )
 
         candidates.append(candidate)
-    
+
     # Apply repair pass to top-K finalists if configured
     if use_finalists_mode:
         # Sort candidates by evaluation score to identify finalists
@@ -282,17 +282,17 @@ def generate_candidates(
             ),
             reverse=True,
         )
-        
+
         # Get top-K finalists
         num_finalists = min(finalists_only, len(sorted_candidates))
         finalist_ids = {sorted_candidates[i]["id"] for i in range(num_finalists)}
-        
+
         # Apply repair pass to finalists
         for candidate in candidates:
             if candidate["id"] in finalist_ids:
                 # Apply repair to this finalist
                 stitched = candidate["stitched"]
-                
+
                 # Check guards
                 guard_result = check_overlap_guard(
                     stitched,
@@ -301,15 +301,15 @@ def generate_candidates(
                     max_overlap_pct=spec.constraints.anti_plagiarism.overlap_pct,
                     min_simhash_hamming=spec.constraints.anti_plagiarism.simhash_hamming_min,
                 )
-                
+
                 # Build repair notes
                 repair_notes = {"issues": []}
                 if not guard_result["passed"]:
                     repair_notes["issues"].extend(guard_result["violations"])
-                
+
                 # Apply repair
                 repaired = repair_text(stitched, spec, notes=repair_notes)
-                
+
                 # Re-check guards after repair
                 final_guard = check_overlap_guard(
                     repaired,
@@ -318,18 +318,23 @@ def generate_candidates(
                     max_overlap_pct=spec.constraints.anti_plagiarism.overlap_pct,
                     min_simhash_hamming=spec.constraints.anti_plagiarism.simhash_hamming_min,
                 )
-                
+
                 # Update candidate with repaired text
                 candidate["repaired"] = repaired
                 candidate["metadata"]["final_guard"] = final_guard
                 candidate["metadata"]["is_finalist"] = True
-                
+
                 # Re-evaluate with repaired text
                 draft_dict = {
                     "text": repaired,
-                    "seeds": {"per_beat": [br.get("metadata", {}).get("seed", 0) for br in candidate["beats"]]},
+                    "seeds": {
+                        "per_beat": [
+                            br.get("metadata", {}).get("seed", 0)
+                            for br in candidate["beats"]
+                        ]
+                    },
                 }
-                
+
                 candidate["eval"] = evaluate_draft(
                     draft=draft_dict,
                     spec=spec,
