@@ -48,8 +48,8 @@ Exemplar → Digest → StorySpec → Generate Candidates → Evaluate → Optim
 - SimHash Hamming distance ≥ 18 for 256-bit chunks
 - No verbatim text stored in artifacts
 
-### Profanity Handling
-**Content Safety Policy**: Profanity is replaced with `[bleep]` when required for narrative authenticity. This universal filtering system maintains tone and rhythm while ensuring appropriate content across all outputs.
+### Grit Handling
+**Content Safety Policy**: Grit is replaced with `[bleep]` when required for narrative authenticity. This universal filtering system maintains tone and rhythm while ensuring appropriate content across all outputs.
 
 ### Reproducibility
 - Same seed + config → same output
@@ -85,7 +85,7 @@ For detailed architecture documentation including system diagrams, see [docs/arc
 
 5. **AuthorProfile**: User voice preferences
    - Lexicon, syntax, register sliders
-   - Profanity policy, content safety
+   - Grit policy, content safety
 
 ### Main Modules
 
@@ -269,7 +269,7 @@ python -m literary_structure_generator.orchestrators.full_pipeline \
   - Per-beat text generation with LLM routing
   - Beat stitching into coherent narrative
   - Anti-plagiarism guards (n-gram overlap, SimHash)
-  - Profanity filtering (Clean Mode)
+  - Grit filtering (Clean Mode)
   - Repair passes for quality improvement
   - GPT-5 model compatibility
 

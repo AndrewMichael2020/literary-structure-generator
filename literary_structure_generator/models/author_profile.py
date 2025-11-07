@@ -38,10 +38,10 @@ class Register(BaseModel):
 
 
 class Profanity(BaseModel):
-    """Profanity policy."""
+    """Grit policy."""
 
-    allowed: bool = Field(default=False, description="Whether profanity is allowed")
-    frequency: float = Field(default=0.0, description="Target profanity frequency (0-1)")
+    allowed: bool = Field(default=False, description="Whether grit is allowed")
+    frequency: float = Field(default=0.0, description="Target grit frequency (0-1)")
 
 
 class AuthorProfile(BaseModel):
@@ -61,7 +61,7 @@ class AuthorProfile(BaseModel):
     register_sliders: Register = Field(
         default_factory=Register, description="Register and tone", alias="register"
     )
-    profanity: Profanity = Field(default_factory=Profanity, description="Profanity policy")
+    profanity: Profanity = Field(default_factory=Profanity, description="Grit policy")
 
     class Config:
         """Pydantic config."""
@@ -77,6 +77,6 @@ class AuthorProfile(BaseModel):
                 },
                 "syntax": {"avg_sentence_len": 14, "variance": 0.55, "em_dash": "rare"},
                 "register": {"deadpan": 0.7, "tender": 0.6, "irony": 0.4},
-                "profanity": {"allowed": False, "frequency": 0.0},
+                "grit": {"allowed": False, "frequency": 0.0},
             }
         }

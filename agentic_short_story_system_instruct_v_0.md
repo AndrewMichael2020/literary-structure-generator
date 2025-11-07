@@ -34,7 +34,7 @@ Constraints:
 ---
 
 ## 3) Inputs you’ll provide
-- **AuthorProfile.json**: lexicon, syntax tendencies, taboo/allowed words, register sliders (deadpan ↔ lyrical, sardonic ↔ earnest), profanity policy, em‑dash usage, sentence‑length targets, dialogue ratio, etc.
+- **AuthorProfile.json**: lexicon, syntax tendencies, taboo/allowed words, register sliders (deadpan ↔ lyrical, sardonic ↔ earnest), grit policy, em‑dash usage, sentence‑length targets, dialogue ratio, etc.
 - **SeedKit/** (any subset):
   - **Notes.md** (fragments, memories, conflicts, images)
   - **ScenePrompts.json** (if you have anchors you want included)
@@ -85,7 +85,7 @@ Define strict, versioned schemas with `model_version` + `story_id` + `seed`.
       "ban_adverbs_after_tags": true,
       "beats_per_dialogue": {"min": 0, "max": 2}
     },
-    "profanity": {"allowed": false, "frequency": 0.0}
+    "grit": {"allowed": false, "frequency": 0.0}
   },
   "form": {
     "structure": "episodic|classic|frame|modular",
@@ -174,7 +174,7 @@ Define strict, versioned schemas with `model_version` + `story_id` + `seed`.
   "lexical_domains": {"medical": [], "working_class": []},
   "valence_arc": {"per_beat": [], "overall_delta": 0.0},
   "surprise_curve": [],
-  "safety": {"profanity_rate": 0.0, "taboo_topics": []}
+  "safety": {"grit_rate": 0.0, "taboo_topics": []}
 }
 ```
 
@@ -344,13 +344,13 @@ $2
 - **Plagiarism:** enforce n‑gram/SimHash limits; require motif/beat re‑instantiation with new imagery.
 - **Mode collapse:** diversity controls per beat + minimum lexical novelty.
 - **POV drift:** coherence checker rejects shifts unless Spec allows.
-- **Over‑sanitization:** profanity/rough diction sliders in `AuthorProfile.json` keep authenticity.
+- **Over‑sanitization:** grit/rough diction sliders in `AuthorProfile.json` keep authenticity.
 - **Over‑lyricism:** cap figurative density; prefer concrete sensory verbs.
 
 
 ### Content-safety modes (toggle now, add later)
-- **Clean Mode (default):** `profanity.allowed=false`, `frequency=0.0`; lexicon filter removes taboo lists; evaluator rejects flagged terms; choose mainstream safety models.
-- **Grit Mode (future):** `profanity.allowed=true` with frequency cap; swap to models with permissive content policies; keep guardrails and n‑gram/SimHash checks.
+- **Clean Mode (default):** `grit.allowed=false`, `frequency=0.0`; lexicon filter removes taboo lists; evaluator rejects flagged terms; choose mainstream safety models.
+- **Grit Mode (future):** `grit.allowed=true` with frequency cap; swap to models with permissive content policies; keep guardrails and n‑gram/SimHash checks.
 
 ---
 
@@ -363,15 +363,7 @@ $2
   "lexicon": {"prefer": ["plain nouns", "everyday verbs"], "avoid": ["generally"]},
   "syntax": {"avg_sentence_len": 14, "variance": 0.55, "em_dash": "rare"},
   "register": {"deadpan": 0.7, "tender": 0.6, "irony": 0.4},
-  "profanity": {"allowed": false, "frequency": 0.0}
-}
-```json
-{
-  "schema": "AuthorProfile@1",
-  "lexicon": {"prefer": ["plain nouns", "everyday verbs"], "avoid": ["generally"]},
-  "syntax": {"avg_sentence_len": 14, "variance": 0.55, "em_dash": "rare"},
-  "register": {"deadpan": 0.7, "tender": 0.6, "irony": 0.4},
-  "profanity": {"allowed": false, "frequency": 0.0}
+  "grit": {"allowed": false, "frequency": 0.0}
 }
 ```
 

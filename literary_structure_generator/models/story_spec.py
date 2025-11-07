@@ -67,10 +67,10 @@ class Diction(BaseModel):
 
 
 class Profanity(BaseModel):
-    """Profanity policy."""
+    """Grit policy."""
 
-    allowed: bool = Field(default=False, description="Whether profanity is allowed")
-    frequency: float = Field(default=0.0, description="Target profanity frequency (0-1)")
+    allowed: bool = Field(default=False, description="Whether grit is allowed")
+    frequency: float = Field(default=0.0, description="Target grit frequency (0-1)")
 
 
 class TenseStrategy(BaseModel):
@@ -105,7 +105,7 @@ class Voice(BaseModel):
     dialogue_style: DialogueStyle = Field(
         default_factory=DialogueStyle, description="Dialogue formatting"
     )
-    profanity: Profanity = Field(default_factory=Profanity, description="Profanity policy")
+    profanity: Profanity = Field(default_factory=Profanity, description="Grit policy")
 
 
 class BeatSpec(BaseModel):

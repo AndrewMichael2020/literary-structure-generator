@@ -79,7 +79,7 @@ def main() -> None:
     print("=" * 60)
     print("SAFETY")
     print("=" * 60)
-    print(f"Profanity Rate:    {digest.safety.profanity_rate} (Clean Mode)")
+    print(f"Grit Rate:    {digest.safety.profanity_rate} (Clean Mode)")
     print()
 
     # Save to file

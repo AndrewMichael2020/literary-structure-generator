@@ -13,7 +13,7 @@ Each candidate goes through a complete generation and evaluation pipeline:
    ↓ (using LLM router: beat_generator)
 2. Stitch Beats
    ↓
-3. Guards (overlap %, SimHash, profanity)
+3. Guards (overlap %, SimHash, grit)
    ↓
 4. Repair Pass
    ↓ (using LLM router: repair_pass)

@@ -586,13 +586,13 @@ class KnowledgeBase:
 
 ---
 
-## 9. Advanced Profanity Handling
+## 9. Advanced Grit Handling
 
 ### 9.1 Context-Aware Filtering
 
 **Current State:** Universal `[bleep]` replacement
 
-**Suggestion:** Context-aware profanity policy
+**Suggestion:** Context-aware grit policy
 
 **Features:**
 - Different thresholds for dialogue vs narration
@@ -605,7 +605,7 @@ class KnowledgeBase:
 class ContextAwareFilter:
     def filter(self, text, context):
         if context.type == "dialogue":
-            threshold = context.character.profanity_threshold
+            threshold = context.character.grit_threshold
         else:  # narration
             threshold = "strict"
         
@@ -767,7 +767,7 @@ This document outlines architectural suggestions across 12 major areas:
 6. **Vision**: Image grounding, scene visualization
 7. **Interface**: Web UI, live preview, diff visualization
 8. **Knowledge**: External grounding, fact checking
-9. **Profanity**: Context-aware filtering, euphemisms
+9. **Grit**: Context-aware filtering, euphemisms
 10. **Testing**: Regression tests, A/B testing, benchmarking
 11. **Deployment**: API service, distributed processing, cloud
 12. **Analytics**: Dashboards, decision patterns

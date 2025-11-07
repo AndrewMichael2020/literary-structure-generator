@@ -23,7 +23,7 @@ You are given a piece of generated text and a list of constraints/issues to fix.
 
 - **Length**: Adjust to target word count
 - **Overlap**: Remove phrases that overlap with exemplar
-- **Profanity**: Replace with clean alternatives
+- **Grit**: Replace with clean alternatives
 - **Coherence**: Fix logical inconsistencies
 - **Style**: Adjust to match voice specification
 
