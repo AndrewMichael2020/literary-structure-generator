@@ -14,12 +14,10 @@
     },
     "imagery_namer": {
       "model": "gpt-4o-mini",
-      "provider": "openai",
       "max_tokens": 64,
       "temperature": 0.2
     },
     "beat_paraphraser": {
-  "provider": "openai",
   "model": "gpt-5-mini",
   "max_tokens": 256,
   "temperature": 0.25
@@ -35,10 +33,10 @@
       "temperature": 0.8
     },
     "repair_pass": {
-      "provider": "openai",
-      "model": "gpt-4o-mini",
+      "model": "opus-4.1",
       "temperature": 0.25,
-      "max_tokens": 320
+      "max_tokens": 320,
+      "finalists_only": 3
     }
   }
 }
