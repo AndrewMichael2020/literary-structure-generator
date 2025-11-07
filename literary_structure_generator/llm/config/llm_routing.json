@@ -17,13 +17,14 @@
       "temperature": 0.2
     },
     "beat_paraphraser": {
-      "model": "gpt-4o",
+      "model": "gpt-5-mini",
       "max_tokens": 256,
       "temperature": 0.25
     },
     "stylefit": {
-      "model": "gpt-4o",
-      "temperature": 0.2
+      "model": "gpt-5-mini",
+      "temperature": 0.2,
+      "tie_break_model": "gpt-5"
     },
     "beat_generator": {
       "model": "gpt-5",
@@ -33,7 +34,8 @@
     "repair_pass": {
       "model": "opus-4.1",
       "temperature": 0.3,
-      "max_tokens": 800
+      "max_tokens": 800,
+      "finalists_only": 3
     }
   }
 }
