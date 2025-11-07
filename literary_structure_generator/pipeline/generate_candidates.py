@@ -247,6 +247,7 @@ def generate_candidates(
 
     # Check if repair_pass has finalists_only configured
     from literary_structure_generator.llm.router import get_params
+
     repair_params = get_params("repair_pass")
     finalists_only = repair_params.get("finalists_only", None)
 
@@ -329,8 +330,7 @@ def generate_candidates(
                     "text": repaired,
                     "seeds": {
                         "per_beat": [
-                            br.get("metadata", {}).get("seed", 0)
-                            for br in candidate["beats"]
+                            br.get("metadata", {}).get("seed", 0) for br in candidate["beats"]
                         ]
                     },
                 }
