@@ -47,7 +47,7 @@ Repository = "https://github.com/AndrewMichael2020/literary-structure-generator"
 Issues = "https://github.com/AndrewMichael2020/literary-structure-generator/issues"
 
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=82.0.1", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
