@@ -15,7 +15,6 @@ class MockClient(LLMClient):
 
     def __init__(self, **kwargs):
         """Initialize mock client."""
-        # Remove 'model' from kwargs if present since we override it
         kwargs.pop("model", None)
         super().__init__(model="mock", **kwargs)
         self._last_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
@@ -31,25 +30,20 @@ class MockClient(LLMClient):
         Returns:
             Deterministic mock response
         """
-        # Estimate token counts
         prompt_tokens = len(prompt.split())
+        prompt_lower = prompt.lower()
 
-        # Pattern matching for different adapter types (order matters - most specific first)
-        if "generate the beat" in prompt.lower() or "beat specification" in prompt.lower():
+        if self._is_beat_generation_prompt(prompt_lower):
             response = self._mock_beat_generation(prompt)
-        elif "repair" in prompt.lower() and "original text" in prompt.lower():
+        elif self._is_repair_prompt(prompt_lower):
             response = self._mock_repair(prompt)
-        elif "label" in prompt.lower() and "motif" in prompt.lower():
+        elif self._is_motif_prompt(prompt_lower):
             response = self._mock_motif_labels(prompt)
-        elif "name" in prompt.lower() and "imagery phrases" in prompt.lower():
+        elif self._is_imagery_prompt(prompt_lower):
             response = self._mock_imagery_names(prompt)
-        elif "paraphrase" in prompt.lower() or (
-            "beat" in prompt.lower()
-            and "function" in prompt.lower()
-            and "paraphrase" in prompt.lower()
-        ):
+        elif self._is_beat_paraphrase_prompt(prompt_lower):
             response = self._mock_beat_paraphrase(prompt)
-        elif "stylefit" in prompt.lower() or "score" in prompt.lower():
+        elif self._is_stylefit_prompt(prompt_lower):
             response = "0.75"
         else:
             response = "[mock response]"
@@ -67,72 +61,162 @@ class MockClient(LLMClient):
         """Get mock usage statistics."""
         return self._last_usage
 
+    def _is_beat_generation_prompt(self, prompt_lower: str) -> bool:
+        """Detect beat-generation prompts."""
+        return (
+            "component:** beat_generator" in prompt_lower
+            or "component: beat_generator" in prompt_lower
+            or "beat generation prompt template" in prompt_lower
+            or "beat specification" in prompt_lower
+            or "generate the beat" in prompt_lower
+            or "generate prose for this beat" in prompt_lower
+        )
+
+    def _is_repair_prompt(self, prompt_lower: str) -> bool:
+        """Detect repair prompts."""
+        return (
+            "component:** repair_pass" in prompt_lower
+            or "component: repair_pass" in prompt_lower
+            or "repair pass prompt template" in prompt_lower
+            or ("repair" in prompt_lower and "original text" in prompt_lower)
+        )
+
+    def _is_motif_prompt(self, prompt_lower: str) -> bool:
+        """Detect motif-labeling prompts."""
+        return "motif" in prompt_lower and (
+            "label" in prompt_lower or "anchors" in prompt_lower or "theme" in prompt_lower
+        )
+
+    def _is_imagery_prompt(self, prompt_lower: str) -> bool:
+        """Detect imagery-naming prompts."""
+        return "imagery" in prompt_lower and (
+            "name" in prompt_lower or "phrases" in prompt_lower or "palette" in prompt_lower
+        )
+
+    def _is_beat_paraphrase_prompt(self, prompt_lower: str) -> bool:
+        """Detect beat-paraphrase prompts."""
+        return "beat" in prompt_lower and (
+            "paraphrase" in prompt_lower
+            or "summaries" in prompt_lower
+            or "summary" in prompt_lower
+        )
+
+    def _is_stylefit_prompt(self, prompt_lower: str) -> bool:
+        """Detect stylefit prompts."""
+        return "stylefit" in prompt_lower or "score (0.0-1.0)" in prompt_lower
+
     def _mock_motif_labels(self, prompt: str) -> str:
         """Generate mock motif labels."""
-        # Extract anchors from prompt if present
-        lines = prompt.split("\n")
-        anchors = [line.strip() for line in lines if line.strip() and not line.startswith("#")]
+        lines = [
+            line.strip("- ").strip()
+            for line in prompt.split("\n")
+            if line.strip() and not line.lstrip().startswith("#")
+        ]
+        content_lines = [
+            line
+            for line in lines
+            if "version:" not in line.lower()
+            and "component:" not in line.lower()
+            and "purpose:" not in line.lower()
+        ]
 
-        if len(anchors) > 2:
-            # Return mock labels based on anchor count
-            return "\n".join([f"theme_{i+1}" for i in range(min(len(anchors), 5))])
+        if content_lines:
+            return "\n".join([f"theme_{i + 1}" for i in range(min(len(content_lines), 5))])
         return "healing\ncrisis\ntransformation"
 
     def _mock_imagery_names(self, prompt: str) -> str:
         """Generate mock imagery names."""
-        lines = prompt.split("\n")
-        phrases = [line.strip() for line in lines if line.strip() and not line.startswith("#")]
+        lines = [
+            line.strip("- ").strip()
+            for line in prompt.split("\n")
+            if line.strip() and not line.lstrip().startswith("#")
+        ]
+        content_lines = [
+            line
+            for line in lines
+            if "version:" not in line.lower()
+            and "component:" not in line.lower()
+            and "purpose:" not in line.lower()
+        ]
 
-        if len(phrases) > 2:
-            return "\n".join([f"imagery_{i+1}" for i in range(min(len(phrases), 5))])
+        if content_lines:
+            return "\n".join([f"imagery_{i + 1}" for i in range(min(len(content_lines), 5))])
         return "medical_setting\nnight_atmosphere\nurgency"
 
     def _mock_beat_paraphrase(self, prompt: str) -> str:
         """Generate mock beat paraphrases."""
-        # Extract functions from prompt
-        lines = prompt.split("\n")
-        functions = [line.strip() for line in lines if line.strip() and not line.startswith("#")]
+        candidate_lines = []
+        for line in prompt.split("\n"):
+            stripped = line.strip("- ").strip()
+            if not stripped or stripped.startswith("#"):
+                continue
+            lowered = stripped.lower()
+            if any(
+                marker in lowered
+                for marker in [
+                    "version:",
+                    "component:",
+                    "purpose:",
+                    "task",
+                    "output",
+                    "register",
+                ]
+            ):
+                continue
+            if len(stripped.split()) <= 20:
+                candidate_lines.append(stripped)
 
-        if len(functions) > 2:
-            return "\n".join([f"summary_{i+1}" for i in range(min(len(functions), 5))])
+        if candidate_lines:
+            return "\n".join(
+                [f"summary_{i + 1}: {line}" for i, line in enumerate(candidate_lines[:5])]
+            )
         return "opening scene\ndevelopment\nresolution"
 
     def _mock_repair(self, prompt: str) -> str:
         """Generate mock repair output."""
-        # Extract original text between **Original Text:** and **Constraints:**
-        if "**original text:**" in prompt.lower():
-            # Try to find text between markers
-            match = re.search(
-                r"\*\*original text:\*\*\s*```\s*(.+?)\s*```\s*\*\*constraints",
-                prompt,
-                re.DOTALL | re.IGNORECASE,
-            )
-            if match:
-                original_text = match.group(1).strip()
-                # Skip if it's the example from the template
-                if "doctor was very" not in original_text.lower():
-                    return original_text
+        match = re.search(
+            r"\*\*original text:\*\*\s*```\s*(.+?)\s*```\s*\*\*constraints",
+            prompt,
+            re.DOTALL | re.IGNORECASE,
+        )
+        if match:
+            original_text = match.group(1).strip()
+            if "doctor was very" not in original_text.lower():
+                return original_text
 
-        # Fallback: return placeholder that won't corrupt output
+        fenced_blocks = re.findall(r"```\s*(.+?)\s*```", prompt, flags=re.DOTALL)
+        for block in fenced_blocks:
+            clean_block = block.strip()
+            if clean_block and "doctor was very" not in clean_block.lower():
+                return clean_block
+
         return "[mock repaired text - repair pass would improve this]"
 
     def _mock_beat_generation(self, prompt: str) -> str:
         """Generate mock beat prose."""
-        # Extract target words if present
         target_words = 200
-        if "target words:" in prompt.lower():
-            match = re.search(r"target words:\*\*\s*(\d+)", prompt, re.IGNORECASE)
+        target_patterns = [
+            r"\*\*target words:\*\*\s*(\d+)",
+            r"target words:\s*(\d+)",
+            r"target_words[^\d]*(\d+)",
+        ]
+        for pattern in target_patterns:
+            match = re.search(pattern, prompt, re.IGNORECASE)
             if match:
                 target_words = int(match.group(1))
+                break
 
-        # Generate mock prose based on function if available
         function = "scene"
-        if "function:**" in prompt:
-            match = re.search(r"function:\*\*\s*(.+?)[\n*]", prompt, re.IGNORECASE)
+        function_patterns = [
+            r"\*\*function:\*\*\s*(.+?)(?:\n|\r|$)",
+            r"function:\s*(.+?)(?:\n|\r|$)",
+        ]
+        for pattern in function_patterns:
+            match = re.search(pattern, prompt, re.IGNORECASE)
             if match:
                 function = match.group(1).strip()
+                break
 
-        # Generate contextual prose
         sentences = [
             "The morning air carried the scent of rain.",
             "She stood at the window, watching the street below.",
@@ -151,7 +235,6 @@ class MockClient(LLMClient):
             "Then the moment passed.",
         ]
 
-        # Vary based on function
         if "opening" in function.lower() or "establish" in function.lower():
             sentences[0] = "The day began quietly, as most days did."
         elif "develop" in function.lower() or "conflict" in function.lower():
@@ -159,8 +242,7 @@ class MockClient(LLMClient):
         elif "resolution" in function.lower() or "conclud" in function.lower():
             sentences[0] = "In the end, nothing was quite as she'd expected."
 
-        # Calculate how many sentences needed
-        words_per_sentence = sum(len(s.split()) for s in sentences) / len(sentences)
+        words_per_sentence = sum(len(sentence.split()) for sentence in sentences) / len(sentences)
         num_sentences = max(5, int(target_words / words_per_sentence))
 
         result_sentences = []
