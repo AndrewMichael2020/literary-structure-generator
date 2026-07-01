@@ -16,10 +16,35 @@ Workflow:
 Each decision is logged via log_decision() for reproducibility.
 """
 
+import json
+from pathlib import Path
+from typing import Any
+
 from literary_structure_generator.models.author_profile import AuthorProfile
 from literary_structure_generator.models.exemplar_digest import ExemplarDigest
 from literary_structure_generator.models.story_spec import StorySpec
 from literary_structure_generator.utils.decision_logger import log_decision
+
+
+def _clamp(value: float, minimum: float = 0.0, maximum: float = 1.0) -> float:
+    """Clamp numeric value to inclusive bounds."""
+    return max(minimum, min(maximum, value))
+
+
+def _estimate_average_from_histogram(
+    histogram: list[int],
+    bucket_midpoints: list[int],
+    default: int,
+) -> int:
+    """Estimate an average from a histogram and bucket midpoints."""
+    total = sum(histogram)
+    if total <= 0:
+        return default
+
+    weighted_sum = sum(
+        count * midpoint for count, midpoint in zip(histogram, bucket_midpoints, strict=False)
+    )
+    return round(weighted_sum / total)
 
 
 def map_voice_parameters(digest: ExemplarDigest, _profile: AuthorProfile | None = None) -> dict:
@@ -33,31 +58,24 @@ def map_voice_parameters(digest: ExemplarDigest, _profile: AuthorProfile | None 
     Returns:
         Dictionary with voice parameters
     """
-    # Calculate average sentence length from histogram
-    sentence_len_hist = digest.stylometry.sentence_len_hist
-    total_sentences = sum(sentence_len_hist)
-    if total_sentences > 0:
-        # Each bucket represents a range: [1-5, 6-10, 11-15, 16-20, 21-30, 31-40, 41-50, 51-75, 76+]
-        bucket_midpoints = [3, 8, 13, 18, 25, 35, 45, 63, 80]
-        weighted_sum = sum(
-            count * midpoint
-            for count, midpoint in zip(sentence_len_hist, bucket_midpoints, strict=False)
-        )
-        avg_sentence_len = round(weighted_sum / total_sentences)
-    else:
-        avg_sentence_len = 15  # Default
+    avg_sentence_len = _estimate_average_from_histogram(
+        digest.stylometry.sentence_len_hist,
+        [3, 8, 13, 18, 25, 35, 45, 63, 80],
+        15,
+    )
 
-    # Determine narrative person from dialogue ratio and focalization
     dialogue_ratio = digest.discourse.dialogue_ratio
-    focalization = digest.discourse.focalization
-    if "first" in focalization.lower() or dialogue_ratio > 0.5:
-        person = "first"
-    elif "third" in focalization.lower():
-        person = "third-limited"
-    else:
-        person = "first"  # Default
+    focalization = digest.discourse.focalization or ""
 
-    # Determine distance based on sentence length and register
+    if "third" in focalization.lower():
+        person = "third-limited"
+    elif "omniscient" in focalization.lower():
+        person = "omniscient"
+    elif "second" in focalization.lower():
+        person = "second"
+    else:
+        person = "first"
+
     if avg_sentence_len < 12:
         distance = "intimate"
     elif avg_sentence_len < 18:
@@ -65,20 +83,44 @@ def map_voice_parameters(digest: ExemplarDigest, _profile: AuthorProfile | None 
     else:
         distance = "medium"
 
-    # Build voice parameters
+    punctuation = digest.stylometry.punctuation
+    comma_density = punctuation.get("comma_per_100", 0.55)
+    if comma_density > 1:
+        comma_density = comma_density / 100
+
+    dash_density = punctuation.get("dash_per_100", 0.0)
+    if dash_density >= 1.0:
+        em_dash = "frequent"
+    elif dash_density >= 0.25:
+        em_dash = "moderate"
+    else:
+        em_dash = "rare"
+
     return {
         "person": person,
         "distance": distance,
+        "register": {
+            "lyric": 0.3,
+            "deadpan": 0.7,
+            "irony": 0.5,
+            "tender": 0.6,
+        },
         "syntax": {
             "avg_sentence_len": avg_sentence_len,
-            "variance": 0.6,  # Default
+            "variance": 0.6,
             "fragment_ok": avg_sentence_len < 15,
-            "comma_density": digest.stylometry.punctuation.get("comma_per_100", 50) / 100,
+            "comma_density": _clamp(comma_density),
+            "em_dash": em_dash,
         },
         "dialogue_style": {
             "quote_marks": "double",
             "tag_verbs_allowed": ["said", "asked"],
         },
+        "profanity": {
+            "allowed": False,
+            "frequency": 0.0,
+        },
+        "dialogue_ratio_hint": dialogue_ratio,
     }
 
 
@@ -98,33 +140,63 @@ def map_form_parameters(
     Returns:
         Dictionary with form parameters
     """
-    # Convert beats from digest to beat specs
     beat_specs = []
     beat_functions = []
 
-    for beat in digest.discourse.beats:
-        span_length = beat.span[1] - beat.span[0]
-        # Convert tokens to approximate words (tokens ~= words * 1.3)
-        target_words = round(span_length / 1.3)
+    source_beats = digest.discourse.beats
+    if not source_beats:
+        total_tokens = max(digest.meta.tokens, 1500)
+        source_beats = [
+            {
+                "id": "opening",
+                "span": [0, round(total_tokens * 0.25)],
+                "function": "establish setting, character, and tone",
+            },
+            {
+                "id": "middle",
+                "span": [round(total_tokens * 0.25), round(total_tokens * 0.75)],
+                "function": "develop conflict and deepen stakes",
+            },
+            {
+                "id": "closing",
+                "span": [round(total_tokens * 0.75), total_tokens],
+                "function": "resolve the central emotional movement",
+            },
+        ]
 
-        # Determine cadence based on beat function
-        if "opening" in beat.function.lower() or "closing" in beat.function.lower():
-            cadence = "short"
+    for beat in source_beats:
+        if isinstance(beat, dict):
+            beat_id = beat.get("id", f"beat_{len(beat_specs) + 1}")
+            span = beat.get("span", [0, 260])
+            function = beat.get("function", "advance the story")
         else:
+            beat_id = beat.id
+            span = beat.span
+            function = beat.function
+
+        span_start = span[0] if len(span) > 0 else 0
+        span_end = span[1] if len(span) > 1 else span_start + 260
+        span_length = max(120, span_end - span_start)
+        target_words = max(120, round(span_length / 1.3))
+
+        if "opening" in function.lower() or "closing" in function.lower():
+            cadence = "short"
+        elif "conflict" in function.lower() or "action" in function.lower():
             cadence = "mixed"
+        else:
+            cadence = "measured"
 
         beat_specs.append(
             {
-                "id": beat.id,
+                "id": beat_id,
                 "target_words": target_words,
-                "function": beat.function,
+                "function": function,
                 "cadence": cadence,
+                "summary": function,
             }
         )
-        beat_functions.append(beat.function)
+        beat_functions.append(function)
 
-    # Phase 3.2: LLM-enhanced beat paraphrasing
-    # Generate concise beat summaries using LLM
     try:
         from literary_structure_generator.llm.adapters import paraphrase_beats
 
@@ -136,35 +208,23 @@ def map_form_parameters(
                 iteration=iteration,
                 use_cache=True,
             )
-            # Add summaries to beat specs
             for i, summary in enumerate(beat_summaries):
                 if i < len(beat_specs):
                     beat_specs[i]["summary"] = summary
     except Exception:
-        # LLM is optional - continue if it fails
-        # Add default summaries
         for spec in beat_specs:
             spec["summary"] = spec["function"]
 
-    # Calculate paragraph stats
-    para_len_hist = digest.pacing.paragraph_len_hist
-    total_paragraphs = sum(para_len_hist)
-    if total_paragraphs > 0:
-        # Bucket midpoints for paragraph lengths
-        bucket_midpoints = [3, 8, 13, 25, 50, 75, 100, 150, 200]
-        weighted_sum = sum(
-            count * midpoint
-            for count, midpoint in zip(para_len_hist, bucket_midpoints, strict=False)
-        )
-        avg_para_len = round(weighted_sum / total_paragraphs)
-    else:
-        avg_para_len = 45  # Default
+    avg_para_len = _estimate_average_from_histogram(
+        digest.pacing.paragraph_len_hist,
+        [10, 30, 50, 70, 90, 125, 175, 225, 275],
+        45,
+    )
 
-    # Build form parameters
     return {
-        "structure": "episodic",  # Default for now
+        "structure": "episodic",
         "beat_map": beat_specs,
-        "dialogue_ratio": digest.discourse.dialogue_ratio,
+        "dialogue_ratio": digest.discourse.dialogue_ratio or 0.25,
         "paragraphing": {
             "avg_len_tokens": avg_para_len,
             "variance": 0.4,
@@ -186,55 +246,119 @@ def blend_with_author_profile(
     Returns:
         Blended parameters
     """
-    # Simple blending: for numeric values, use weighted average
-    # For categorical values, prefer exemplar if alpha >= 0.5, else author
-    blended = exemplar_params.copy()
+    if not 0.0 <= alpha_exemplar <= 1.0:
+        raise ValueError("alpha_exemplar must be between 0.0 and 1.0")
 
-    # Blend syntax parameters if available
-    if "syntax" in exemplar_params and hasattr(profile, "syntax_preferences"):
-        syntax = blended["syntax"]
-        author_syntax = profile.syntax_preferences
+    blended = {
+        key: value.copy() if isinstance(value, dict) else value
+        for key, value in exemplar_params.items()
+    }
 
-        # Blend numeric fields
-        if "avg_sentence_len" in author_syntax:
-            syntax["avg_sentence_len"] = round(
-                alpha_exemplar * syntax["avg_sentence_len"]
-                + (1 - alpha_exemplar) * author_syntax["avg_sentence_len"]
-            )
+    syntax = blended.setdefault("syntax", {})
+    syntax["avg_sentence_len"] = round(
+        alpha_exemplar * syntax.get("avg_sentence_len", 15)
+        + (1.0 - alpha_exemplar) * profile.syntax.avg_sentence_len
+    )
+    syntax["variance"] = (
+        alpha_exemplar * syntax.get("variance", 0.6)
+        + (1.0 - alpha_exemplar) * profile.syntax.variance
+    )
 
-    # Blend profanity policy
-    if hasattr(profile, "profanity_allowed"):
-        if "profanity" not in blended:
-            blended["profanity"] = {}
-        # If author disallows profanity, always respect that
-        blended["profanity"]["allowed"] = profile.profanity_allowed and blended.get(
-            "profanity", {}
-        ).get("allowed", False)
+    if alpha_exemplar < 0.5:
+        syntax["em_dash"] = profile.syntax.em_dash
+
+    exemplar_register = blended.setdefault("register", {})
+    author_register = profile.register_sliders.model_dump()
+    for key, author_value in author_register.items():
+        exemplar_value = exemplar_register.get(key, author_value)
+        exemplar_register[key] = _clamp(
+            alpha_exemplar * exemplar_value + (1.0 - alpha_exemplar) * author_value
+        )
+
+    profanity = blended.setdefault("profanity", {})
+    profanity["allowed"] = bool(profile.profanity.allowed and profanity.get("allowed", False))
+    profanity["frequency"] = (
+        min(float(profile.profanity.frequency), float(profanity.get("frequency", 0.0)))
+        if profanity["allowed"]
+        else 0.0
+    )
 
     return blended
 
 
-def initialize_content_section(setting_prompt: str = "", characters_prompt: str = "") -> dict:
+def _extract_motifs_from_digest(digest: ExemplarDigest, limit: int = 8) -> list[str]:
+    """Extract motif labels from digest motif map."""
+    motifs = []
+    for motif in digest.motif_map[:limit]:
+        motif_name = motif.motif.strip()
+        if motif_name and motif_name not in motifs:
+            motifs.append(motif_name)
+    return motifs
+
+
+def _extract_imagery_from_digest(digest: ExemplarDigest, limit: int = 12) -> list[str]:
+    """Flatten imagery palettes into a compact list."""
+    imagery = []
+    for phrases in digest.imagery_palettes.values():
+        for phrase in phrases:
+            clean_phrase = phrase.strip()
+            if clean_phrase and clean_phrase not in imagery:
+                imagery.append(clean_phrase)
+            if len(imagery) >= limit:
+                return imagery
+    return imagery
+
+
+def _extract_characters_from_digest(digest: ExemplarDigest, limit: int = 4) -> list[dict[str, str]]:
+    """Extract likely character placeholders from PERSON entities."""
+    characters = []
+    for entity in digest.coherence_graph.entities:
+        if entity.type.upper() == "PERSON":
+            characters.append(
+                {
+                    "name": entity.canonical,
+                    "role": "supporting" if characters else "protagonist",
+                }
+            )
+        if len(characters) >= limit:
+            break
+
+    if not characters:
+        characters.append({"name": "protagonist", "role": "protagonist"})
+
+    return characters
+
+
+def initialize_content_section(
+    setting_prompt: str = "",
+    characters_prompt: str = "",
+    digest: ExemplarDigest | None = None,
+) -> dict[str, Any]:
     """
     Initialize content section with placeholders or prompts.
 
     Args:
         setting_prompt: Optional setting description
         characters_prompt: Optional character descriptions
+        digest: Optional digest to extract motifs, imagery, and entities from
 
     Returns:
         Dictionary with content parameters
     """
-    # Create basic content structure with placeholders
+    motifs = _extract_motifs_from_digest(digest) if digest is not None else []
+    imagery_palette = _extract_imagery_from_digest(digest) if digest is not None else []
+    characters = _extract_characters_from_digest(digest) if digest is not None else []
+
     content = {
         "setting": {
             "place": setting_prompt or "[to be defined]",
-            "time": "[to be defined]",
+            "time": "contemporary",
             "weather_budget": [],
         },
-        "characters": [],
-        "motifs": [],
-        "imagery_palettes": {},
+        "characters": characters,
+        "motifs": motifs,
+        "imagery_palette": imagery_palette,
+        "props": imagery_palette[:3],
         "sensory_quotas": {
             "visual": 0.4,
             "auditory": 0.2,
@@ -244,13 +368,15 @@ def initialize_content_section(setting_prompt: str = "", characters_prompt: str 
         },
     }
 
-    # Parse character descriptions if provided
     if characters_prompt:
-        # Simple comma-separated character names
         char_names = [name.strip() for name in characters_prompt.split(",")]
-        content["characters"] = [
-            {"name": name, "role": "[to be defined]"} for name in char_names if name
+        parsed_characters = [
+            {"name": name, "role": "supporting" if index else "protagonist"}
+            for index, name in enumerate(char_names)
+            if name
         ]
+        if parsed_characters:
+            content["characters"] = parsed_characters
 
     return content
 
@@ -281,7 +407,6 @@ def synthesize_spec(
     Returns:
         Complete StorySpec object
     """
-    # Log decision about blending strategy
     log_decision(
         run_id=run_id,
         iteration=iteration,
@@ -289,9 +414,7 @@ def synthesize_spec(
         decision=f"Use alpha_exemplar={alpha_exemplar} for blending",
         reasoning=(
             f"Blending exemplar digest with author profile using "
-            f"{alpha_exemplar:.0%} exemplar weight. "
-            f"This balances structural learning from exemplar with "
-            f"author's voice preferences."
+            f"{alpha_exemplar:.0%} exemplar weight."
         ),
         parameters={
             "alpha_exemplar": alpha_exemplar,
@@ -301,7 +424,6 @@ def synthesize_spec(
         metadata={"story_id": story_id},
     )
 
-    # Map digest to voice parameters
     voice_params = map_voice_parameters(digest, profile)
     log_decision(
         run_id=run_id,
@@ -316,7 +438,6 @@ def synthesize_spec(
         metadata={"stage": "voice_mapping"},
     )
 
-    # Map digest to form parameters
     form_params = map_form_parameters(digest, run_id=run_id, iteration=iteration)
     log_decision(
         run_id=run_id,
@@ -331,7 +452,6 @@ def synthesize_spec(
         metadata={"stage": "form_mapping"},
     )
 
-    # Blend with author profile if provided
     if profile:
         voice_params = blend_with_author_profile(voice_params, profile, alpha_exemplar)
         log_decision(
@@ -344,13 +464,12 @@ def synthesize_spec(
             metadata={"stage": "blending"},
         )
 
-    # Initialize content section
-    content_params = initialize_content_section()
+    content_params = initialize_content_section(digest=digest)
 
-    # Build StorySpec from mapped parameters
     from literary_structure_generator.models.story_spec import (
         AntiPlagiarism,
         BeatSpec,
+        Character,
         Constraints,
         Content,
         DialogueStyle,
@@ -364,7 +483,6 @@ def synthesize_spec(
         Voice,
     )
 
-    # Create MetaInfo
     meta = MetaInfo(
         story_id=story_id,
         seed=seed,
@@ -375,36 +493,36 @@ def synthesize_spec(
         },
     )
 
-    # Create Voice
     voice = Voice(
         person=voice_params.get("person", "first"),
         distance=voice_params.get("distance", "intimate"),
+        register=voice_params.get("register", {}),
         syntax=Syntax(**voice_params.get("syntax", {})),
         dialogue_style=DialogueStyle(**voice_params.get("dialogue_style", {})),
         profanity=Profanity(**voice_params.get("profanity", {})),
     )
 
-    # Create Form with BeatSpecs
     beat_specs = [BeatSpec(**beat_data) for beat_data in form_params.get("beat_map", [])]
     form = Form(
+        structure=form_params.get("structure", "episodic"),
         beat_map=beat_specs,
         dialogue_ratio=form_params.get("dialogue_ratio", 0.25),
         paragraphing=Paragraphing(**form_params.get("paragraphing", {})),
     )
 
-    # Create Content
     content = Content(
-        setting=Setting(
-            **content_params.get("setting", {"place": "[to be defined]", "time": "[to be defined]"})
-        ),
-        characters=[],
+        setting=Setting(**content_params["setting"]),
+        characters=[
+            Character(**character_data) for character_data in content_params.get("characters", [])
+        ],
         motifs=content_params.get("motifs", []),
+        imagery_palette=content_params.get("imagery_palette", []),
+        props=content_params.get("props", []),
+        sensory_quotas=content_params.get("sensory_quotas", {}),
     )
 
-    # Calculate target length from beats
     target_words = sum(beat.target_words for beat in beat_specs) if beat_specs else 2000
 
-    # Create Constraints with anti-plagiarism defaults
     constraints = Constraints(
         anti_plagiarism=AntiPlagiarism(
             max_ngram=12,
@@ -418,7 +536,6 @@ def synthesize_spec(
         ),
     )
 
-    # Build final StorySpec
     spec = StorySpec(
         meta=meta,
         voice=voice,
@@ -427,16 +544,12 @@ def synthesize_spec(
         constraints=constraints,
     )
 
-    # Save to JSON if output_path provided
     if output_path:
-        import json
-        from pathlib import Path
-
         output_file = Path(output_path)
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
         with open(output_file, "w", encoding="utf-8") as f:
-            json.dump(spec.model_dump(by_alias=True), f, indent=2)
+            json.dump(spec.model_dump(by_alias=True, mode="json"), f, indent=2)
 
         log_decision(
             run_id=run_id,
@@ -457,7 +570,7 @@ def synthesize_spec(
         parameters={
             "story_id": story_id,
             "beat_count": len(beat_specs),
-            "target_words": sum(beat.target_words for beat in beat_specs) if beat_specs else 0,
+            "target_words": target_words,
         },
         metadata={"stage": "completion"},
     )

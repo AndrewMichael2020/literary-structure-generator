@@ -27,8 +27,9 @@ def save_json(obj: BaseModel, filepath: str, indent: int = 2) -> None:
         filepath: Path to save JSON
         indent: JSON indentation
     """
-    # TODO: Implement JSON saving
-    raise NotImplementedError("JSON saving not yet implemented")
+    output_path = Path(filepath)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(obj.model_dump_json(indent=indent, by_alias=True), encoding="utf-8")
 
 
 def load_json(filepath: str, model_class: type[T]) -> T:
@@ -42,8 +43,11 @@ def load_json(filepath: str, model_class: type[T]) -> T:
     Returns:
         Validated model object
     """
-    # TODO: Implement JSON loading with validation
-    raise NotImplementedError("JSON loading not yet implemented")
+    input_path = Path(filepath)
+    if not input_path.exists():
+        raise FileNotFoundError(f"JSON file not found: {filepath}")
+
+    return model_class.model_validate_json(input_path.read_text(encoding="utf-8"))
 
 
 def ensure_dir(dirpath: str) -> Path:
@@ -56,11 +60,12 @@ def ensure_dir(dirpath: str) -> Path:
     Returns:
         Path object
     """
-    # TODO: Implement directory creation
-    raise NotImplementedError("Directory creation not yet implemented")
+    path = Path(dirpath)
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
-def create_artifact_structure(base_dir: str, run_id: str) -> dict:
+def create_artifact_structure(base_dir: str, run_id: str) -> dict[str, Path]:
     """
     Create artifact directory structure for a run.
 
@@ -71,9 +76,23 @@ def create_artifact_structure(base_dir: str, run_id: str) -> dict:
     Returns:
         Dictionary with paths to subdirectories
     """
-    # TODO: Implement artifact directory structure creation
-    # Create dirs for digests, specs, configs, reports, candidates, etc.
-    raise NotImplementedError("Artifact structure creation not yet implemented")
+    root = ensure_dir(str(Path(base_dir) / run_id))
+
+    paths = {
+        "root": root,
+        "digests": root / "digests",
+        "specs": root / "specs",
+        "configs": root / "configs",
+        "reports": root / "reports",
+        "candidates": root / "candidates",
+        "final": root / "final",
+        "logs": root / "logs",
+    }
+
+    for path in paths.values():
+        path.mkdir(parents=True, exist_ok=True)
+
+    return paths
 
 
 def load_text_file(filepath: str, encoding: str = "utf-8") -> str:
@@ -87,8 +106,11 @@ def load_text_file(filepath: str, encoding: str = "utf-8") -> str:
     Returns:
         File contents as string
     """
-    # TODO: Implement text file loading
-    raise NotImplementedError("Text file loading not yet implemented")
+    input_path = Path(filepath)
+    if not input_path.exists():
+        raise FileNotFoundError(f"Text file not found: {filepath}")
+
+    return input_path.read_text(encoding=encoding)
 
 
 def save_text_file(text: str, filepath: str, encoding: str = "utf-8") -> None:
@@ -100,5 +122,6 @@ def save_text_file(text: str, filepath: str, encoding: str = "utf-8") -> None:
         filepath: Path to save file
         encoding: Text encoding
     """
-    # TODO: Implement text file saving
-    raise NotImplementedError("Text file saving not yet implemented")
+    output_path = Path(filepath)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(text, encoding=encoding)
