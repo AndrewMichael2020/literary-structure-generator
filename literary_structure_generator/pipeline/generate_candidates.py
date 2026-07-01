@@ -336,7 +336,7 @@ def generate_candidates(
         "generation_timestamp": datetime.now(timezone.utc).isoformat(),
         "story_id": spec.meta.story_id,
         "routing_overrides": routing_overrides or {},
-        "config_hash": hashlib.md5(config.model_dump_json().encode()).hexdigest()[:8],
+        "config_hash": hashlib.sha256(config.model_dump_json().encode()).hexdigest()[:8],
         "finalists_only_mode": use_finalists_mode,
         "num_finalists": finalists_only if use_finalists_mode else n_candidates,
     }
