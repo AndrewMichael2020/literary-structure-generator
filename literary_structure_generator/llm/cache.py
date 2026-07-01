@@ -36,8 +36,7 @@ class LLMCache:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS llm_cache (
                 cache_key TEXT PRIMARY KEY,
                 component TEXT NOT NULL,
@@ -48,23 +47,18 @@ class LLMCache:
                 response TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-        """
-        )
+        """)
 
         # Create indices for faster lookups
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_component
             ON llm_cache(component)
-        """
-        )
+        """)
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_created_at
             ON llm_cache(created_at)
-        """
-        )
+        """)
 
         conn.commit()
         conn.close()
@@ -210,13 +204,11 @@ class LLMCache:
         cursor.execute("SELECT COUNT(*) FROM llm_cache")
         total_entries = cursor.fetchone()[0]
 
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT component, COUNT(*) as count
             FROM llm_cache
             GROUP BY component
-        """
-        )
+        """)
         by_component = dict(cursor.fetchall())
 
         conn.close()
