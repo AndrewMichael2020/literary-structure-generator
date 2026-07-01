@@ -1,6 +1,6 @@
 # Core dependencies for literary-structure-generator
 pydantic>=2.0.0
-pydantic-settings>=2.0.0
+pydantic-settings>=2.13.1
 spacy>=3.7.0
 numpy>=1.24.0
 simhash>=2.1.0
