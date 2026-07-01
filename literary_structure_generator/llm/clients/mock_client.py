@@ -96,9 +96,7 @@ class MockClient(LLMClient):
     def _is_beat_paraphrase_prompt(self, prompt_lower: str) -> bool:
         """Detect beat-paraphrase prompts."""
         return "beat" in prompt_lower and (
-            "paraphrase" in prompt_lower
-            or "summaries" in prompt_lower
-            or "summary" in prompt_lower
+            "paraphrase" in prompt_lower or "summaries" in prompt_lower or "summary" in prompt_lower
         )
 
     def _is_stylefit_prompt(self, prompt_lower: str) -> bool:

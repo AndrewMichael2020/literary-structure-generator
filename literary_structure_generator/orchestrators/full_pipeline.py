@@ -19,6 +19,7 @@ CLI interface for running complete workflow.
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -310,7 +311,7 @@ def main() -> None:
         "summary_path": result["summary_path"],
     }
 
-    print(json.dumps(cli_summary, indent=2))
+    sys.stdout.write(f"{json.dumps(cli_summary, indent=2)}\n")
 
 
 if __name__ == "__main__":

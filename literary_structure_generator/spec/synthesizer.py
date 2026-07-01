@@ -351,7 +351,7 @@ def initialize_content_section(
 
     content = {
         "setting": {
-            "place": setting_prompt or "an unspecified familiar place",
+            "place": setting_prompt or "[to be defined]",
             "time": "contemporary",
             "weather_budget": [],
         },
