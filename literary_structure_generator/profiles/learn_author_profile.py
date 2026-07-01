@@ -40,7 +40,7 @@ def _estimate_em_dash_usage(text: str, word_count: int) -> str:
     if word_count <= 0:
         return "rare"
 
-    dash_count = text.count("—") + text.count("–") + text.count("--")
+    dash_count = text.count("—") + text.count("\u2013") + text.count("--")
     dashes_per_100 = (dash_count / word_count) * 100
 
     if dashes_per_100 >= 1.0:
@@ -78,9 +78,7 @@ def analyze_user_texts(filepaths: list[str]) -> dict:
     if sentence_lengths:
         avg_sentence_len = round(sum(sentence_lengths) / len(sentence_lengths))
         mean = sum(sentence_lengths) / len(sentence_lengths)
-        variance = sum((length - mean) ** 2 for length in sentence_lengths) / len(
-            sentence_lengths
-        )
+        variance = sum((length - mean) ** 2 for length in sentence_lengths) / len(sentence_lengths)
         normalized_variance = min(1.0, variance / 100.0)
     else:
         avg_sentence_len = 14
@@ -93,7 +91,9 @@ def analyze_user_texts(filepaths: list[str]) -> dict:
 
     word_count = len(words)
     irony_score = (
-        min(1.0, sum(lower_text.count(marker) for marker in irony_markers) / max(word_count, 1) * 20)
+        min(
+            1.0, sum(lower_text.count(marker) for marker in irony_markers) / max(word_count, 1) * 20
+        )
         if word_count
         else 0.4
     )
@@ -108,7 +108,9 @@ def analyze_user_texts(filepaths: list[str]) -> dict:
     expressive_score = (
         min(
             1.0,
-            sum(lower_text.count(marker) for marker in expressive_markers) / max(word_count, 1) * 20,
+            sum(lower_text.count(marker) for marker in expressive_markers)
+            / max(word_count, 1)
+            * 20,
         )
         if word_count
         else 0.3

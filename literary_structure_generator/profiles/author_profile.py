@@ -68,8 +68,7 @@ def validate_profile(profile: AuthorProfile) -> bool:
     allowed_dash_settings = {"rare", "moderate", "frequent"}
     if profile.syntax.em_dash not in allowed_dash_settings:
         raise ValueError(
-            "profile.syntax.em_dash must be one of: "
-            f"{', '.join(sorted(allowed_dash_settings))}"
+            f"profile.syntax.em_dash must be one of: {', '.join(sorted(allowed_dash_settings))}"
         )
 
     sliders = profile.register_sliders.model_dump()
