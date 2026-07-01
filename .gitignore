@@ -212,3 +212,4 @@ __marimo__/
 # Runtime artifacts and workflow outputs
 runs/
 artifacts/
+.aider*
