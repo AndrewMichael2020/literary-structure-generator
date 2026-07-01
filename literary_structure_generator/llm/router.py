@@ -103,7 +103,7 @@ def get_client(component: str) -> LLMClient:
     """
     params = get_params(component)
     provider = params.get("provider", "mock")
-    model = params.get("model", "gpt-4o-mini")
+    model = params.get("model", "gpt-4")
 
     # Extract client parameters
     client_params = {
