@@ -70,10 +70,9 @@ def generate_single_candidate(
     if config is None:
         config = GenerationConfig()
 
-    # Step 1: Generate beats
     beat_results = []
     beat_texts = []
-    memory = {}  # Context for beat generation
+    memory = {}
 
     for beat_spec in spec.form.beat_map:
         beat_result = generate_beat_text(
@@ -86,16 +85,13 @@ def generate_single_candidate(
         beat_results.append(beat_result)
         beat_texts.append(beat_result["text"])
 
-        # Update memory for next beat
         memory[beat_spec.id] = {
             "text": beat_result["text"],
             "function": beat_spec.function,
         }
 
-    # Step 2: Stitch beats
     stitched = stitch_beats(beat_texts)
 
-    # Step 3: Check guards on stitched text
     guard_result = check_overlap_guard(
         stitched,
         exemplar_text,
@@ -104,9 +100,7 @@ def generate_single_candidate(
         min_simhash_hamming=spec.constraints.anti_plagiarism.simhash_hamming_min,
     )
 
-    # Step 4: Repair if needed (skip if finalists-only mode)
     if skip_repair:
-        # Skip repair for non-finalists
         repaired = stitched
         final_guard = guard_result
     else:
@@ -116,7 +110,6 @@ def generate_single_candidate(
 
         repaired = repair_text(stitched, spec, notes=repair_notes)
 
-        # Re-check guards after repair
         final_guard = check_overlap_guard(
             repaired,
             exemplar_text,
@@ -125,8 +118,6 @@ def generate_single_candidate(
             min_simhash_hamming=spec.constraints.anti_plagiarism.simhash_hamming_min,
         )
 
-    # Step 5: Evaluate using Phase 5
-    # Extract seeds for repro (use 0 as default if not present)
     default_seed = 0
     per_beat_seeds = [br.get("metadata", {}).get("seed", default_seed) for br in beat_results]
 
@@ -143,10 +134,9 @@ def generate_single_candidate(
         config=config,
         run_id=run_id,
         candidate_id=candidate_id,
-        use_llm_stylefit=False,  # Keep offline for tests
+        use_llm_stylefit=False,
     )
 
-    # Compile metadata
     metadata = {
         "candidate_id": candidate_id,
         "run_id": run_id,
@@ -187,7 +177,6 @@ def select_best_candidate(candidates: list[dict]) -> str:
     if not candidates:
         raise ValueError("No candidates to select from")
 
-    # Sort by: pass_fail (True first), overall score (desc), freshness (desc)
     sorted_candidates = sorted(
         candidates,
         key=lambda c: (
@@ -208,6 +197,8 @@ def generate_candidates(
     n_candidates: int = 3,
     routing_overrides: dict | None = None,
     run_id: str | None = None,
+    config: GenerationConfig | None = None,
+    output_dir: str = "runs",
 ) -> dict:
     """
     Generate N candidate drafts, evaluate them, and select the best.
@@ -224,6 +215,8 @@ def generate_candidates(
         n_candidates: Number of candidates to generate (default: 3)
         routing_overrides: Optional routing configuration overrides
         run_id: Optional run identifier (auto-generated if not provided)
+        config: Optional GenerationConfig. If omitted, a default config is used.
+        output_dir: Base output directory for persisted run artifacts.
 
     Returns:
         Dictionary with:
@@ -231,33 +224,30 @@ def generate_candidates(
             - best_id: ID of the best candidate
             - meta: Metadata about the run
     """
-    # Generate run_id if not provided
+    if n_candidates <= 0:
+        raise ValueError("n_candidates must be positive")
+
     if run_id is None:
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         run_id = f"run_{timestamp}"
 
-    # Apply routing overrides if provided
+    if config is None:
+        config = GenerationConfig(num_candidates=n_candidates)
+    else:
+        config.num_candidates = n_candidates
+
     if routing_overrides:
-        # Note: Router uses global config, overrides would need to be applied
-        # via environment or config file. For now, just note in metadata.
         pass
 
-    # Create GenerationConfig
-    config = GenerationConfig()
-
-    # Check if repair_pass has finalists_only configured
     from literary_structure_generator.llm.router import get_params
 
     repair_params = get_params("repair_pass")
     finalists_only = repair_params.get("finalists_only", None)
-
-    # Determine if we should use finalists-only mode
     use_finalists_mode = finalists_only is not None and finalists_only > 0
 
-    # Generate candidates (skip repair if using finalists mode)
     candidates = []
     for i in range(n_candidates):
-        candidate_id = f"cand_{i+1:03d}"
+        candidate_id = f"cand_{i + 1:03d}"
 
         candidate = generate_single_candidate(
             spec=spec,
@@ -271,9 +261,7 @@ def generate_candidates(
 
         candidates.append(candidate)
 
-    # Apply repair pass to top-K finalists if configured
     if use_finalists_mode:
-        # Sort candidates by evaluation score to identify finalists
         sorted_candidates = sorted(
             candidates,
             key=lambda c: (
@@ -284,17 +272,13 @@ def generate_candidates(
             reverse=True,
         )
 
-        # Get top-K finalists
         num_finalists = min(finalists_only, len(sorted_candidates))
         finalist_ids = {sorted_candidates[i]["id"] for i in range(num_finalists)}
 
-        # Apply repair pass to finalists
         for candidate in candidates:
             if candidate["id"] in finalist_ids:
-                # Apply repair to this finalist
                 stitched = candidate["stitched"]
 
-                # Check guards
                 guard_result = check_overlap_guard(
                     stitched,
                     exemplar_text,
@@ -303,15 +287,12 @@ def generate_candidates(
                     min_simhash_hamming=spec.constraints.anti_plagiarism.simhash_hamming_min,
                 )
 
-                # Build repair notes
                 repair_notes = {"issues": []}
                 if not guard_result["passed"]:
                     repair_notes["issues"].extend(guard_result["violations"])
 
-                # Apply repair
                 repaired = repair_text(stitched, spec, notes=repair_notes)
 
-                # Re-check guards after repair
                 final_guard = check_overlap_guard(
                     repaired,
                     exemplar_text,
@@ -320,12 +301,11 @@ def generate_candidates(
                     min_simhash_hamming=spec.constraints.anti_plagiarism.simhash_hamming_min,
                 )
 
-                # Update candidate with repaired text
                 candidate["repaired"] = repaired
+                candidate["metadata"]["total_words"] = len(repaired.split())
                 candidate["metadata"]["final_guard"] = final_guard
                 candidate["metadata"]["is_finalist"] = True
 
-                # Re-evaluate with repaired text
                 draft_dict = {
                     "text": repaired,
                     "seeds": {
@@ -348,55 +328,44 @@ def generate_candidates(
             else:
                 candidate["metadata"]["is_finalist"] = False
 
-    # Select best candidate
     best_id = select_best_candidate(candidates)
 
-    # Compile metadata
     meta = {
         "run_id": run_id,
         "n_candidates": n_candidates,
         "generation_timestamp": datetime.now(timezone.utc).isoformat(),
         "story_id": spec.meta.story_id,
         "routing_overrides": routing_overrides or {},
-        "config_hash": hashlib.md5(config.model_dump_json().encode()).hexdigest()[:8],  # noqa: S324
+        "config_hash": hashlib.sha256(config.model_dump_json().encode()).hexdigest()[:8],
         "finalists_only_mode": use_finalists_mode,
         "num_finalists": finalists_only if use_finalists_mode else n_candidates,
     }
 
-    # Persist to /runs/ directory
-    output_dir = Path("runs") / run_id
-    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = Path(output_dir) / run_id
+    output_path.mkdir(parents=True, exist_ok=True)
 
-    # Save each candidate
     for candidate in candidates:
-        candidate_dir = output_dir / candidate["id"]
+        candidate_dir = output_path / candidate["id"]
         candidate_dir.mkdir(exist_ok=True)
 
-        # Save repaired text
         with open(candidate_dir / "repaired.txt", "w", encoding="utf-8") as f:
             f.write(candidate["repaired"])
 
-        # Save stitched text
         with open(candidate_dir / "stitched.txt", "w", encoding="utf-8") as f:
             f.write(candidate["stitched"])
 
-        # Save beat results
         with open(candidate_dir / "beat_results.json", "w", encoding="utf-8") as f:
             json.dump(candidate["beats"], f, indent=2, default=str)
 
-        # Save eval report
         with open(candidate_dir / "eval_report.json", "w", encoding="utf-8") as f:
             f.write(candidate["eval"].model_dump_json(indent=2, by_alias=True))
 
-        # Save metadata
         with open(candidate_dir / "metadata.json", "w", encoding="utf-8") as f:
             json.dump(candidate["metadata"], f, indent=2, default=str)
 
-    # Save run metadata
-    with open(output_dir / "run_metadata.json", "w", encoding="utf-8") as f:
+    with open(output_path / "run_metadata.json", "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2, default=str)
 
-    # Save summary
     summary = {
         "run_id": run_id,
         "best_candidate": best_id,
@@ -410,7 +379,7 @@ def generate_candidates(
             for c in candidates
         ],
     }
-    with open(output_dir / "summary.json", "w", encoding="utf-8") as f:
+    with open(output_path / "summary.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
 
     return {
